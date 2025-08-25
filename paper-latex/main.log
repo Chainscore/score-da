@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2025.8.25)  25 AUG 2025 17:49
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2025.8.25)  25 AUG 2025 22:48
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -377,21 +377,21 @@ Before submitting the final camera ready copy, remember to:
 LaTeX Warning: There were undefined references.
 
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: DC57A84F320803A7F100EE3BD4B4EDBB;1586.
+(rerunfilecheck)             Checksum: BCF9D567F63C2C059B9909C0C01EA010;1482.
  ) 
 Here is how much of TeX's memory you used:
- 9804 strings out of 476034
- 158215 string characters out of 5792864
- 1868388 words of memory out of 6000000
- 30130 multiletter control sequences out of 15000+600000
+ 9802 strings out of 476034
+ 158195 string characters out of 5792864
+ 1869388 words of memory out of 6000000
+ 30129 multiletter control sequences out of 15000+600000
  543215 words of font info for 83 fonts, out of 8000000 for 9000
  1137 hyphenation exceptions out of 8191
  75i,8n,76p,465b,437s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (1 page, 60799 bytes).
+Output written on main.pdf (1 page, 62987 bytes).
 PDF statistics:
- 103 PDF objects out of 1000 (max. 8388607)
- 89 compressed objects within 1 object stream
- 17 named destinations out of 1000 (max. 500000)
- 121 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 99 PDF objects out of 1000 (max. 8388607)
+ 85 compressed objects within 1 object stream
+ 16 named destinations out of 1000 (max. 500000)
+ 113 words of extra memory for PDF output out of 10000 (max. 10000000)
 
