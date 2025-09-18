@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2025.8.25)  8 SEP 2025 13:10
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2025.8.25)  18 SEP 2025 19:03
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -367,40 +367,80 @@ Package hyperref Info: Link coloring OFF on input line 15.
 \@outlinefile=\write3
 \openout3 = `main.out'.
 
- (./sections/introduction.tex
-Underfull \hbox (badness 10000) in paragraph at lines 55--56
+ (./sections/introduction.tex [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}{/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}
+
+
+]
+Underfull \hbox (badness 10000) in paragraph at lines 65--66
 []|\OT1/ptm/m/n/8 BABE/
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 56--56
+Underfull \hbox (badness 10000) in paragraph at lines 66--66
 []|\OT1/ptm/m/n/8 Night-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 58--58
+Underfull \hbox (badness 10000) in paragraph at lines 66--68
+[]|\OT1/ptm/m/n/8 BABE/
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 69--69
+[]|\OT1/ptm/m/n/8 Erasure
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 69--69
 []|\OT1/ptm/m/n/8 Reed-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 62--62
-[]|\OT1/ptm/m/n/8 Chunk-
+Underfull \hbox (badness 10000) in paragraph at lines 69--69
+[]|\OT1/ptm/m/n/8 Three-layer
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 62--63
-[]|\OT1/ptm/m/n/8 Light
+Underfull \hbox (badness 10000) in paragraph at lines 73--73
+[]|\OT1/ptm/m/n/8 Max-
  []
 
 
-Overfull \hbox (32.112pt too wide) in paragraph at lines 46--66
+Underfull \hbox (badness 10000) in paragraph at lines 73--73
+[]|\OT1/ptm/m/n/8 0.0159
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 77--77
+[]|\OT1/ptm/m/n/8 Total
+ []
+
+
+Underfull \hbox (badness 7722) in paragraph at lines 81--81
+[]|\OT1/ptm/m/n/8 Native To-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 87--87
+[]|\OT1/ptm/m/n/8 Txs per
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 89--89
+[]|\OT1/ptm/m/n/8 Nakamoto
+ []
+
+
+Overfull \hbox (40.6479pt too wide) in paragraph at lines 56--93
  [][] 
  []
 
-) (./sections/methodology.tex [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}{/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}
+) (./sections/methodology.tex) (./sections/results.tex) (./sections/conclusion.tex) (./main.bbl
+Underfull \hbox (badness 2261) in paragraph at lines 30--31
+[]\OT1/ptm/m/n/8 N. Pro-to-col, ``The near white pa-per,'' []$https : / / pages . near . org / papers /
+ []
 
-
-]) (./sections/results.tex) (./sections/conclusion.tex) (./main.bbl)
+)
 
 ** Conference Paper **
 Before submitting the final camera ready copy, remember to:
@@ -412,25 +452,23 @@ Before submitting the final camera ready copy, remember to:
  uses only Type 1 fonts and that every step in the generation
  process uses the appropriate paper size.
 
-[2
-
-] (./main.aux)
+[2] (./main.aux)
 Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: 44F353733E7D2BD09B9F06E6559B5DCC;1841.
  ) 
 Here is how much of TeX's memory you used:
- 10076 strings out of 476034
- 161974 string characters out of 5792864
- 1881388 words of memory out of 6000000
- 30377 multiletter control sequences out of 15000+600000
+ 10078 strings out of 476034
+ 162049 string characters out of 5792864
+ 1880388 words of memory out of 6000000
+ 30378 multiletter control sequences out of 15000+600000
  548348 words of font info for 94 fonts, out of 8000000 for 9000
  1137 hyphenation exceptions out of 8191
  75i,18n,76p,922b,437s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (2 pages, 70136 bytes).
+Output written on main.pdf (2 pages, 73078 bytes).
 PDF statistics:
- 127 PDF objects out of 1000 (max. 8388607)
- 111 compressed objects within 2 object streams
- 24 named destinations out of 1000 (max. 500000)
+ 132 PDF objects out of 1000 (max. 8388607)
+ 116 compressed objects within 2 object streams
+ 25 named destinations out of 1000 (max. 500000)
  137 words of extra memory for PDF output out of 10000 (max. 10000000)
 

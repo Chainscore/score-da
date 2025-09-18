@@ -26,6 +26,9 @@ Avail-Team, ``Avail: A unifying blockchain network,'' \emph{Avail Project Docume
 \bibitem{Espresso:Hotshot_and_Triamisu}
 Espresso-Systems, ``The espresso sequencer: Hotshot consensus and triamisu data availability,'' \emph{Avail Project Documentation}, vol.~1, no.~1, 2023.
 
+\bibitem{NEAR_Nightshade_Scaling_Blockchain}
+N.~Protocol, ``The near white paper,'' \url{https://pages.near.org/papers/the-official-near-white-paper/}, 2020, accessed: 2025-09-16.
+
 \bibitem{Avail_The_DA_Blockchain}
 Avail, ``Avail: The data availability blockchain,'' \emph{Avail Project Documentation}, vol.~1, no. 2.1, 2024.
 

@@ -15,10 +15,17 @@ The Models included in study are as follows:
 The below is a breif short introduction of the models that will be discussed and analyzed in the study.
 
 \subsection{Polkadot ELVES}
-We employed a quantitative research design to gather and analyze data systematically.
+Polkadot is a sharded L0 multichain network the enables cross-chain interoperability and scalablity. It utilizes ELVES (Economic Last Validation Enforcement System) to ensure data availability and validity of the parachains.
+Polkadot uses a hybrid consensus mechanism which uses BABE for block production and GRANDPA for its block finality. ELVES uses Reed Solomon encoding to split the data into chunks and then disperse it all across the network.
+
+Polkadot uses Nominated Proof of Stake (NPoS) consensus mechanism which allows token holders to nominate entrusted validators to secure the network.
+
+
 
 \subsection{Celestia}
-We employed a quantitative research design to gather and analyze data systematically.
+Celestia is one of the first mover in the modular Data Availability solution space playing a major role in L2 and rollups developments. Celestia as of now utilizes 2D-Reed Solomon Erasure coding to split data into chunks and then encode into a matrix extension Namespaced Merkel Trees are then used to ensure the retirval and validity of the data. The root of the NMT is then stored in the block header.
+
+As of now Celestia uses Tenderming consensus mechanism which uses BFT (Byzantine Fault Tolerance) style mechanism to ensure the finality of the blocks
 
 \subsection{Espresso Tiramisu}
 Espresso-Tiramisu DA resolves the Data availability scaling issue with a three layred system below is the short overview of these three layers.
@@ -29,7 +36,10 @@ Espresso-Tiramisu DA resolves the Data availability scaling issue with a three l
 \end{itemize}
 Espresso utilizes Hotshot consensus which is a optimistically responsive, communication-efficient consensus protocol in a proof-of-stake setting that is resistant to bribing adversaries and scalable to large number of nodes.
 \subsection{NEAR}
-We employed a quantitative research design to gather and analyze data systematically.
+NEAR provides a high speed DA solution which porvides high transaction volumes with cost-effectivenes.
+NEAR utilizes the nightshade sharding mechanism, which parallelizes the network into multiple shards.Each shard processes its own transactions allowing the network to handle a higher volume of transactions approx ~100,000 TPS \cite{NEAR_Nightshade_Scaling_Blockchain}.
+
+As of now NEAR uses sharding-based proof of stake consensus mechanism.NEAR also implements unique validator elections to ensure security and decentralization of the network
 
 \subsection{Avail}
 Avail DA helps blockchains scale by providing an abundance of data availability capacity. Its modular design scales data
@@ -43,23 +53,40 @@ As for consensus Avail uses BABE/GRANDPA hybrid consensus used by polkadot for b
 \setlength{\tabcolsep}{4pt} % tighter columns
 \renewcommand{\arraystretch}{1.15}
 \footnotesize
-\begin{tabular}{|p{1.4cm}|p{1.4cm}|p{1.5cm}|p{1.5cm}|p{1.2cm}|p{1.2cm}|}
+\begin{tabular}{|p{1.4cm}|p{1.4cm}|p{1.5cm}|p{1.5cm}|p{1.2cm}|p{1.5cm}|}
 \hline
 \textbf{Feature} &
-\makecell[l]{\textbf{Polkadot's}\\\textbf{ELVES}} &
+\makecell[l]{\textbf{Polkadot}\\} &
 \textbf{Celestia} &
 \makecell[l]{\textbf{Espresso}\\\textbf{Tiramisu}} &
 \textbf{NEAR} &
 \textbf{Avail} \\
 \hline
 Consensus & BABE/
-GRANDPA & Tendermint & HotShot & Night\-shade & --- \\
+GRANDPA & Tendermint & HotShot & Night\-shade & BABE/
+GRANDPA \\
 \hline
-Storage & Sharding & Reed-Solomon & Three-layer & Sharding & KZG \\
+Storage & Erasure Coding  & Reed-Solomon & Three-layer system & Sharding & KZG + Erasure Coding \\
 \hline
 Block Time & 20s & 15s & \textasciitilde6s & 1s & 20s \\
 \hline
-Validation & Light Client & Light Client & Full Node & Chunk-only & Light Client \\
+Max-Throughput & - & 0.0159 MiB/s & 5 MB/s & -  & 0.2 MiB/s \\
+\hline
+Block Size & 5 MB & 8 MB & 1 MB & 4 MB & 4 MB \\
+\hline
+Total Validators & 600 & 100 &  100 & 300 & 1000\\
+\hline
+Cost/mb & - & 0.08 USD & - & 100kb per NEAR token & 0.0173 USD\\
+\hline
+Native Token & DOT & - & TIA & NEAR &  AVAIL \\
+\hline
+Latency & 6-30s & 5-15s & - & 1-2s & 20-40s \\
+\hline
+TPS & 10 & - & - & 53 & 420 \\
+\hline
+Txs per block & - & - & - & - & - \\
+\hline
+Nakamoto Coeff & 174 & - & - & 10 & - \\
 \hline
 \end{tabular}
 \label{tab:da_comparison}
