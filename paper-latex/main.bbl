@@ -20,9 +20,6 @@
 \providecommand{\BIBdecl}{\relax}
 \BIBdecl
 
-\bibitem{Avail_Unifying_Blockchain_Network}
-Avail-Team, ``Avail: A unifying blockchain network,'' \emph{Avail Project Documentation}, vol.~1, no.~1, 2024.
-
 \bibitem{polkadot_article}
 Polkadot, ``Polkadot protocol architecture,'' \url{https://docs.polkadot.com/polkadot-protocol/architecture/polkadot-chain/overview.}, 2025, accessed: 2025-09-22.
 
@@ -37,6 +34,9 @@ Espresso-Systems, ``The espresso sequencer: Hotshot consensus and triamisu data 
 
 \bibitem{NEAR_Nightshade_Scaling_Blockchain}
 N.~Protocol, ``The near white paper,'' \url{https://pages.near.org/papers/the-official-near-white-paper/}, 2020, accessed: 2025-09-16.
+
+\bibitem{Avail_Unifying_Blockchain_Network}
+Avail-Team, ``Avail: A unifying blockchain network,'' \emph{Avail Project Documentation}, vol.~1, no.~1, 2024.
 
 \bibitem{Avail_The_DA_Blockchain}
 Avail, ``Avail: The data availability blockchain,'' \emph{Avail Project Documentation}, vol.~1, no. 2.1, 2024.
