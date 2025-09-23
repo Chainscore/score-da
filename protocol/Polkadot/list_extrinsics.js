@@ -1,8 +1,7 @@
-// node list_extrinsics.js
-// npm i @polkadot/api
+// list_extrinsics.js
 const { ApiPromise, WsProvider } = require('@polkadot/api');
 
-const WS = process.env.WS || 'wss://rpc.polkadot.io'; // change to your node (e.g., JAM testnet RPC)
+const WS = process.env.WS || 'wss://rpc.polkadot.io'; // change to Westend if you prefer
 
 async function main(){
   const provider = new WsProvider(WS);
@@ -12,24 +11,20 @@ async function main(){
   const modules = Object.keys(api.tx);
   for(const m of modules){
     try{
-      const calls = Object.keys(api.tx[m]);
-      // quick filter: print only modules that look like DA/Elves/Data
       if (/elves|da|data|parachain|paras/i.test(m)){
         console.log(`\n== ${m} ==`);
-        for(const c of calls){
-          // show arg list
+        for(const c of Object.keys(api.tx[m])){
           const meta = api.tx[m][c].meta;
           const args = meta.args.map(a => `${a.name}:${a.type.toString()}`).join(', ');
           console.log(`  - ${c}(${args})`);
         }
       }
     }catch(e){
-      // ignore
+      // ignore per-module errors
     }
   }
 
-  // also print any likely methods across all modules
-  console.log('\nSearch for common DA method names across all pallets:');
+  console.log('\nSearch for DA-like method names across all pallets:');
   const keywords = ['submit', 'blob', 'data', 'submitBlob', 'submit_data', 'publish'];
   for(const m of modules){
     for(const c of Object.keys(api.tx[m])){
