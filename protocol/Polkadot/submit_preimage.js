@@ -5,7 +5,7 @@ const { blake2AsU8a } = require('@polkadot/util-crypto');
 const { u8aToHex } = require('@polkadot/util'); // <-- fixed import
 
 const WS = process.env.WS || 'wss://westend-rpc.polkadot.io';
-const MNEMONIC = process.env.MNEMONIC || '//Alice';
+const MNEMONIC = process.env.SENDER_SEED || '//Alice';
 const SIZE = parseInt(process.env.SIZE || '1024', 10); // 1 KiB
 
 async function main() {
