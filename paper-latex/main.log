@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2025.8.25)  6 OCT 2025 12:16
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2025.8.25)  8 OCT 2025 00:46
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -475,24 +475,48 @@ File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
 )) [2
 
 ] [3] (./sections/methodology.tex
-<./figures/dummy_graph.png, id=105, 505.89pt x 361.35pt>
+<./figures/dummy_graph.png, id=133, 505.89pt x 361.35pt>
 File: ./figures/dummy_graph.png Graphic file (type png)
 <use ./figures/dummy_graph.png>
-Package pdftex.def Info: ./figures/dummy_graph.png  used on input line 51.
+Package pdftex.def Info: ./figures/dummy_graph.png  used on input line 31.
 (pdftex.def)             Requested size: 201.60077pt x 144.0026pt.
 
-Overfull \hbox (106.19843pt too wide) in paragraph at lines 52--52
+Overfull \hbox (106.19843pt too wide) in paragraph at lines 32--32
 [] [] 
  []
 
 File: ./figures/dummy_graph.png Graphic file (type png)
 <use ./figures/dummy_graph.png>
-Package pdftex.def Info: ./figures/dummy_graph.png  used on input line 70.
+Package pdftex.def Info: ./figures/dummy_graph.png  used on input line 49.
 (pdftex.def)             Requested size: 201.60077pt x 144.0026pt.
 
-Overfull \hbox (106.19843pt too wide) in paragraph at lines 71--71
+Overfull \hbox (106.19843pt too wide) in paragraph at lines 50--50
 [] [] 
  []
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+File: ./figures/dummy_graph.png Graphic file (type png)
+<use ./figures/dummy_graph.png>
+Package pdftex.def Info: ./figures/dummy_graph.png  used on input line 67.
+(pdftex.def)             Requested size: 201.60077pt x 144.0026pt.
+
+Overfull \hbox (106.19843pt too wide) in paragraph at lines 68--68
+[] [] 
+ []
+
+File: ./figures/dummy_graph.png Graphic file (type png)
+<use ./figures/dummy_graph.png>
+Package pdftex.def Info: ./figures/dummy_graph.png  used on input line 86.
+(pdftex.def)             Requested size: 201.60077pt x 144.0026pt.
+
+Overfull \hbox (106.19843pt too wide) in paragraph at lines 87--87
+[] [] 
+ []
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 [4
 
@@ -500,28 +524,10 @@ Overfull \hbox (106.19843pt too wide) in paragraph at lines 71--71
  <./figures/dummy_graph.png>]
 File: ./figures/dummy_graph.png Graphic file (type png)
 <use ./figures/dummy_graph.png>
-Package pdftex.def Info: ./figures/dummy_graph.png  used on input line 88.
-(pdftex.def)             Requested size: 201.60077pt x 144.0026pt.
-
-Overfull \hbox (106.19843pt too wide) in paragraph at lines 89--89
-[] [] 
- []
-
-File: ./figures/dummy_graph.png Graphic file (type png)
-<use ./figures/dummy_graph.png>
 Package pdftex.def Info: ./figures/dummy_graph.png  used on input line 106.
 (pdftex.def)             Requested size: 201.60077pt x 144.0026pt.
 
 Overfull \hbox (106.19843pt too wide) in paragraph at lines 107--107
-[] [] 
- []
-
-File: ./figures/dummy_graph.png Graphic file (type png)
-<use ./figures/dummy_graph.png>
-Package pdftex.def Info: ./figures/dummy_graph.png  used on input line 125.
-(pdftex.def)             Requested size: 201.60077pt x 144.0026pt.
-
-Overfull \hbox (106.19843pt too wide) in paragraph at lines 126--126
 [] [] 
  []
 
@@ -550,21 +556,21 @@ Before submitting the final camera ready copy, remember to:
 LaTeX Warning: There were multiply-defined labels.
 
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 5FFD35099251B8E281AF3D9DADB1BAE7;1926.
+(rerunfilecheck)             Checksum: 6E8B8235E277F135740C66AC11D2FA83;2763.
  ) 
 Here is how much of TeX's memory you used:
- 12883 strings out of 476034
- 214729 string characters out of 5792864
+ 12897 strings out of 476034
+ 214989 string characters out of 5792864
  1873388 words of memory out of 6000000
- 33118 multiletter control sequences out of 15000+600000
+ 33125 multiletter control sequences out of 15000+600000
  549437 words of font info for 96 fonts, out of 8000000 for 9000
  1137 hyphenation exceptions out of 8191
- 75i,10n,117p,864b,516s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,10n,117p,864b,488s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (6 pages, 148226 bytes).
+Output written on main.pdf (6 pages, 147875 bytes).
 PDF statistics:
- 168 PDF objects out of 1000 (max. 8388607)
- 144 compressed objects within 2 object streams
- 36 named destinations out of 1000 (max. 500000)
- 134 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 200 PDF objects out of 1000 (max. 8388607)
+ 176 compressed objects within 2 object streams
+ 43 named destinations out of 1000 (max. 500000)
+ 190 words of extra memory for PDF output out of 10000 (max. 10000000)
 
