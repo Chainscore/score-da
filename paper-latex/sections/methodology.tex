@@ -39,6 +39,7 @@ For benchmarking of polkadot's ELVES we are using \textbf{Paseo testnet} and \te
 % Celestia
 \paragraph{Celestia}
 For benchmarking Celestia's data availability solution, we utilize their \textbf{RPC} to submit and retrieve data blobs from the DA layer with their namespaces.
+
 [We will also use the \textbf{Cosmos SDK} to interact with Celestia nodes and perform various operations such as data submission, retrieval, and verification.]
 \vspace{1em}
 
@@ -224,3 +225,22 @@ These assumptions are critical for understanding the context in which the soluti
 \subsection{\textbf{Validator Costing}}
 In this section, we will analyze the costs incurred by validators in maintaining and operating each DA solution. 
 This includes hardware costs, bandwidth costs, and any other operational expenses associated with running a validator node.
+
+\begin{table*}[ht]
+\centering
+\caption{Minimum or Recommended Hardware Requirements for DA/Validator Nodes}
+\setlength{\tabcolsep}{8pt}  % Increased spacing between columns
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|l|c|c|c|c|c|}
+\hline
+\textbf{Network} & \textbf{CPU} & \textbf{RAM} & \textbf{Storage} & \textbf{Bandwidth} & \textbf{Cost} \\ 
+\hline
+Polkadot & 8 cores & 32\,GB & 1--2\,TB NVMe & 500\,Mbps & \$XXX/mo \\ 
+Celestia & 8 cores & 64\,GB & 8\,TB NVMe & 1\,Gbps & \$XXX/mo \\ 
+Espresso & 4 cores & 8\,GB & 1\,TB SSD & 100\,Mbps & \$XXX/mo \\ 
+NEAR & 8 cores & 32--48\,GB & 3--4\,TB NVMe & 1\,Gbps & \$XXX/mo \\ 
+Avail & 4 cores & 8\,GB & 20--40\,GB SSD & 50\,Mbps & \$XXX/mo \\
+\hline
+\end{tabular}
+\label{tab:da-node-reqs}
+\end{table*}

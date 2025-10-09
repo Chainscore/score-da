@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2025.8.25)  9 OCT 2025 18:41
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2025.8.25)  9 OCT 2025 20:48
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -503,27 +503,27 @@ File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
 )) [2
 
 ] [3] (./sections/methodology.tex
-Underfull \hbox (badness 10000) in paragraph at lines 49--50
+Underfull \hbox (badness 10000) in paragraph at lines 50--51
 []\OT1/ptm/m/n/10 Data avail-abil-ity met-rics through \OT1/ptm/b/n/10 API \OT1/ptm/m/n/10 end-points
  []
 
 
-Underfull \hbox (badness 1515) in paragraph at lines 57--61
+Underfull \hbox (badness 1515) in paragraph at lines 58--62
  \OT1/ptm/m/it/10 d) NEAR: [][] \OT1/ptm/m/n/10 For bench-mark-ing NEAR's sharded data
  []
 
 
-Overfull \hbox (106.19843pt too wide) in paragraph at lines 89--89
+Overfull \hbox (106.19843pt too wide) in paragraph at lines 90--90
 [] [] 
  []
 
 
-Overfull \hbox (106.19843pt too wide) in paragraph at lines 111--111
+Overfull \hbox (106.19843pt too wide) in paragraph at lines 112--112
 [] [] 
  []
 
 
-Overfull \hbox (106.19843pt too wide) in paragraph at lines 135--135
+Overfull \hbox (106.19843pt too wide) in paragraph at lines 136--136
 [] [] 
  []
 
@@ -534,16 +534,16 @@ LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 
 ]
-Overfull \hbox (106.19843pt too wide) in paragraph at lines 158--158
+Overfull \hbox (106.19843pt too wide) in paragraph at lines 159--159
 [] [] 
  []
 
 
-Overfull \hbox (106.19843pt too wide) in paragraph at lines 180--180
+Overfull \hbox (106.19843pt too wide) in paragraph at lines 181--181
 [] [] 
  []
 
-) [5] (./main.bbl
+) [5] [6] (./main.bbl
 Underfull \hbox (badness 2261) in paragraph at lines 36--37
 []\OT1/ptm/m/n/8 N. Pro-to-col, ``The near white pa-per,'' []$https : / / pages . near . org / papers /
  []
@@ -560,7 +560,7 @@ Before submitting the final camera ready copy, remember to:
  uses only Type 1 fonts and that every step in the generation
  process uses the appropriate paper size.
 
-[6
+[7
 
 
 ] (./main.aux)
@@ -568,21 +568,21 @@ Before submitting the final camera ready copy, remember to:
 LaTeX Warning: There were multiply-defined labels.
 
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 17C62075B33880761807469E3CCC68F9;1758.
+(rerunfilecheck)             Checksum: C8B76AE8F31C623469881B6EBA5E5B2C;1758.
  ) 
 Here is how much of TeX's memory you used:
- 12961 strings out of 476034
- 215927 string characters out of 5792864
+ 12964 strings out of 476034
+ 215966 string characters out of 5792864
  1873388 words of memory out of 6000000
- 33177 multiletter control sequences out of 15000+600000
+ 33178 multiletter control sequences out of 15000+600000
  551158 words of font info for 99 fonts, out of 8000000 for 9000
  1137 hyphenation exceptions out of 8191
  75i,10n,117p,864b,518s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (6 pages, 97078 bytes).
+Output written on main.pdf (7 pages, 98248 bytes).
 PDF statistics:
- 183 PDF objects out of 1000 (max. 8388607)
- 161 compressed objects within 2 object streams
- 52 named destinations out of 1000 (max. 500000)
+ 190 PDF objects out of 1000 (max. 8388607)
+ 167 compressed objects within 2 object streams
+ 54 named destinations out of 1000 (max. 500000)
  121 words of extra memory for PDF output out of 10000 (max. 10000000)
 
