@@ -1,0 +1,64 @@
+name: Build LaTeX Paper and Create Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Compile LaTeX document
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: main.tex
+          working_directory: paper-latex
+          args: -pdf -file-line-error -halt-on-error -interaction=nonstopmode
+      
+      - name: Get tag name
+        id: tag
+        run: echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+      
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          release_name: Research Paper - ${{ steps.tag.outputs.tag }}
+          body: |
+            Automated release of research paper PDF
+            
+            **Generated from commit:** ${{ github.sha }}
+            **Tag:** ${{ steps.tag.outputs.tag }}
+          draft: false
+          prerelease: false
+      
+      - name: Upload PDF to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./paper-latex/main.pdf
+          asset_name: research-paper.pdf
+          asset_content_type: application/pdf
+      
+      - name: Upload PDF as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: research-paper-pdf
+          path: paper-latex/main.pdf
+          retention-days: 90

@@ -33,3 +33,19 @@ __pycache__/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# LaTeX generated files
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+*.lof
+*.lot
+*.fdb_latexmk
+*.fls
+*.pdf
