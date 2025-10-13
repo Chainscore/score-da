@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2025.8.25)  11 OCT 2025 20:09
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2025.8.25)  13 OCT 2025 12:26
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -500,14 +500,8 @@ Package caption Info: End \AtBeginDocument code.
 
 
 ]
-
-LaTeX Warning: Citation `Celestia_Overview' on page 2 undefined on input line 54.
-
-
-LaTeX Warning: Citation `Celestia_Overview' on page 2 undefined on input line 54.
-
 LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 90.
-(/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1ptm.fd
+ (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1ptm.fd
 File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
 )) [2
 
@@ -578,7 +572,7 @@ Overfull \hbox (106.19843pt too wide) in paragraph at lines 291--291
  []
 
 [5]
-<./figures/output.png, id=150, 570.933pt x 317.988pt>
+<./figures/output.png, id=160, 570.933pt x 317.988pt>
 File: ./figures/output.png Graphic file (type png)
 <use ./figures/output.png>
 Package pdftex.def Info: ./figures/output.png  used on input line 334.
@@ -614,28 +608,33 @@ Underfull \hbox (badness 10000) in paragraph at lines 27--28
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 48--49
-[]\OT1/ptm/m/n/8 P. Doc-u-men-ta-tion, ``Val-ida-tor re-quire-ments and vps provider
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 48--49
-\OT1/ptm/m/n/8 list,'' []$https : / / docs . polkadot . com / infrastructure / running-[]a-[]validator /
- []
-
-
-Underfull \hbox (badness 1571) in paragraph at lines 51--52
-[]\OT1/ptm/m/n/8 C. Docs, ``Nodes overview,'' []$https : / / docs . celestia . org / how-[]to-[]guides /
- []
-
-
 Underfull \hbox (badness 10000) in paragraph at lines 54--55
+\OT1/ptm/m/n/8 gate . com / learn / articles / a-[]comparative-[]study-[]of-[]celestia-[]and-[]near / 6143$[],
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 57--58
 []\OT1/ptm/m/n/8 E. S. Doc-u-men-ta-tion, ``Run-ning a mainnet-1 node,''
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 54--55
+Underfull \hbox (badness 10000) in paragraph at lines 57--58
 []$\OT1/ptm/m/n/8 https : / / docs . espressosys . com / network / releases / mainnet-[]1 /
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 60--61
+[]\OT1/ptm/m/n/8 P. Doc-u-men-ta-tion, ``Val-ida-tor re-quire-ments and vps provider
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 60--61
+\OT1/ptm/m/n/8 list,'' []$https : / / docs . polkadot . com / infrastructure / running-[]a-[]validator /
+ []
+
+
+Underfull \hbox (badness 1571) in paragraph at lines 63--64
+[]\OT1/ptm/m/n/8 C. Docs, ``Nodes overview,'' []$https : / / docs . celestia . org / how-[]to-[]guides /
  []
 
 )
@@ -655,27 +654,24 @@ Before submitting the final camera ready copy, remember to:
 
 ] (./main.aux)
 
-LaTeX Warning: There were undefined references.
-
-
 LaTeX Warning: There were multiply-defined labels.
 
 Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: 8AF7F0537693A267ECBCE3867BA995EC;1759.
  ) 
 Here is how much of TeX's memory you used:
- 13010 strings out of 476034
- 216977 string characters out of 5792864
+ 13015 strings out of 476034
+ 217099 string characters out of 5792864
  1875388 words of memory out of 6000000
- 33200 multiletter control sequences out of 15000+600000
+ 33202 multiletter control sequences out of 15000+600000
  551158 words of font info for 99 fonts, out of 8000000 for 9000
  1137 hyphenation exceptions out of 8191
  75i,12n,117p,900b,520s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (8 pages, 192822 bytes).
+Output written on main.pdf (8 pages, 193354 bytes).
 PDF statistics:
- 267 PDF objects out of 1000 (max. 8388607)
- 225 compressed objects within 3 object streams
- 76 named destinations out of 1000 (max. 500000)
+ 283 PDF objects out of 1000 (max. 8388607)
+ 239 compressed objects within 3 object streams
+ 79 named destinations out of 1000 (max. 500000)
  126 words of extra memory for PDF output out of 10000 (max. 10000000)
 

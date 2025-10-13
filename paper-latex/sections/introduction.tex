@@ -18,7 +18,7 @@ The below is a breif short introduction of the models that will be discussed and
 Polkadot is a sharded L0 multichain network the enables cross-chain interoperability and scalablity \cite{polkadot_article}. It utilizes ELVES (Economic Last Validation Enforcement System) to ensure data availability and validity of the parachains.
 Polkadot uses a hybrid consensus mechanism which uses BABE for block production and GRANDPA for its block finality. ELVES uses Reed Solomon encoding to split the data into chunks and then disperse it all across the network.
 
-Polkadot uses Nominated Proof of Stake (NPoS) consensus mechanism which allows token holders to nominate entrusted validators to secure the network\cite{Overview_of_polkadot}.
+Polkadot uses Nominated Proof of Stake (NPoS) consensus mechanism which allows token holders to nominate entrusted validators to secure the network\cite{Overview_of_polkadot} \cite{Jeff_Burdges_ELVES}.
 
 
 
@@ -34,7 +34,7 @@ Espresso-Tiramisu DA resolves the Data availability scaling issue with a three l
     \item Mascarpone (DA Committe Layer) - A Small elected Committee stores the full data and guarantees to efficiently recover data \cite{Espresso:Hotshot_and_Triamisu}.
     \item Cocoa (CDN Layer) - Uploads the data on web2 based CDN solution for seamless and speedy data recovery \cite{Espresso:Hotshot_and_Triamisu}.
 \end{itemize}
-Espresso utilizes Hotshot consensus which is a optimistically responsive, communication-efficient consensus protocol in a proof-of-stake setting that is resistant to bribing adversaries and scalable to large number of nodes.
+Espresso utilizes Hotshot consensus which is a optimistically responsive, communication-efficient consensus protocol in a proof-of-stake setting that is resistant to bribing adversaries and scalable to large number of nodes \cite{Espresso_Docs}.
 \subsection{NEAR}
 NEAR provides a high speed DA solution which porvides high transaction volumes with cost-effectivenes.
 NEAR utilizes the nightshade sharding mechanism, which parallelizes the network into multiple shards.Each shard processes its own transactions allowing the network to handle a higher volume of transactions approx ~100,000 TPS \cite{NEAR_Nightshade_Scaling_Blockchain}.
@@ -50,7 +50,7 @@ As for consensus Avail uses BABE/GRANDPA hybrid consensus used by polkadot for b
 \begin{table*}[ht]
 \centering
 \caption{Comprehensive Comparison of Data Availability Solutions
-(Data sourced from network documentation: \cite{polkadot_article}, \cite{Celestia_Overview}, \cite{Espresso:Hotshot_and_Triamisu}, \cite{NEAR_Nightshade_Scaling_Blockchain}, \cite{Avail_The_DA_Blockchain})
+(Data sourced from network documentation: \cite{polkadot_article}, \cite{Gate_Celestia_NEAR_Comparison}, \cite{Espresso:Hotshot_and_Triamisu}, \cite{NEAR_Nightshade_Scaling_Blockchain}, \cite{Avail_The_DA_Blockchain}, \cite{Espresso_Mainnet_Node})
 }
 \setlength{\tabcolsep}{4pt} % column spacing
 \renewcommand{\arraystretch}{1.3} % row spacing
