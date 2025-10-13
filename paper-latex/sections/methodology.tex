@@ -103,7 +103,7 @@ This section will analyze the maximum throughput capabilities of different DA so
 \paragraph{\textbf{TPS}}
 This section analyzes the transactions per second (TPS) capabilities of different DA solutions.
 \begin{itemize}
-    \item \textbf{Test Parameters:} Network conditions, data sizes, node count
+    \item \textbf{Test Parameters:} Network conditions, data sizes, transactions count
     \item \textbf{Metrics:} TPS
 \end{itemize}
 
@@ -198,7 +198,7 @@ This section analyzes the maximum data retrieval time capabilities of different 
 % (table here...)
 \begin{table}[h!] \centering \caption{Data Retrieval Latency Analysis of DA Solutions} \label{tab:throughput_vertical} \setlength{\tabcolsep}{5pt} % reduce column padding 
     \renewcommand{\arraystretch}{1.1} % tighten row spacing 
-    \begin{tabular}{|l|c|c|c|} \hline \textbf{Protocol} & \textbf{Latency (s)} \\ 
+    \begin{tabular}{|l|c|c|c|} \hline \textbf{Protocol} & \textbf{ Retrieval Latency (s)} \\ 
         \hline Polkadot & X \\ 
         Celestia & X \\ 
         Espresso & X \\ 
@@ -220,10 +220,10 @@ This includes analyzing how each solution handles extreme conditions such as hig
 
 \paragraph{\textbf{Cost per MB (Inclusion Phase)}}
 This sub-subsection evaluates the cost per megabyte (MB) incurred during worst-case data inclusion scenarios for each DA solution. 
-We measure how on-chain congestion, gas fee surges, and payload sizes affect the overall inclusion cost.
+We measure how gas fee surges, and payload sizes affect the overall inclusion cost.
 
 \begin{itemize}
-    \item \textbf{Test Parameters:} Network congestion, data size (1KB–1MB), gas/fee volatility
+    \item \textbf{Test Parameters:}  Data size (1KB–1MB), gas/fee volatility
     \item \textbf{Metrics:} Cost per MB (\$/MB)
 \end{itemize}
 
@@ -249,7 +249,7 @@ We measure how on-chain congestion, gas fee surges, and payload sizes affect the
 \vspace{2em}
 
 \paragraph{\textbf{Latency (Worst Case)}}
-This measures the maximum inclusion time under stress conditions (e.g., full block utilization, network congestion).
+This measures the maximum inclusion time under stress conditions (e.g., full block utilization).
 \begin{itemize}
     \item \textbf{Test Parameters:} Network latency, data size, node count
     \item \textbf{Metrics:} Latency (seconds)

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2025.8.25)  13 OCT 2025 12:26
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2025.8.25)  13 OCT 2025 14:40
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -549,11 +549,6 @@ Overfull \hbox (106.19843pt too wide) in paragraph at lines 199--199
  []
 
 
-Underfull \hbox (badness 6493) in paragraph at lines 226--227
-[]\OT1/ptm/b/n/10 Test Pa-ram-e-ters: \OT1/ptm/m/n/10 Net-work con-ges-tion, data size
- []
-
-
 Overfull \hbox (106.19843pt too wide) in paragraph at lines 232--232
 [] [] 
  []
@@ -668,7 +663,7 @@ Here is how much of TeX's memory you used:
  1137 hyphenation exceptions out of 8191
  75i,12n,117p,900b,520s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (8 pages, 193354 bytes).
+Output written on main.pdf (8 pages, 193649 bytes).
 PDF statistics:
  283 PDF objects out of 1000 (max. 8388607)
  239 compressed objects within 3 object streams

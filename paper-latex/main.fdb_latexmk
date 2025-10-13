@@ -1,14 +1,14 @@
 # Fdb version 4
-["bibtex main"] 1760338593.10464 "main.aux" "main.bbl" "main" 1760338594.52477 0
+["bibtex main"] 1760338593.10464 "main.aux" "main.bbl" "main" 1760346627.99111 0
   "./references.bib" 1760338560.57492 5204 21845b673d1da9659cf993d613b313c0 ""
   "/usr/share/texlive/texmf-dist/bibtex/bst/ieeetran/IEEEtran.bst" 1440712899 57748 7c8250ecf02814ce6ddc0cdbb63df1dd ""
-  "main.aux" 1760338594.11249 12249 c4669977e839ec0bf3da120920fc6b65 "pdflatex"
+  "main.aux" 1760346627.58108 12249 c4669977e839ec0bf3da120920fc6b65 "pdflatex"
   (generated)
   "main.bbl"
   "main.blg"
   (rewritten before read)
-["pdflatex"] 1760338593.26052 "/home/pranjal/Desktop/DA-Research/paper-latex/main.tex" "main.pdf" "main" 1760338594.52519 0
-  "/home/pranjal/Desktop/DA-Research/paper-latex/main.tex" 1760037654.05117 2010 67e3f8fedcbd07fc9be95eec8c004f82 ""
+["pdflatex"] 1760346626.79028 "/home/pranjal/Desktop/DA-Research/paper-latex/main.tex" "main.pdf" "main" 1760346627.9915 0
+  "/home/pranjal/Desktop/DA-Research/paper-latex/main.tex" 1760341496.57146 2115 217f39601fa35fb08c92893aeea21f0b ""
   "/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc" 1721433600 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/adobe/times/ptmb7t.tfm" 1136768653 2172 fd0c924230362ff848a33632ed45dc23 ""
@@ -118,12 +118,12 @@
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1756121400.08188 4547210 0b4d8bce3d83ee4f50b88a57a6a0d7ef ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1756121199 7759950 f921b52f412d0f875badbe6f299f5a03 ""
   "figures/output.png" 1760026711.78006 92872 a6e706de2ff42e295ff28869d6b17422 ""
-  "main.aux" 1760338594.11249 12249 c4669977e839ec0bf3da120920fc6b65 "pdflatex"
+  "main.aux" 1760346627.58108 12249 c4669977e839ec0bf3da120920fc6b65 "pdflatex"
   "main.bbl" 1760338593.2525 3945 6572d1d1d43a7f117a568eff701d65d5 "bibtex main"
-  "main.out" 1760338594.11449 1759 8af7f0537693a267ecbce3867ba995ec "pdflatex"
-  "main.tex" 1760037654.05117 2010 67e3f8fedcbd07fc9be95eec8c004f82 ""
-  "sections/introduction.tex" 1760338590.18481 7053 bdfc55f914c6245360877b440cfe036d ""
-  "sections/methodology.tex" 1760192883.17842 17535 8c60a4dd5621a490472114d73ed32d60 ""
+  "main.out" 1760346627.58308 1759 8af7f0537693a267ecbce3867ba995ec "pdflatex"
+  "main.tex" 1760341496.57146 2115 217f39601fa35fb08c92893aeea21f0b ""
+  "sections/introduction.tex" 1760339792.04972 7053 17c8927fb5f6dfa03580ac5d1be63a00 ""
+  "sections/methodology.tex" 1760346626.51741 17494 8dc1de6762217bd11a75ca5dc9a7f5b5 ""
   (generated)
   "main.aux"
   "main.log"
