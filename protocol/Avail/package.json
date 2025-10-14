@@ -1,17 +1,27 @@
 {
-  "name": "avail",
+  "name": "avail-protocol",
   "version": "1.0.0",
-  "description": "",
+  "description": "Avail DA protocol testing and analysis tools",
   "main": "avail_test_data.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node avail_test_data.js",
+    "get-block": "node avail_get_block.js"
   },
-  "keywords": [],
+  "keywords": [
+    "avail",
+    "data-availability",
+    "blockchain"
+  ],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "type": "module",
   "dependencies": {
     "avail-js-sdk": "^0.4.2",
     "dotenv": "^17.2.1"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=18.0.0"
   }
 }

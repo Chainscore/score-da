@@ -1,7 +1,28 @@
 {
+  "name": "polkadot-protocol",
+  "version": "1.0.0",
+  "description": "Polkadot DA protocol testing and analysis tools",
+  "main": "polkadot_add_data.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node polkadot_add_data.js"
+  },
+  "keywords": [
+    "polkadot",
+    "data-availability",
+    "blockchain"
+  ],
+  "author": "",
+  "license": "MIT",
   "dependencies": {
     "@polkadot/api": "^16.4.8",
     "@polkadot/util": "^13.5.6",
-    "@polkadot/util-crypto": "^13.5.6"
+    "@polkadot/util-crypto": "^13.5.6",
+    "bn.js": "^5.2.1"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
+

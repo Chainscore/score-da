@@ -1,0 +1,91 @@
+version: '3.8'
+
+services:
+  da-research:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: da-research-protocols
+    volumes:
+      # Mount protocol directories for development
+      - ./protocol:/app/protocol
+      # Mount environment files if needed
+      - ./protocol/Avail/.env:/app/protocol/Avail/.env:ro
+      - ./protocol/Polkadot/.env:/app/protocol/Polkadot/.env:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+    working_dir: /app
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  # Individual protocol services (optional)
+  avail:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: da-research-avail
+    volumes:
+      - ./protocol/Avail:/app/protocol/Avail
+    working_dir: /app/protocol/Avail
+    environment:
+      - PYTHONUNBUFFERED=1
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  espresso:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: da-research-espresso
+    volumes:
+      - ./protocol/Espresso:/app/protocol/Espresso
+    working_dir: /app/protocol/Espresso
+    environment:
+      - PYTHONUNBUFFERED=1
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  near:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: da-research-near
+    volumes:
+      - ./protocol/Near:/app/protocol/Near
+    working_dir: /app/protocol/Near
+    environment:
+      - PYTHONUNBUFFERED=1
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  polkadot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: da-research-polkadot
+    volumes:
+      - ./protocol/Polkadot:/app/protocol/Polkadot
+    working_dir: /app/protocol/Polkadot
+    environment:
+      - PYTHONUNBUFFERED=1
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  celestia:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: da-research-celestia
+    volumes:
+      - ./protocol/Celestia:/app/protocol/Celestia
+    working_dir: /app/protocol/Celestia
+    environment:
+      - PYTHONUNBUFFERED=1
+    stdin_open: true
+    tty: true
+    command: /bin/bash
