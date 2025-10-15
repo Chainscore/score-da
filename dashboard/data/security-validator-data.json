@@ -1,0 +1,109 @@
+{
+  "metadata": {
+    "generatedAt": "2025-10-15T00:00:00Z",
+    "description": "Security assumptions and validator requirements"
+  },
+  "securityAssumptions": {
+    "data": [
+      {
+        "protocol": "Polkadot",
+        "honestMajority": "≥2/3",
+        "daSamplingSize": 600,
+        "validatorCount": 297,
+        "nakamotoCoefficient": 12,
+        "consensusType": "GRANDPA/BABE"
+      },
+      {
+        "protocol": "Celestia",
+        "honestMajority": "≥2/3",
+        "daSamplingSize": "≥1 honest node",
+        "validatorCount": 100,
+        "nakamotoCoefficient": 8,
+        "consensusType": "Tendermint"
+      },
+      {
+        "protocol": "Espresso",
+        "honestMajority": "≥2/3",
+        "daSamplingSize": "DA committee + fallback",
+        "validatorCount": 100,
+        "nakamotoCoefficient": 15,
+        "consensusType": "HotShot"
+      },
+      {
+        "protocol": "NEAR",
+        "honestMajority": "≥2/3 per shard",
+        "daSamplingSize": "Shard validators",
+        "validatorCount": 500,
+        "nakamotoCoefficient": 7,
+        "consensusType": "Nightshade"
+      },
+      {
+        "protocol": "Avail",
+        "honestMajority": "≥2/3 consensus + ≥1 sampler",
+        "daSamplingSize": 105,
+        "validatorCount": 105,
+        "nakamotoCoefficient": 18,
+        "consensusType": "BABE/GRANDPA"
+      }
+    ]
+  },
+  "validatorCosts": {
+    "data": [
+      {
+        "protocol": "Polkadot",
+        "cpuCores": 8,
+        "ramGB": 32,
+        "storageType": "NVMe",
+        "storageTB": 2,
+        "bandwidthMbps": 500,
+        "entryFeesUSD": 18500,
+        "monthlyOperatingCostUSD": 350,
+        "totalFirstYearCostUSD": 22700
+      },
+      {
+        "protocol": "Celestia",
+        "cpuCores": 8,
+        "ramGB": 64,
+        "storageType": "NVMe",
+        "storageTB": 8,
+        "bandwidthMbps": 1000,
+        "entryFeesUSD": 5000,
+        "monthlyOperatingCostUSD": 580,
+        "totalFirstYearCostUSD": 11960
+      },
+      {
+        "protocol": "Espresso",
+        "cpuCores": 4,
+        "ramGB": 8,
+        "storageType": "SSD",
+        "storageTB": 1,
+        "bandwidthMbps": 100,
+        "entryFeesUSD": 2500,
+        "monthlyOperatingCostUSD": 120,
+        "totalFirstYearCostUSD": 3940
+      },
+      {
+        "protocol": "NEAR",
+        "cpuCores": 8,
+        "ramGB": 32,
+        "storageType": "NVMe",
+        "storageTB": 3,
+        "bandwidthMbps": 0,
+        "entryFeesUSD": 12000,
+        "monthlyOperatingCostUSD": 280,
+        "totalFirstYearCostUSD": 15360
+      },
+      {
+        "protocol": "Avail",
+        "cpuCores": 4,
+        "ramGB": 8,
+        "storageType": "SSD",
+        "storageTB": 0.02,
+        "bandwidthMbps": 50,
+        "entryFeesUSD": 1000,
+        "monthlyOperatingCostUSD": 65,
+        "totalFirstYearCostUSD": 1780
+      }
+    ]
+  }
+}

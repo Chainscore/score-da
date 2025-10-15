@@ -1,0 +1,68 @@
+{
+  "metadata": {
+    "generatedAt": "2025-10-15T00:00:00Z",
+    "testDuration": "30 days",
+    "protocols": ["Polkadot", "Celestia", "Espresso", "NEAR", "Avail"],
+    "description": "Comparative performance metrics for DA protocols"
+  },
+  "throughput": {
+    "unit": "MB/s",
+    "data": [
+      { "protocol": "Polkadot", "value": 12.5, "min": 10.2, "max": 15.8, "avg": 12.5 },
+      { "protocol": "Celestia", "value": 28.3, "min": 25.1, "max": 32.4, "avg": 28.3 },
+      { "protocol": "Espresso", "value": 18.7, "min": 16.4, "max": 21.2, "avg": 18.7 },
+      { "protocol": "NEAR", "value": 22.4, "min": 19.8, "max": 25.6, "avg": 22.4 },
+      { "protocol": "Avail", "value": 35.6, "min": 32.1, "max": 38.9, "avg": 35.6 }
+    ]
+  },
+  "tps": {
+    "unit": "transactions/second",
+    "data": [
+      { "protocol": "Polkadot", "value": 1500, "min": 1200, "max": 1800, "avg": 1500 },
+      { "protocol": "Celestia", "value": 3200, "min": 2800, "max": 3600, "avg": 3200 },
+      { "protocol": "Espresso", "value": 2100, "min": 1900, "max": 2400, "avg": 2100 },
+      { "protocol": "NEAR", "value": 2800, "min": 2400, "max": 3200, "avg": 2800 },
+      { "protocol": "Avail", "value": 4500, "min": 4000, "max": 5000, "avg": 4500 }
+    ]
+  },
+  "costPerMB": {
+    "unit": "USD/MB",
+    "data": [
+      { "protocol": "Polkadot", "value": 0.0042, "min": 0.0038, "max": 0.0048, "avg": 0.0042 },
+      { "protocol": "Celestia", "value": 0.00089, "min": 0.00075, "max": 0.00102, "avg": 0.00089 },
+      { "protocol": "Espresso", "value": 0.0023, "min": 0.0019, "max": 0.0027, "avg": 0.0023 },
+      { "protocol": "NEAR", "value": 0.0031, "min": 0.0028, "max": 0.0035, "avg": 0.0031 },
+      { "protocol": "Avail", "value": 0.00067, "min": 0.00055, "max": 0.00078, "avg": 0.00067 }
+    ]
+  },
+  "latency": {
+    "unit": "seconds",
+    "data": [
+      { "protocol": "Polkadot", "value": 6.2, "min": 5.8, "max": 7.1, "avg": 6.2 },
+      { "protocol": "Celestia", "value": 12.8, "min": 11.4, "max": 14.5, "avg": 12.8 },
+      { "protocol": "Espresso", "value": 8.5, "min": 7.9, "max": 9.8, "avg": 8.5 },
+      { "protocol": "NEAR", "value": 2.1, "min": 1.8, "max": 2.5, "avg": 2.1 },
+      { "protocol": "Avail", "value": 20.3, "min": 18.2, "max": 22.7, "avg": 20.3 }
+    ]
+  },
+  "maxBlockSize": {
+    "unit": "MB",
+    "data": [
+      { "protocol": "Polkadot", "value": 5.0, "theoretical": 5.0 },
+      { "protocol": "Celestia", "value": 8.0, "theoretical": 8.0 },
+      { "protocol": "Espresso", "value": 4.5, "theoretical": 5.0 },
+      { "protocol": "NEAR", "value": 4.0, "theoretical": 4.5 },
+      { "protocol": "Avail", "value": 2.0, "theoretical": 2.0 }
+    ]
+  },
+  "dataRetrieval": {
+    "unit": "seconds",
+    "data": [
+      { "protocol": "Polkadot", "value": 1.8, "min": 1.5, "max": 2.2, "avg": 1.8 },
+      { "protocol": "Celestia", "value": 3.2, "min": 2.8, "max": 3.8, "avg": 3.2 },
+      { "protocol": "Espresso", "value": 2.1, "min": 1.9, "max": 2.5, "avg": 2.1 },
+      { "protocol": "NEAR", "value": 1.2, "min": 0.9, "max": 1.5, "avg": 1.2 },
+      { "protocol": "Avail", "value": 4.5, "min": 3.8, "max": 5.2, "avg": 4.5 }
+    ]
+  }
+}
