@@ -42,10 +42,14 @@ Thumbs.db
 *.fls
 *.log
 *.out
+!collect.log
 *.synctex.gz
 *.toc
 *.lof
 *.lot
 *.fdb_latexmk
 *.fls
-*.pdf
+# *.pdf
+
+grant.md
+reports/

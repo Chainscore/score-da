@@ -1,104 +1,42 @@
-The blockchain technology is a constantly evolving field that has garnered significant attention and value in recent years. However, despite its growing prominence, the decentralized systems are facing challenges in scaling Blockchains in terms of data availability. Data availability is a critically important aspect of blockchain technology. Data availability refers to the ability of a blockchain network to ensure that all necessary data is accessible and retrievable by all its participants. In a decentralized system, Where multiple nodes work together to validate and store data/transactions, ensuring that the data is avaliable, valid and accessible is quite a important factor for maintaing the integrity and decentralized nature of the network \cite{Saif_Survey_DA_Rollups}.
+% ================================================================
+% SECTION I: INTRODUCTION
+% ================================================================
 
+Blockchain scalability hinges on a deceptively simple requirement: every participant must be confident that block data has been published and is retrievable.
+This property, known as \emph{data availability} (DA), underpins the security of rollups, parachains, and sharded architectures alike.
+Without DA guarantees, validators cannot verify state transitions, light clients cannot detect fraud, and the trust model of the entire system collapses to that of a permissioned committee~\cite{Saif_Survey_DA_Rollups}.
 
-This study provides a comparative study among the latest available Data availability solutions/models in terms of bandwidth, time and other criteria to provide a bigger overview of pro's and con's of every model.
+The past three years have witnessed a proliferation of DA solutions.
+Ethereum introduced blob-carrying transactions (EIP-4844) and is progressively deploying PeerDAS for cell-level sampling~\cite{EIP-4844, EIP-7594}.
+Celestia launched the first dedicated DA network with two-dimensional erasure coding and namespace-filtered sampling~\cite{AlBassam_LazyLedger}.
+Polkadot's ELVES protocol distributes erasure-coded parachain data across its validator set with approval-gated finality~\cite{Jeff_Burdges_ELVES}.
+Espresso's Tiramisu introduces a three-layer Verifiable Information Dispersal (VID) architecture that explicitly rejects DAS in favor of algebraic dispersal proofs~\cite{Espresso:Hotshot_and_Triamisu}.
+NEAR provides sharding-based DA through Nightshade with a rollup-oriented blob store~\cite{NEAR_Nightshade_Scaling_Blockchain}, and Avail combines KZG polynomial commitments with DAS-enabled light clients on a Substrate-based chain~\cite{Avail_The_DA_Blockchain}.
 
-The Models included in study are as follows:
-\begin{itemize}
-    \item Polkadot's ELVES
-    \item Celestia
-    \item Espresso Tiramisu
-    \item NEAR
-    \item Avail
-\end{itemize}
+Despite this activity, the field lacks an empirical, cross-protocol comparison grounded in production data.
+Existing comparisons are either qualitative~\cite{Symbolic_Capital_Data_Availability}, vendor-authored, or limited to theoretical analysis of individual protocols.
+No study has simultaneously measured throughput, cost, and utilization across multiple DA networks under a unified methodology.
+This gap is consequential: rollup developers choosing a DA backend, protocol designers evaluating trade-offs, and researchers assessing the state of the art all lack a common empirical baseline.
 
-The below is a breif short introduction of the models that will be discussed and analyzed in the study.
+This paper fills that gap. Our contributions are:
 
-\subsection{Polkadot ELVES}
-Polkadot is a sharded L0 multichain network the enables cross-chain interoperability and scalablity \cite{polkadot_article}. It utilizes ELVES (Economic Last Validation Enforcement System) to ensure data availability and validity of the parachains.
-Polkadot uses a hybrid consensus mechanism which uses BABE for block production and GRANDPA for its block finality. ELVES uses Reed Solomon encoding to split the data into chunks and then disperse it all across the network.
+\begin{enumerate}
+    \item \textbf{A taxonomy of DA architectures} that classifies protocols along three paradigms (Data Availability Sampling, Verifiable Information Dispersal, and validator-set recovery) and along orthogonal dimensions of encoding scheme and commitment type (Section~\ref{sec:background}).
 
-Polkadot uses Nominated Proof of Stake (NPoS) consensus mechanism which allows token holders to nominate entrusted validators to secure the network\cite{Overview_of_polkadot} \cite{Jeff_Burdges_ELVES}.
+    \item \textbf{A qualitative architecture comparison} of encoding redundancy, commitment schemes (KZG vs.\ NMT vs.\ Merkle), and verification mechanisms across all six protocols, grounded in protocol specifications and documentation (Section~\ref{sec:architecture}).
 
+    \item \textbf{An empirical benchmarking study} using 90~days of production mainnet data (November 2025--February 2026) across Polkadot, Ethereum, Celestia, Espresso, NEAR, and Avail, measuring throughput (MiB/s), cost (\$/MiB), utilization (\%), and block dynamics under consistent definitions (Section~\ref{sec:results}).
 
+    \item \textbf{A comparative security analysis} of trust assumptions, Byzantine fault tolerance thresholds, data withholding enforcement, and retention policies across all six protocols (Section~\ref{sec:security}).
 
-\subsection{Celestia}
-Celestia is one of the first mover in the modular Data Availability solution space playing a major role in L2 and rollups developments. Celestia as of now utilizes 2D-Reed Solomon Erasure coding to split data into chunks and then encode into a matrix extension Namespaced Merkel Trees are then used to ensure the retirval and validity of the data. The root of the NMT is then stored in the block header \cite{AlBassam_LazyLedger}.
+    \item \textbf{Open-source tooling and datasets}: all data collection scripts, raw datasets, and analysis notebooks are released under Apache~2.0 (code) and CC~BY~4.0 (data) licenses to enable reproducibility and longitudinal extension.
+\end{enumerate}
 
-As of now Celestia uses Tendermint consensus mechanism which uses BFT (Byzantine Fault Tolerance) style mechanism to ensure the finality of the blocks \cite{AlBassam_LazyLedger}.
-
-\subsection{Espresso Tiramisu}
-Espresso-Tiramisu DA resolves the Data availability scaling issue with a three layred system below is the short overview of these three layers.
-\begin{itemize}
-    \item Savoiardi (VID Layer) - Erause codes and stores data across all the nodes \cite{Espresso:Hotshot_and_Triamisu}.
-    \item Mascarpone (DA Committe Layer) - A Small elected Committee stores the full data and guarantees to efficiently recover data \cite{Espresso:Hotshot_and_Triamisu}.
-    \item Cocoa (CDN Layer) - Uploads the data on web2 based CDN solution for seamless and speedy data recovery \cite{Espresso:Hotshot_and_Triamisu}.
-\end{itemize}
-Espresso utilizes Hotshot consensus which is a optimistically responsive, communication-efficient consensus protocol in a proof-of-stake setting that is resistant to bribing adversaries and scalable to large number of nodes \cite{Espresso_Docs}.
-\subsection{NEAR}
-NEAR provides a high speed DA solution which porvides high transaction volumes with cost-effectivenes.
-NEAR utilizes the nightshade sharding mechanism, which parallelizes the network into multiple shards.Each shard processes its own transactions allowing the network to handle a higher volume of transactions approx ~100,000 TPS \cite{NEAR_Nightshade_Scaling_Blockchain}.
-
-As of now NEAR uses sharding-based proof of stake consensus mechanism.NEAR also implements unique validator elections to ensure security and decentralization of the network
-
-\subsection{Avail}
-Avail DA helps blockchains scale by providing an abundance of data availability capacity. Its modular design scales data
-availability capacity with demand, and transaction data can be cryptographically verified quickly by anyone running an Avail
-light client \cite{Avail_Unifying_Blockchain_Network}.Avail utilizes Erasure coding, KZG commitments along with light client to ensure its data availability.
-
-As for consensus Avail uses BABE/GRANDPA hybrid consensus used by polkadot for block production and finality. Avail also provides Application Specific Data Retrieval (ASDR) this helps rollups to fetch and decode their own blobs even tho the block might contain many app's data. \cite{Avail_The_DA_Blockchain}.
-\begin{table*}[ht]
-\centering
-\caption{Comprehensive Comparison of Data Availability Solutions
-(Data sourced from network documentation: \cite{polkadot_article}, \cite{Gate_Celestia_NEAR_Comparison}, \cite{Espresso:Hotshot_and_Triamisu}, \cite{NEAR_Nightshade_Scaling_Blockchain}, \cite{Avail_The_DA_Blockchain}, \cite{Espresso_Mainnet_Node})
-}
-\setlength{\tabcolsep}{4pt} % column spacing
-\renewcommand{\arraystretch}{1.3} % row spacing
-\footnotesize
-\begin{tabular}{|l|c|c|c|c|c|}
-\hline
-\textbf{Feature} & \textbf{Polkadot} & \textbf{Celestia} & \textbf{Espresso} & \textbf{NEAR} & \textbf{Avail} \\
- & \textbf{ELVES} & & \textbf{Tiramisu} & & \\
-\hline
-\multicolumn{6}{|c|}{\textbf{Consensus \& Architecture}} \\
-\hline
-Consensus & BABE + & Tendermint & Permissionless & Nightshade & BABE + \\
-Mechanism & GRANDPA(PoS) & BFT & PoS & Sharding & GRANDPA(PoS) \\
-\hline
-DA Model & Reed-Solomon & 2D Reed-Solomon & Three-layer & Sharding-based & KZG + 2D \\
- & Erasure Coding & + Namespaced & Tiramisu & Parallelization & Reed-Solomon \\
- & & Merkle Trees & System & & Erasure Coding \\
-\hline
-Native Token & DOT & TIA & - & NEAR & AVAIL \\
-\hline
-Total Validators & 600 & 100 & 100 & 500 & 105 \\
-\hline
-\multicolumn{6}{|c|}{\textbf{Performance Metrics}} \\
-\hline
-Block Time & $\sim$6s & $\sim$6s & $\sim$5s & $\sim$0.6s & $\sim$20s \\
-\hline
-Block Size & 5 MB & 8 MB & 1 MB & 4 MB & 4 MB \\
-\hline
-TPS** & 10 & 0.48 & 0.8 & 53 & 420 \\
-\hline
-Max Throughput* & $\sim$40 MB/s & $\sim$6 MB/s & $\sim$5 MB/s & $\sim$16MB/s & $\sim$0.2 MB/s \\
-\hline
-Finality & 6--30s & 5--15s & 1--2s & 1--1.2s & 20--40s \\
-\hline
-\multicolumn{6}{|c|}{\textbf{Economic \& Security}} \\
-\hline
-Cost per MB & N/A & $\sim$\$0.08 & N/A & 100kb per & $\sim$\$0.0173 \\
- & & & & NEAR token & \\
-\hline
-Nakamoto & 174 & 9 & N/A & 10 & 34 \\
-Coefficient & & & & & \\
-\hline
-\multicolumn{6}{|c|}{\textbf{Key Features}} \\
-\hline
-Unique & Cross-chain & First modular & Web2 CDN & High-speed & Application \\
-Advantages & interoperability & DA solution & integration (Cocoa layer) & sharding & Specific Data \\
- & via parachains & for rollups & (High speed retrieval) & ~100k TPS & Retrieval (ASDR) \\
-\hline
-\end{tabular}
-\label{tab:da_comparison}
-\end{table*}
+The remainder of this paper is organized as follows.
+Section~\ref{sec:background} provides background on the DA problem, introduces our taxonomy, describes each protocol, and positions our work relative to prior literature.
+Section~\ref{sec:architecture} presents a qualitative comparison of protocol architectures.
+Section~\ref{sec:methodology} details our data collection and analysis methodology.
+Section~\ref{sec:results} presents empirical results organized by metric.
+Section~\ref{sec:security} analyzes security properties and trust assumptions.
+Section~\ref{sec:discussion} discusses trade-offs, implications, and limitations.
+Section~\ref{sec:conclusion} concludes with a summary of findings and directions for future work.

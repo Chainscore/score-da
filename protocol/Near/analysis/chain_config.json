@@ -1,0 +1,55 @@
+{
+  "blockRange": {
+    "start": 185503855,
+    "end": 185505854
+  },
+  "config": {
+    "numShards": 9,
+    "protocolVersion": 82,
+    "epochLength": 43200,
+    "minGasPrice": "1000000000",
+    "maxGasPrice": "10000000000000000000000",
+    "genesisHeight": 9820210,
+    "blockProducerSeats": 100,
+    "gasLimitPerChunk": 1000000000000000,
+    "avgBlockTimeMs": 610.7112112112112,
+    "empiricalMaxEncodedBytes": 570953,
+    "maxBytesPerBlockMib": 36,
+    "protocolMaxMibps": 58.94766517975317
+  },
+  "gas": {
+    "gas_price": "100000000",
+    "receipt_creation_gas": 324178500000,
+    "fn_call_base_gas": 1180000000000,
+    "fn_call_per_byte_gas": 52155583,
+    "per_mib_gas": 56193271099808,
+    "per_mib_near": 0.0056193271099808,
+    "current_near_usd": 1.0401915611606536,
+    "current_cost_per_mib_usd": 0.005845176639203312,
+    "current_cost_per_gib_month_usd": 5.985460878544192
+  },
+  "milestones": [
+    {
+      "label": "Simple Nightshade (4 shards)",
+      "block": 47704100,
+      "timestamp_ms": 1636761600000
+    },
+    {
+      "label": "Simple Nightshade v2 (5 shards)",
+      "block": 103747170,
+      "timestamp_ms": 1696982400000
+    },
+    {
+      "label": "Stateless validation",
+      "block": 130154688,
+      "timestamp_ms": 1722470400000
+    }
+  ],
+  "priceRange": {
+    "min_usd": 0.939124474605297,
+    "max_usd": 2.5382383911761557,
+    "from": "2025-11-16T11:01:37.906Z",
+    "to": "2026-02-14T10:47:36.000Z",
+    "points": 2161
+  }
+}

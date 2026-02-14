@@ -1,0 +1,58 @@
+{
+  "blockRange": {
+    "start": 8524265,
+    "end": 9822185,
+    "count": 1294912
+  },
+  "config": {
+    "shareSize": 512,
+    "maxSquareSize": 128,
+    "maxDataBytes": 8388608,
+    "maxMib": 8.0,
+    "avgBlockTimeMs": 6052.5,
+    "medianBlockTimeMs": 6090.0,
+    "protocolMaxMibps": 1.3136,
+    "predominantAppVersion": 6,
+    "currentEra": "Current",
+    "availabilityWindowDays": 30.042
+  },
+  "gas": {
+    "refCostPerMibTia": 0.060273,
+    "utiaPerTia": 1000000,
+    "currentTiaUsd": 0.345472,
+    "currentCostPerMibUsd": 0.02082263
+  },
+  "eras": [
+    {
+      "label": "Lemongrass",
+      "maxAppVersion": 2,
+      "maxSquareSize": 64,
+      "avgBlockTimeS": 12,
+      "maxDataBytes": 2097152
+    },
+    {
+      "label": "Ginger",
+      "minAppVersion": 3,
+      "maxAppVersion": 5,
+      "maxSquareSize": 64,
+      "avgBlockTimeS": 6,
+      "maxDataBytes": 2097152
+    },
+    {
+      "label": "Current",
+      "minAppVersion": 6,
+      "maxSquareSize": 128,
+      "avgBlockTimeS": 6,
+      "maxDataBytes": 8388608
+    }
+  ],
+  "priceRange": {
+    "min_usd": 0.2997,
+    "max_usd": 0.849,
+    "latest_usd": 0.345472,
+    "from": "2025-11-16T15:01:04.056000+00:00",
+    "to": "2026-02-14T14:03:48+00:00",
+    "points": 2161
+  },
+  "collectedAt": "2026-02-14T14:03:54.809000+00:00"
+}

@@ -4,8 +4,11 @@
   "description": "Polkadot DA protocol testing and analysis tools",
   "main": "polkadot_add_data.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node polkadot_add_data.js"
+    "start": "node polkadot_add_data.js",
+    "throughput": "npx tsx throughput/collect.ts",
+    "throughput:plot": "npx tsx throughput/plot.ts",
+    "cost": "npx tsx cost/collect.ts",
+    "cost:plot": "npx tsx cost/plot.ts"
   },
   "keywords": [
     "polkadot",
@@ -20,7 +23,9 @@
     "@polkadot/util-crypto": "^13.5.6",
     "bn.js": "^5.2.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "tsx": "^4.0.0"
+  },
   "engines": {
     "node": ">=18.0.0"
   }

@@ -1,0 +1,45 @@
+{
+  "blockRange": {
+    "start": 2159659,
+    "end": 2548459
+  },
+  "config": {
+    "expectedBlockTimeMs": 20000,
+    "maxBlockBytes": 4456448,
+    "specVersion": 50,
+    "maxMibPerS": 0.2125,
+    "avgBlockTimeMs": 20000,
+    "empiricalMaxSubmitBytes": 0,
+    "availDecimals": 18,
+    "currentAvailUsd": 0.00416851,
+    "availUsdSource": "coingecko:avail",
+    "avgFeePerMibAvail": 0
+  },
+  "milestones": [
+    {
+      "label": "Mainnet launch",
+      "block": 1,
+      "timestamp_ms": 1721088000000
+    },
+    {
+      "label": "v2.3.4.0 — 64 MiB blocks, ~1 block finality",
+      "block": null,
+      "timestamp_ms": 1733961600000
+    }
+  ],
+  "priceData": {
+    "points": 2161,
+    "range": {
+      "minUsd": 0.003928331841234777,
+      "maxUsd": 0.00973445089674003,
+      "from": "2025-11-16T16:06:45.743Z",
+      "to": "2026-02-14T15:20:12.000Z"
+    }
+  },
+  "notes": [
+    "Avail fees = base_fee + length_fee + weight_fee * congestion_multiplier * submitDataFeeModifier",
+    "Fees extracted from TransactionFeePaid events (actual fees paid on-chain)",
+    "Default node pruning retains 256 finalized blocks; archive nodes serve full history",
+    "1 AVAIL = 10^18 plancks"
+  ]
+}

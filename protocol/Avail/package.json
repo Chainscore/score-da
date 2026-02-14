@@ -5,6 +5,10 @@
   "main": "avail_test_data.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "collect": "npx tsx collect.ts",
+    "collect:days": "npx tsx collect.ts --days 90",
+    "collect:prices": "npx tsx collect.ts --prices-only",
+    "plot": "python3 plot.py",
     "start": "node avail_test_data.js",
     "get-block": "node avail_get_block.js"
   },
@@ -20,7 +24,9 @@
     "avail-js-sdk": "^0.4.2",
     "dotenv": "^17.2.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "tsx": "^4.0.0"
+  },
   "engines": {
     "node": ">=18.0.0"
   }

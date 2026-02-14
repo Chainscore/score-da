@@ -1,0 +1,321 @@
+% ================================================================
+% SECTION III: PROTOCOL ARCHITECTURE COMPARISON
+% ================================================================
+
+This section presents a qualitative comparison of the six DA protocols along three architectural dimensions: encoding and redundancy schemes, commitment and proof systems, and verification paradigms.
+These dimensions collectively determine each protocol's trade-off surface between bandwidth efficiency, light client capability, trust assumptions, and fault tolerance.
+
+% ----------------------------------------------------------
+% III-A. ENCODING AND REDUNDANCY
+% ----------------------------------------------------------
+\subsection{Encoding and Redundancy}
+\label{subsec:encoding}
+
+All six protocols employ Reed--Solomon (RS) erasure coding to introduce redundancy into block data, but they differ substantially in dimensionality, redundancy factor, and reconstruction semantics.
+Table~\ref{tab:encoding_comparison} summarizes these differences.
+
+\begin{table*}[t]
+\centering
+\caption{Encoding and Redundancy Comparison Across DA Protocols}
+\label{tab:encoding_comparison}
+\setlength{\tabcolsep}{6pt}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{l l c l}
+\toprule
+\textbf{Protocol} & \textbf{Encoding Scheme} & \textbf{Redundancy Factor} & \textbf{Reconstruction Threshold} \\
+\midrule
+Polkadot~\cite{Jeff_Burdges_ELVES} & 1D RS across validator set & ${\sim}3\times$ & $f{+}1$ of $n$ validators ($n = 3f + k$) \\
+Ethereum~\cite{EIP-4844} & 1D RS (PeerDAS cells) & ${\sim}2\times$ & 50\%+ of 128 columns \\
+Celestia~\cite{AlBassam_LazyLedger} & 2D RS ($k \times k \to 2k \times 2k$) & ${\sim}4\times$ (in shares) & $k \times k$ unique shares \\
+Espresso~\cite{Espresso:Hotshot_and_Triamisu} & Polynomial VID (eval/interp) & ${\sim}1/r$ (configurable, $r = m/n$) & $m$ of $n$ evaluations \\
+NEAR~\cite{NEAR_Nightshade_Scaling_Blockchain} & 1D RS (chunk parts) & ${\sim}3\times$ (current) & $1/3$ of parts \\
+Avail~\cite{Avail_The_DA_Blockchain} & 1D RS (row-wise) & ${\sim}2\times$ & $n$ of $2n$ coded pieces \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+The central trade-off is between redundancy overhead (bandwidth and storage cost) and reconstruction robustness.
+Higher redundancy factors require proportionally more network bandwidth for data distribution and more aggregate storage across the validator or node set, but they provide stronger guarantees that data can be recovered even when a larger fraction of coded pieces is unavailable.
+
+\textbf{Celestia} exhibits the highest redundancy at ${\sim}4\times$ due to its two-dimensional RS structure: original data of dimension $k \times k$ is extended to $2k \times 2k$, yielding four times the original data volume in shares~\cite{AlBassam_LazyLedger}.
+This overhead is the direct cost of enabling two-dimensional random sampling, which allows light clients to verify availability by sampling from both rows and columns of the extended matrix.
+The 2D structure also permits row- or column-level reconstruction: any $k$ shares from a single row (or column) of length $2k$ suffice to recover that row (or column), enabling localized repair without reconstructing the entire block.
+
+\textbf{Polkadot} and \textbf{NEAR} both employ ${\sim}3\times$ redundancy, distributing erasure-coded pieces across their respective validator sets.
+In Polkadot's ELVES protocol, parachain block data (Proofs of Validity, or PoVs) are RS-encoded and distributed such that each validator stores one coded chunk, with reconstruction requiring $f{+}1$ of $n$ chunks where $n = 3f + k$~\cite{Jeff_Burdges_ELVES, Overview_of_polkadot}.
+NEAR's Nightshade sharding similarly encodes chunk data with ${\sim}3\times$ redundancy, requiring only $1/3$ of the parts for reconstruction~\cite{NEAR_Nightshade_Scaling_Blockchain}.
+In both cases, the redundancy distributes data responsibility across the full validator set rather than relying on a smaller committee or random sampling.
+
+\textbf{Ethereum} and \textbf{Avail} achieve the most bandwidth-efficient encoding at ${\sim}2\times$ redundancy.
+Ethereum's EIP-4844 blob transactions encode data into 128-byte cells arranged across 128 columns. The emerging PeerDAS specification extends each blob's polynomial evaluation points such that any 64 of the 128 columns suffice for reconstruction~\cite{EIP-4844}.
+Avail performs row-wise RS encoding on its application data matrix, extending $n$ original pieces to $2n$ coded pieces per row, so that any $n$ of the $2n$ pieces suffice for recovery~\cite{Avail_The_DA_Blockchain}.
+The $2\times$ factor represents the minimum redundancy that still provides meaningful erasure resilience, and is sufficient for DAS-based verification when combined with appropriate commitment schemes.
+
+\textbf{Espresso}'s Tiramisu uses a polynomial-based Verifiable Information Dispersal (VID) scheme rather than a traditional RS code operating on byte-level shares.
+Data is represented as a polynomial that is evaluated at $n$ distinct points (one per committee member); any $m$ evaluations suffice for interpolation, where the code rate $r = m/n$ is configurable~\cite{Espresso:Hotshot_and_Triamisu}.
+This approach is algebraically equivalent to RS coding but is tightly integrated with the VID commitment layer, enabling a unified proof of correct dispersal that simultaneously certifies both encoding correctness and data distribution.
+
+% ----------------------------------------------------------
+% III-B. COMMITMENT SCHEMES AND PROOF SYSTEMS
+% ----------------------------------------------------------
+\subsection{Commitment Schemes and Proof Systems}
+\label{subsec:commitments}
+
+The choice of cryptographic commitment scheme determines what properties light clients can verify, what trust assumptions are required, and the computational cost of proof generation and verification.
+The six protocols employ three fundamentally different commitment families: KZG polynomial commitments, Namespaced Merkle Trees (NMTs), and standard Merkle trees.
+Table~\ref{tab:commitment_comparison} compares their properties.
+
+\begin{table*}[t]
+\centering
+\caption{Commitment Scheme Properties Across DA Protocols}
+\label{tab:commitment_comparison}
+\setlength{\tabcolsep}{6pt}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{l c c c}
+\toprule
+\textbf{Property} & \textbf{KZG (Avail, Ethereum, Espresso)} & \textbf{NMT (Celestia)} & \textbf{Merkle (Polkadot, NEAR)} \\
+\midrule
+Proof size & $O(1)$, ${\sim}48$ bytes & $O(\log n)$ & $O(\log n)$ \\
+Trusted setup required & Yes (ceremony / SRS) & No & No \\
+Namespace filtering & No (application-level) & Native & No \\
+Verification cost & Pairing operations & Hash operations & Hash operations \\
+Encoding correctness & Algebraically verifiable & Fraud proofs (BEFPs) & Not independently verifiable \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\textbf{KZG polynomial commitments}~\cite{KZG_Original} are used by Avail, Ethereum, and Espresso.
+A KZG commitment to a polynomial $p(x)$ of degree $d$ is a single elliptic curve group element (${\sim}48$ bytes on BLS12-381), and an opening proof for any evaluation $p(z) = v$ is also a single group element.
+Verification requires two pairing operations, which are computationally more expensive than hash evaluations but yield $O(1)$-size proofs regardless of the data size.
+KZG commitments enable \emph{algebraic verification of encoding correctness}: given commitments to the rows (or columns) of an erasure-coded data matrix, anyone can verify that the extended portions are consistent with the original data by checking polynomial relationships between commitments, without accessing the underlying data.
+This property is what enables Avail and Ethereum light clients to reject incorrectly encoded data without fraud proofs.
+The principal drawback is the requirement for a structured reference string (SRS) generated through a trusted setup ceremony.
+Compromise of the SRS toxic waste would allow an adversary to forge proofs.
+In practice, both Ethereum and Avail have conducted large-scale multi-party ceremonies (Ethereum's ceremony involved over 140{,}000 contributors) to mitigate this risk.
+
+\textbf{Namespaced Merkle Trees (NMTs)} are Celestia's defining commitment innovation~\cite{AlBassam_LazyLedger}.
+An NMT is a standard Merkle tree augmented with namespace identifiers: each leaf is tagged with a namespace, internal nodes carry the minimum and maximum namespace of their subtrees, and the tree is sorted by namespace.
+This structure enables \emph{namespace inclusion and exclusion proofs}. A light client can request all shares belonging to a specific namespace (e.g., a particular rollup's data) and receive a Merkle proof that the returned set is complete (no shares from that namespace have been omitted, and no extraneous shares have been included).
+This capability is critical for Celestia's rollup-centric design, as it allows rollup nodes to efficiently retrieve only their own data without downloading the entire block.
+NMT proofs are $O(\log n)$ in size.
+Encoding correctness, however, is \emph{not} algebraically verifiable from the NMT alone. Instead, Celestia relies on Bad Encoding Fraud Proofs (BEFPs) to detect and propagate evidence of incorrect erasure coding~\cite{AlBassam_FraudDA}.
+
+\textbf{Standard Merkle trees} are used by Polkadot and NEAR.
+Polkadot commits to erasure-coded PoV chunks via a Merkle trie whose root is included in the relay chain block header~\cite{Overview_of_polkadot, polkadot_article}.
+NEAR similarly uses Merkle roots to commit to chunk data within shard blocks.
+Standard Merkle proofs provide $O(\log n)$ inclusion proofs and require only hash operations for verification, making them the simplest and most widely understood commitment scheme.
+However, plain Merkle trees provide no mechanism for light clients to verify encoding correctness or to perform data availability sampling: a Merkle proof confirms that a specific piece was included in the committed data set, but it reveals nothing about whether the overall erasure coding was performed correctly.
+In both Polkadot and NEAR, encoding correctness is enforced through the validator set (validators who reconstruct and re-encode can detect errors), but this verification is not accessible to light clients or external observers.
+
+% ----------------------------------------------------------
+% III-C. VERIFICATION PARADIGMS
+% ----------------------------------------------------------
+\subsection{Verification Paradigms: DAS, VID, and Validator Recovery}
+\label{subsec:verification}
+
+The most consequential architectural distinction among DA protocols is how availability is verified.
+We identify three paradigms, each with different trust assumptions and light client capabilities.
+
+% --- DAS ---
+\subsubsection{Data Availability Sampling (DAS)}
+
+DAS, as formalized by Al-Bassam et al.~\cite{AlBassam_FraudDA}, enables light clients to verify data availability without downloading the full block.
+A light client randomly requests $s$ coded pieces from the network; if all $s$ are returned, the client gains probabilistic confidence that the full data is available.
+Against a $(1{-}q)$-withholding adversary (one that has made fraction $q$ of the data unavailable), a client sampling $s$ independent pieces achieves confidence $1 - q^s$.
+
+\textbf{Celestia} was the first production network to deploy DAS.
+Its 2D RS structure means that light clients sample from the $2k \times 2k$ extended square.
+With 16 random samples, a Celestia light client achieves approximately $1 - (1/2)^{16} \approx 99.994\%$ confidence that the data is available, assuming that at least one honest full node is non-eclipsed and participates in the peer-to-peer network~\cite{AlBassam_LazyLedger}.
+The 2D structure further enables row- or column-level reconstruction: if sampling reveals a missing row, any node holding $k$ of the $2k$ shares in that row can reconstruct it, providing a repair mechanism that does not require full block reconstruction.
+
+\textbf{Avail} implements DAS over its 1D RS-encoded rows with KZG commitments.
+Avail light clients sample random cells from the data matrix; each cell is accompanied by a KZG opening proof.
+With 10 random samples, an Avail light client achieves $1 - (1/2)^{10} \approx 99.9\%$ confidence ($1 - 1/1024$)~\cite{Avail_The_DA_Blockchain}.
+The use of KZG commitments provides an additional guarantee beyond sampling: the algebraic properties of polynomial commitments allow the light client to verify that each sampled cell is consistent with the committed row polynomial, effectively verifying encoding correctness without fraud proofs.
+
+\textbf{Ethereum} is progressively deploying DAS through the PeerDAS specification (EIP-7594).
+Under PeerDAS, each blob is extended from 64 to 128 evaluation points (columns), and each validator is responsible for custody of a subset of columns determined by its node ID.
+The current specification sets \texttt{SAMPLES\_PER\_SLOT} $= 8$ columns as the minimum custody requirement per validator~\cite{EIP-4844}.
+Confidence in Ethereum's DAS is emergent at the system level rather than per-client: individual validators do not perform independent random sampling in the Celestia/Avail sense; instead, the aggregate custody across the validator set ensures that all 128 columns are held by at least one honest validator with high probability.
+This design reflects Ethereum's philosophy of leveraging its large validator set (${\sim}1{,}000{,}000$ validators) rather than requiring each light client to independently sample.
+
+The security of DAS across all three protocols rests on two critical assumptions: (i)~at least one honest, non-eclipsed full node must hold the complete data and respond to sampling requests, and (ii)~sufficient sampling participation must exist in the network to ensure that withholding is detected before the data propagation window closes.
+An adversary capable of eclipsing a light client's peer connections can cause the client to falsely conclude that data is available (or unavailable) regardless of the true state.
+
+% --- Validator-Set Recovery ---
+\subsubsection{Validator-Set Recovery}
+
+Polkadot and NEAR adopt a different approach: the full validator set collectively stores and serves erasure-coded data, and availability is attested through consensus-integrated mechanisms rather than probabilistic sampling.
+
+\textbf{Polkadot}'s ELVES protocol tightly couples DA verification with its finality mechanism~\cite{Jeff_Burdges_ELVES}.
+After a parachain collator produces a block candidate, the relay chain validators erasure-code the Proof of Validity (PoV) and distribute one chunk per validator.
+Each validator that successfully receives and stores its chunk signs an \emph{availability bitfield} (a bitmap indicating which PoV chunks it holds).
+A PoV is considered available when $\geq 2/3$ of validators have signed its bitfield.
+Polkadot \emph{gates finality on availability evidence}: the GRANDPA finality gadget will not finalize a relay chain block unless the availability bitfields for all included parachain candidates have reached the $2/3$ threshold~\cite{Overview_of_polkadot, polkadot_article}.
+This design provides a deterministic (not probabilistic) availability guarantee conditioned on the $2/3$ honest-majority assumption, and ensures that unavailable data cannot be finalized.
+
+\textbf{NEAR}'s Nightshade sharding distributes chunk data across shard validators (chunk producers).
+Each chunk producer is responsible for producing and serving the chunk parts for its assigned shard.
+NEAR's availability enforcement relies on a ``lazy signer'' mechanism with probabilistic accountability: validators are required to attest to chunk availability, but enforcement is primarily through the consensus protocol's liveness requirements rather than explicit sampling~\cite{NEAR_Nightshade_Scaling_Blockchain}.
+A challenge mechanism exists in the block structure for disputing invalid or unavailable chunks, but as of our observation period, this mechanism is ``not used today'' in practice.
+
+The key advantage of validator-set recovery is its tight coupling with consensus: availability evidence is a prerequisite for block finality (Polkadot) or block production (NEAR), creating a direct economic incentive for validators to store and serve data.
+However, \emph{light clients cannot independently verify data availability}.
+A Polkadot or NEAR light client must trust that the $\geq 2/3$ validator supermajority has honestly attested to availability. There is no mechanism analogous to DAS that would allow a resource-constrained client to independently check.
+Trust rests entirely on the validator set's honesty and the economic security provided by staking.
+
+% --- VID ---
+\subsubsection{Verifiable Information Dispersal (VID)}
+
+Espresso's Tiramisu architecture introduces a third paradigm that explicitly rejects DAS in favor of algebraic dispersal proofs~\cite{Espresso:Hotshot_and_Triamisu}.
+Tiramisu consists of three layers:
+
+\squishlist
+\item \textbf{Savoiardi (VID layer):} Data is encoded as a polynomial and evaluated at $n$ points (one per committee member). A vector commitment (using KZG) binds the evaluations to the polynomial commitment, producing a compact proof that each committee member received a correct evaluation. This provides \emph{bribery resistance}: even if an adversary bribes a threshold of committee members, the algebraic binding prevents them from claiming to hold data they do not possess.
+
+\item \textbf{Mascarpone (certification layer):} Committee members who receive and verify their evaluations produce threshold signatures attesting to availability. A DA certificate is formed when $\geq 2/3$ of the committee has signed, providing a compact ($O(1)$-size) availability attestation.
+
+\item \textbf{Ladyfinger (fallback layer):} A secondary retrieval path through a CDN-like infrastructure that provides availability even if committee members go offline, with cryptographic proofs linking the fallback data to the original VID commitments.
+\squishend
+
+Espresso's design provides \emph{deterministic} confidence in availability: there is no probabilistic sampling, and finalization is conditional on the DA certificate.
+The Savoiardi VID layer's bribery-resistance guarantees go beyond what DAS provides. While DAS detects withholding probabilistically, Savoiardi's algebraic binding makes it infeasible for a committee member to falsely attest to holding data.
+
+The principal limitation is that data retrieval requires cooperation from the committee (or the Ladyfinger fallback).
+There is no mechanism for an independent light client to sample data and verify availability without relying on the committee's attestations.
+Espresso explicitly argues that DAS introduces ``unnecessary redundancies'' given the algebraic guarantees provided by VID~\cite{Espresso:Hotshot_and_Triamisu}, but this design choice means that trust in data retrievability ultimately rests on the committee and fallback infrastructure.
+
+% ----------------------------------------------------------
+% CROSS-CUTTING: WITHHOLDING ENFORCEMENT
+% ----------------------------------------------------------
+\subsubsection{Cross-Cutting Finding: No Slashing for Data Withholding}
+
+Across all six protocols, \emph{none implements slashing for pure data withholding}.
+While each protocol provides mechanisms to detect or discourage withholding, the enforcement is uniformly indirect:
+
+\squishlist
+\item \textbf{Polkadot:} Validators are slashed for casting invalid \emph{validity} votes (attesting that an invalid parachain block is valid), but there is no slashing for failing to store or serve erasure-coded chunks. A validator that withholds its chunk simply does not sign the availability bitfield, potentially delaying but not corrupting finality~\cite{Jeff_Burdges_ELVES}.
+
+\item \textbf{Celestia:} Bad Encoding Fraud Proofs (BEFPs) allow any full node to prove that the block producer performed incorrect erasure coding~\cite{AlBassam_FraudDA}. However, BEFPs address encoding correctness, not data withholding. A block producer that correctly encodes data but subsequently withholds it faces no direct slashing penalty.
+
+\item \textbf{Ethereum:} PeerDAS enforces availability through peer scoring and disconnection: validators that fail to serve their custody columns receive negative gossip scores and may be disconnected from the p2p network. There is no protocol-level slashing for custody failures~\cite{EIP-4844}.
+
+\item \textbf{Espresso:} In the current Mainnet~0 deployment, enforcement is reputational only. No slashing mechanism is implemented for committee members that fail to serve their VID evaluations~\cite{Espresso:Hotshot_and_Triamisu}.
+
+\item \textbf{NEAR:} A challenge mechanism exists in the block structure that theoretically allows validators to dispute chunk unavailability, but this mechanism is ``not used today'' in the production network. Enforcement relies on the consensus protocol's liveness requirements~\cite{NEAR_Nightshade_Scaling_Blockchain}.
+
+\item \textbf{Avail:} Slashing is implemented for equivocation (double-signing) but not for data withholding. Validators that fail to make sampled cells available face no direct economic penalty~\cite{Avail_The_DA_Blockchain}.
+\squishend
+
+This universal absence of withholding-specific slashing reflects a fundamental difficulty: proving that a node \emph{possesses} data but \emph{refuses} to serve it is harder than proving that a node served \emph{incorrect} data.
+Data withholding is an omission fault rather than a commission fault, and attributing omission to malice (rather than network partition, latency, or node failure) remains an open problem in distributed systems.
+
+% ----------------------------------------------------------
+% COMPREHENSIVE FEATURE COMPARISON TABLE
+% ----------------------------------------------------------
+
+\begin{table*}[t]
+\centering
+\caption{Comprehensive Feature Comparison of DA Protocols}
+\label{tab:feature_comparison}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.3}
+\small
+\begin{tabular}{l c c c c c c}
+\toprule
+\textbf{Feature} & \textbf{Polkadot} & \textbf{Ethereum} & \textbf{Celestia} & \textbf{Espresso} & \textbf{NEAR} & \textbf{Avail} \\
+\midrule
+Encoding &
+  1D RS (validators) &
+  1D RS (PeerDAS) &
+  2D RS ($k{\to}2k$) &
+  Poly.\ VID &
+  1D RS (chunks) &
+  1D RS (rows) \\
+Commitment &
+  Merkle trie &
+  KZG &
+  NMT &
+  KZG + vector &
+  Merkle &
+  KZG \\
+Redundancy &
+  ${\sim}3\times$ &
+  ${\sim}2\times$ &
+  ${\sim}4\times$ &
+  Configurable &
+  ${\sim}3\times$ &
+  ${\sim}2\times$ \\
+DAS support &
+  No &
+  Emerging (PeerDAS) &
+  Yes (2D) &
+  No (VID) &
+  No &
+  Yes (1D) \\
+Light client DAS &
+  No &
+  Validator custody &
+  Yes (16 samples) &
+  No &
+  No &
+  Yes (10 samples) \\
+Block time &
+  6\,s (relay) &
+  12\,s &
+  12\,s &
+  ${\sim}1$\,s &
+  ${\sim}1.3$\,s &
+  20\,s \\
+Max DA capacity &
+  ${\sim}67$\,MiB/block &
+  0.75\,MiB (6 blobs) &
+  ${\sim}2$\,MiB &
+  30\,MiB/block &
+  4\,MiB/shard &
+  ${\sim}2$\,MiB \\
+Finality &
+  GRANDPA (${\sim}12$--$60$\,s) &
+  Casper FFG (${\sim}13$\,min) &
+  Single-slot (${\sim}12$\,s) &
+  HotShot (${\sim}1$\,s) &
+  ${\sim}2$\,s (Doomslug) &
+  GRANDPA (${\sim}20$--$60$\,s) \\
+DA retention &
+  ${\sim}24$\,h &
+  ${\sim}18$\,days &
+  ${\sim}21$\,days &
+  85\,min (default) &
+  ${\sim}5$ epochs &
+  ${\sim}24$\,h \\
+Fee model &
+  Weight-based &
+  EIP-1559 blob market &
+  Gas-based &
+  Per-byte &
+  Gas-based &
+  Weight-based \\
+Withholding &
+  Indirect (finality gate) &
+  Peer scoring &
+  BEFPs (encoding) &
+  Reputational &
+  Challenge (unused) &
+  None (equivoc.\ only) \\
+Byzantine threshold &
+  $f < n/3$ &
+  $f < n/3$ &
+  $f < n/3$ &
+  $f < n/3$ &
+  $f < n/3$ per shard &
+  $f < n/3$ \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+Table~\ref{tab:feature_comparison} consolidates the architectural comparison across all dimensions discussed in this section.
+Several cross-cutting observations emerge.
+First, DAS-capable protocols (Celestia, Avail, and the emerging Ethereum PeerDAS) represent a distinct design philosophy from validator-recovery protocols (Polkadot, NEAR) and VID-based designs (Espresso). The former enable trust-minimized light clients at the cost of network-level assumptions, while the latter two provide deterministic guarantees conditioned on committee or validator honesty.
+Second, the choice of commitment scheme is tightly coupled to the verification paradigm. KZG enables algebraic verification needed for DAS and VID, while Merkle-based schemes are sufficient for validator-recovery models where the validator set itself performs encoding verification.
+Third, all protocols share the same $f < n/3$ Byzantine threshold (the classical BFT bound) but differ substantially in how this threshold manifests in practice: Polkadot gates finality, Ethereum distributes custody, Celestia relies on sampling participation, Espresso requires committee certification, NEAR enforces per-shard honesty, and Avail combines sampling with algebraic commitments.
+These architectural choices have direct empirical consequences for throughput, cost, and operational characteristics, which we measure in Sections~\ref{sec:methodology} and~\ref{sec:results}.

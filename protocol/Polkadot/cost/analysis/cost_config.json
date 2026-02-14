@@ -1,0 +1,41 @@
+{
+  "dot_usd": 1.28,
+  "dot_usd_source": "coingecko",
+  "dot_usd_timestamp": 1770988828841,
+  "relay": {
+    "maxPovBytes": 10485760,
+    "cadence": 6,
+    "effectiveCores": 100
+  },
+  "broker": {
+    "region_length_timeslices": 5040,
+    "timeslice_period_blocks": 80,
+    "blocks_per_region": 403200,
+    "max_mib_per_region": 4032000,
+    "renewal_bump_perbill": 30000000
+  },
+  "bulk_purchase": {
+    "sales_indexed": 19,
+    "purchases_indexed": 160,
+    "latest_end_price_dot": 10,
+    "median_purchase_price_dot": 10,
+    "cost_per_mib_dot": 0.00000248015873015873,
+    "cost_per_mib_usd": 0.0000031746031746031746,
+    "cost_per_gib_month_usd": 0.003250793650793651
+  },
+  "bulk_renewal": {
+    "renewals_indexed": 282,
+    "median_renewal_price_dot": 10.0828883845,
+    "cost_per_mib_dot": 0.000002500716365203373,
+    "cost_per_mib_usd": 0.0000032009169474603174,
+    "cost_per_gib_month_usd": 0.003277738954199365
+  },
+  "ondemand": {
+    "orders_indexed": 0,
+    "median_fee_dot": 0,
+    "cost_per_mib_dot": 0,
+    "cost_per_mib_usd": 0,
+    "cost_per_gib_month_usd": 0,
+    "blocks_per_month": 432000
+  }
+}

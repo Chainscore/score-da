@@ -1,492 +1,160 @@
-In this section, we detail the methods and approaches we will be using in our research. 
-The methodology is structured as follows:
+% ================================================================
+% SECTION IV: METHODOLOGY
+% ================================================================
+
+This section details our data collection framework, metric definitions, normalization approach, and reproducibility provisions.
+
+\subsection{Data Collection Framework}
+\label{sec:meth-collection}
+
+We collect per-block production data from six DA protocols over a 90-day observation window (November~15, 2025 through February~14, 2026).
+For each protocol, we develop custom collection scripts that interface with mainnet RPC endpoints or explorer APIs, extracting block-level metrics at the granularity needed for throughput and cost analysis.
+All collectors are resumable: interrupted runs checkpoint progress in per-day CSV files and resume from the last collected block.
+
+Table~\ref{tab:collection_summary} summarizes the data sources, block counts, and collection methods for each protocol.
+
+\begin{table*}[t]
+\centering
+\caption{Data Collection Summary Across Six DA Protocols (90-Day Window)}
+\label{tab:collection_summary}
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{llrlll}
+\toprule
+\textbf{Protocol} & \textbf{Source} & \textbf{Blocks} & \textbf{Key Fields} & \textbf{Language} & \textbf{Price Source} \\
+\midrule
+Polkadot & Relay chain RPC & $\sim$1.3M & candidates backed/included, bitfields, core index & TypeScript & CoinGecko (DOT) \\
+Ethereum & Execution + Beacon RPC & $\sim$648K & blob\_gas\_used, excess\_blob\_gas, blob count & Python/SQL & CoinGecko (ETH) \\
+Celestia & Celenium API & $\sim$1.3M & blobs\_size, square\_size, fill\_rate, fee\_utia & Python & CoinGecko (TIA) \\
+Espresso & Query-service API & $\sim$2.9M & size\_bytes, num\_transactions, block\_time\_ms & Python & CoinGecko (ETH) \\
+NEAR & NEAR Lake S3 + RPC & $\sim$7.8M & total\_encoded\_bytes, gas\_used, gas\_price & TypeScript & CoinGecko (NEAR) \\
+Avail & Substrate RPC & $\sim$389K & submit\_data\_bytes, block\_fee\_plancks & TypeScript & CoinGecko (AVAIL) \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+For each protocol, the collector captures the following:
+
+\paragraph{Polkadot}
+We scan relay chain blocks via the Polkadot.js RPC API, extracting three event types per block: \texttt{paraInclusion.CandidateBacked}, \texttt{paraInclusion.CandidateIncluded}, and \texttt{paraInclusion.CandidateTimedOut}.
+We also parse the \texttt{paraInherent.enter} extrinsic to extract signed availability bitfield counts and per-core availability fractions.
+Throughput is computed as an upper bound: $\text{included} \times \text{maxPovBytes} / \text{cadence}$, since the relay chain does not expose actual PoV sizes (only commitments).
+Cost data is collected separately from the Coretime chain, scanning \texttt{broker.Purchased}, \texttt{broker.Renewed}, and \texttt{broker.SaleInitialized} events, as well as relay chain \texttt{onDemand.OnDemandOrderPlaced} events.
+
+\paragraph{Ethereum}
+We collect per-block header fields (\texttt{blob\_gas\_used}, \texttt{excess\_blob\_gas}) from execution-layer RPC endpoints across the full 90-day window, which spans three distinct parameter regimes: Pectra (target~6, max~9), BPO1 (target~10, max~15, activated December~9, 2025), and BPO2 (target~14, max~21, activated January~7, 2026).
+The blob base fee is computed using the EIP-4844 exponential pricing formula.
+ETH/USD prices are sampled hourly from CoinGecko.
+
+\paragraph{Celestia}
+Block data is retrieved from the Celenium indexer API, which provides 22 columns per block including \texttt{blobs\_size}, \texttt{blobs\_count}, \texttt{square\_size}, \texttt{fill\_rate}, and \texttt{fee\_utia}.
+The observation window spans two protocol eras: the Ginger era (app versions~3--5, 64$\times$64 max square, 6s blocks) and the Current era (app version~6+, 128$\times$128 max square, 8~MiB capacity), with the transition occurring within our collection period.
+
+\paragraph{Espresso}
+We fetch all blocks from the Espresso query-service explorer API using binary search to locate the start height and 20 concurrent workers fetching 100 blocks per page ($\sim$1,630~blocks/s collection rate).
+Each block record contains \texttt{size\_bytes}, \texttt{num\_transactions}, and \texttt{block\_time\_ms}.
+Since HotShot uses responsive consensus, block times are variable (no fixed cadence).
+The base fee has been verified as 1~wei/byte since genesis across headers from height~1K to~10.3M.
+
+\paragraph{NEAR}
+We employ a dual-source strategy: NEAR Lake S3 for bulk historical collection ($\sim$275~blocks/s at concurrency~100) and NEAR RPC as fallback ($\sim$2.5~blocks/s).
+Per-block fields include \texttt{num\_shards}, \texttt{total\_encoded\_bytes} (sum of chunk encoded lengths), \texttt{total\_gas\_used}, and \texttt{gas\_price}.
+
+\paragraph{Avail}
+The collector uses the Polkadot.js API (Avail is Substrate-based) to extract \texttt{submit\_data\_bytes}, \texttt{submit\_data\_count}, and \texttt{block\_fee\_plancks} (from \texttt{TransactionFeePaid} events) per block.
+Runtime version (\texttt{spec\_version}) is tracked to account for parameter changes.
+
+\subsection{Metric Definitions}
+\label{sec:meth-metrics}
+
+We define four primary metric categories, applied consistently across all protocols.
+
+\subsubsection{Throughput (MiB/s)}
+
+We distinguish three throughput measures:
+
+\begin{itemize}
+    \item \textbf{Protocol maximum}: the theoretical ceiling given current parameters.
+    Protocol-specific formulas:
+    \begin{align}
+        T_{\max}^{\text{Polkadot}} &= \frac{\text{effective\_cores} \times \text{max\_pov}}{\text{cadence}} \label{eq:tmax-polkadot} \\
+        T_{\max}^{\text{Ethereum}} &= \frac{\text{max\_blobs} \times 128\text{ KiB}}{\text{slot\_time}} \label{eq:tmax-ethereum} \\
+        T_{\max}^{\text{Celestia}} &= \frac{\text{max\_data\_bytes}}{\text{avg\_block\_time}} \label{eq:tmax-celestia}
+    \end{align}
+    where effective\_cores $= \min(\text{num\_cores}, \lfloor\text{validators}/5\rfloor)$ and cadence is 6s (async backing) for Polkadot.
+
+    \item \textbf{Observed throughput}: measured from production data as
+    \begin{equation}
+        T_{\text{obs}} = \frac{\sum \text{payload\_bytes}}{\Delta t \times 2^{20}} \quad \text{(MiB/s)}
+    \end{equation}
+    aggregated at hourly and daily granularity.
+
+    \item \textbf{Utilization}: $U = T_{\text{obs}} / T_{\max}$, representing the fraction of available DA capacity in use.
+\end{itemize}
+
+\subsubsection{Cost (\$/MiB)}
+
+Cost normalization requires care, as protocols use fundamentally different pricing models:
+
+\begin{itemize}
+    \item \textbf{Per-byte fee markets} (Celestia, Espresso, Avail): cost is directly computable from on-chain fee data and token prices.
+    \begin{equation}
+        \text{cost\_per\_MiB} = \text{fee\_per\_byte} \times 2^{20} \times \text{token\_USD}
+    \end{equation}
+
+    \item \textbf{Blob gas market} (Ethereum): cost follows EIP-4844 exponential pricing:
+    \begin{equation}
+        \text{cost\_per\_MiB} = \frac{\text{baseFeePerBlobGas} \times 131{,}072}{10^{9}} \times \text{ETH\_USD} \times \frac{2^{20}}{131{,}072}
+    \end{equation}
+
+    \item \textbf{Coretime pricing} (Polkadot): DA is bundled with execution capacity. We compute:
+    \begin{equation}
+        \text{cost\_per\_MiB} = \frac{\text{coretime\_price\_DOT} \times \text{DOT\_USD}}{\text{max\_MiB\_per\_region}}
+    \end{equation}
+    for bulk coretime, and $\text{fee\_paid} / \text{max\_pov\_MiB}$ for on-demand.
+    This yields a \emph{best-case} cost assuming full PoV utilization every block.
+
+    \item \textbf{Gas + storage staking} (NEAR): upload cost is gas-based (burned); state storage requires locking 1~NEAR per 100~KB. Rollup DA blobs avoid state costs by using function call inputs (pruned).
+\end{itemize}
+
+We report spot cost at percentiles (p50, p90, p99) and volume-weighted average price (VWAP) over the 90-day window.
+
+\subsubsection{Annualized Cost}
+
+Since DA is universally temporary (all protocols prune data), continuous availability requires periodic reposting.
+We define:
+\begin{equation}
+    \text{cost\_per\_MiB\_year} = \text{cost\_per\_MiB} \times \left\lceil \frac{365}{\text{retention\_days}} \right\rceil
+\end{equation}
+This normalization is essential for fair comparison, as short-retention protocols (Avail: $\sim$85~min, Polkadot: 25~hours) appear cheap at spot but expensive when annualized.
+
+\subsubsection{Block Dynamics}
+
+We measure block time distributions (p10, p50, p90), block size distributions, and empty block rates.
+For protocols with variable block times (Espresso's responsive HotShot consensus), we report the empirical distribution rather than a fixed value.
+
+\subsection{Normalization and Comparability}
+\label{sec:meth-normalization}
+
+Several methodological challenges arise from comparing heterogeneous protocols:
 
 \begin{enumerate}
-    \item \textbf{Benchmarking}
-    \begin{enumerate}
-        \item Design
-        \item Performance
-        \item Worst Case Analysis
-        \item Efficiency
-    \end{enumerate}
-    \item \textbf{Security Assumptions}
-    \item \textbf{Validator Costing}
+    \item \textbf{Demand-constrained measurements}: all six protocols operate well below their theoretical capacity during our observation window ($<$50\% utilization). Observed throughput therefore reflects \emph{demand}, not protocol capability. We report both observed and maximum throughput and emphasize that empirical results characterize current usage patterns, not protocol limits.
+
+    \item \textbf{Token price volatility}: USD-denominated costs are sensitive to token prices, which fluctuated during our window (e.g., ETH ranged \$2,000--\$4,000; TIA ranged \$0.30--\$0.85). We use contemporaneous hourly prices from CoinGecko rather than fixed spot rates, and report VWAP alongside percentile distributions.
+
+    \item \textbf{Apples-to-oranges pricing}: Polkadot prices blockspace (coretime), not bytes. Ethereum prices blob gas. Celestia and Espresso price per byte. We normalize all to \$/MiB but note that Polkadot's cost includes execution capacity (not just DA), making its per-MiB figure a lower bound on pure DA cost.
+
+    \item \textbf{Upper-bound throughput for Polkadot}: the relay chain does not expose actual PoV sizes on-chain (only commitments). Our throughput measurement uses $\text{included\_candidates} \times \text{max\_pov\_size}$, which is an upper bound. Actual throughput is lower since real parachains typically use 1--3~MiB per candidate.
+
+    \item \textbf{Protocol upgrades within window}: Ethereum underwent two parameter changes (BPO1, BPO2) and Celestia transitioned eras during our observation period. We segment analysis by protocol era where applicable and treat these transitions as natural experiments (Section~\ref{sec:results-upgrades}).
 \end{enumerate}
 
-% ==========================================================
-% I.1 BENCHMARKING
-% ==========================================================
-\subsection{\textbf{Benchmarking}}
-
-% ----------------------------------------------------------
-% 1.1.1 DESIGN
-% ----------------------------------------------------------
-\subsubsection{\textbf{Design}}
-For benchmarking design a code module will be developed to evaluate the performance of all the data availability solutions under the study. 
-\vspace{1em}
-
-% Polkadot
-\paragraph{Polkadot}
-For benchmarking of Polkadot's ELVES we are using its Mainnet and Localnet. The current test code implements:
-\begin{itemize}
-    \item System remarks for submission of data.
-    \item Measuring the transaction fees
-    \item Time taken for finalization of the block.
-\end{itemize}
-[We are also planning to use polkadot's on-chain telemetry (telemetry.polkadot.io) and logs for benchmarking.]
-\vspace{1em}
-
-% Celestia
-\paragraph{Celestia}
-For benchmarking Celestia's data availability solution, we utilize their \textbf{RPC} to submit and retrieve data blobs from the DA layer with their namespaces.
-
-[We will also use the \textbf{Cosmos SDK} to interact with Celestia nodes and perform various operations such as data submission, retrieval, and verification.]
-\vspace{1em}
-
-% Espresso
-\paragraph{Espresso's Tiramisu}
-For Espresso's Tiramisu, we utilized their three-layered data availability architecture through their \textbf{API} endpoints. As of now, our testing framework implements:
-\begin{itemize}
-    \item Data availability metrics through \textbf{API} endpoints (query.main.net.espresso.network)
-    \item Block analysis including TPS calculations and size measurements
-\end{itemize}
-[We are also planning to set up a local testnet node of Espresso and use their SDKs for more in-depth benchmarking.]
-\vspace{1em}
-
-% NEAR
-\paragraph{NEAR}
-For benchmarking NEAR's sharded data availability, we use \textbf{NEAR's} \textbf{Mainnet} environments. 
-Our benchmarking setup uses near-api and a custom smart contract deployed with near-sdk, which allows storing and retrieving base64 encoded data blobs on-chain. 
-We record the transaction time, retrieval latency, and cost per MB to compare NEAR’s blob storage performance with other DA systems.
-\vspace{1em}
-
-% Avail
-\paragraph{Avail}
-For Avail's benchmarking we have currently utilized avails JavaScript \textbf{SDK} and Python implementations. The code framework includes:
-\begin{itemize}
-    \item Block bloat testing with automatic payload size adjustment
-    \item Telemetry probing for network metrics
-    \item Data submission through \textbf{AppID}-based categorization
-    \item Block retrieval and verification mechanisms
-\end{itemize}
-
-
-\vspace{2em}
-
-% ----------------------------------------------------------
-% 1.1.2 PERFORMANCE
-% ----------------------------------------------------------
-\subsubsection{\textbf{Performance}}
-\vspace{1em}
-
-\paragraph{\textbf{Throughput Analysis}}
-This section will analyze the maximum throughput capabilities of different DA solutions under various network conditions/data sizes.
-\begin{itemize}
-    \item \textbf{Test Parameters:} Time taken, data sizes
-    \item \textbf{Metrics:} MB/s
-\end{itemize}
-
-\begin{table}[h!] \centering \caption{Comparative Throughput Analysis of DA Solutions} \label{tab:throughput} \setlength{\tabcolsep}{5pt} % reduce column padding 
-    \renewcommand{\arraystretch}{1.1} % tighten row spacing 
-    \begin{tabular}{|l|c|c|c|} \hline \textbf{Protocol} & \textbf{Max Throughput (MB/s)} \\ 
-        \hline Polkadot & X \\ 
-        Celestia & X \\ 
-        Espresso & X \\ 
-        NEAR & X \\ 
-        Avail & X \\ \hline 
-    \end{tabular}
- \end{table}
-
-\vspace{1em}
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.4\textwidth]{./figures/line-compare.png}
-    \caption{\textbf{[DUMMY]} Comparative Throughput over time}
-    \label{fig:efficiency_boxplot}
-\end{figure}
-
-\paragraph{\textbf{TPS}}
-This section analyzes the transactions per second (TPS) capabilities of different DA solutions.
-\begin{itemize}
-    \item \textbf{Test Parameters:} Network conditions, data sizes, transactions count
-    \item \textbf{Metrics:} TPS
-\end{itemize}
-
-\begin{table}[h!] \centering \caption{Comparative TPS Analysis of DA Solutions} \label{tab:tps} \setlength{\tabcolsep}{5pt} % reduce column padding 
-    \renewcommand{\arraystretch}{1.1} % tighten row spacing 
-    \begin{tabular}{|l|c|c|c|} \hline \textbf{Protocol} & \textbf{Max TPS} \\ 
-        \hline Polkadot & X \\ 
-        Celestia & X \\ 
-        Espresso & X \\ 
-        NEAR & X \\ 
-        Avail & X \\ \hline 
-    \end{tabular}
- \end{table}
-
-\vspace{3em}
-
-
-\paragraph{\textbf{Cost per MB}}
-This section analyzes the cost per megabyte (MB) of data processed by different DA solutions.
-\begin{itemize}
-    \item \textbf{Test Parameters:} Data sizes, Cost in native token conversion to USD
-    \item \textbf{Metrics:} \$/MB
-\end{itemize}
-
-\begin{table}[h!] \centering \caption{Comparative \$/MB Analysis of DA Solutions} \label{tab:cost_per_mb} \setlength{\tabcolsep}{5pt} % reduce column padding 
-    \renewcommand{\arraystretch}{1.1} % tighten row spacing 
-    \begin{tabular}{|l|c|c|c|} \hline \textbf{Protocol} & \textbf{Cost (\$/MB)} \\ 
-        \hline Polkadot & X \\ 
-        Celestia & X \\ 
-        Espresso & X \\ 
-        NEAR & X \\ 
-        Avail & X \\ \hline 
-    \end{tabular}
- \end{table}
-
-\vspace{1em}
-
-
-\paragraph{\textbf{Latency}}
-This section will analyze the maximum time taken by the DA solution to finalize a block.
-\begin{itemize}
-    \item \textbf{Test Parameters:} Network conditions, data sizes, node count
-    \item \textbf{Metrics:} seconds (s)
-\end{itemize}
-
-% (table here...)'
-\begin{table}[h!] \centering \caption{Comparative Latency Analysis of DA Solutions} \label{tab:latency} \setlength{\tabcolsep}{5pt} % reduce column padding 
-    \renewcommand{\arraystretch}{1.1} % tighten row spacing 
-    \begin{tabular}{|l|c|c|c|} \hline \textbf{Protocol} & \textbf{Latency (s)} \\ 
-        \hline Polkadot & X \\ 
-        Celestia & X \\ 
-        Espresso & X \\ 
-        NEAR & X \\ 
-        Avail & X \\ \hline 
-    \end{tabular}
- \end{table}
-\vspace{1em}
-
-
-\paragraph{\textbf{Max Block Size}}
-This section analyzes the maximum block size capabilities of different DA solutions.
-\begin{itemize}
-    \item \textbf{Test Parameters:} Data sizes.
-    \item \textbf{Metrics:} Block size (MB)
-\end{itemize}
-
-% (table here...)
-\begin{table}[h!] \centering \caption{Comparative Block Size Analysis of DA Solutions} \label{tab:block_size} \setlength{\tabcolsep}{5pt} % reduce column padding 
-    \renewcommand{\arraystretch}{1.1} % tighten row spacing 
-    \begin{tabular}{|l|c|c|c|} \hline \textbf{Protocol} & \textbf{Block Size (MB)} \\ 
-        \hline Polkadot & X \\ 
-        Celestia & X \\ 
-        Espresso & X \\ 
-        NEAR & X \\ 
-        Avail & X \\ \hline 
-    \end{tabular}
- \end{table}
-
-\vspace{1em}
-
-
-
-\paragraph{\textbf{Data Retrieval}}
-This section analyzes the maximum data retrieval time capabilities of different DA solutions i.e. the time taken to retrieve a specific size/piece of data from the network.
-\begin{itemize}
-    \item \textbf{Test Parameters:} Network conditions, data sizes.
-    \item \textbf{Metrics:} Retrieval time (s)
-\end{itemize}
-
-% (table here...)
-\begin{table}[h!] \centering \caption{Data Retrieval Latency Analysis of DA Solutions} \label{tab:data_retrieval} \setlength{\tabcolsep}{5pt} % reduce column padding 
-    \renewcommand{\arraystretch}{1.1} % tighten row spacing 
-    \begin{tabular}{|l|c|c|c|} \hline \textbf{Protocol} & \textbf{ Retrieval Latency (s)} \\ 
-        \hline Polkadot & X \\ 
-        Celestia & X \\ 
-        Espresso & X \\ 
-        NEAR & X \\ 
-        Avail & X \\ \hline 
-    \end{tabular}
- \end{table}
-
-\vspace{1em}
-% ----------------------------------------------------------
-% 1.1.3 WORST CASE SCENARIO
-% ----------------------------------------------------------
-\subsubsection{\textbf{Worst Case Analysis}}
-In this section, we will evaluate the worst-case performance scenarios for each DA solution. 
-This includes analyzing how each solution handles extreme conditions such as high network latency, large data loads, and potential attacks or failures within the network.
-
-
-\vspace{1em}
-
-\paragraph{\textbf{Cost per MB}}
-This sub-subsection evaluates the cost per megabyte (MB) incurred during worst-case data inclusion scenarios for each DA solution. 
-We measure how gas fee surges, and payload sizes affect the overall inclusion cost.
-
-\begin{itemize}
-    \item \textbf{Test Parameters:}  Data size (1KB–1MB), gas/fee volatility
-    \item \textbf{Metrics:} Cost per MB (\$/MB)
-\end{itemize}
-
-\begin{table}[h!]
-\centering
-\caption{Worst-Case Cost per MB During Data Inclusion}
-\label{tab:worstcase_cost_inclusion}
-\setlength{\tabcolsep}{5pt}
-\renewcommand{\arraystretch}{1.1}
-\begin{tabular}{|l|c|}
-    \hline
-    \textbf{Protocol} & \textbf{Worst-Case Cost (\$/MB)} \\
-    \hline
-    Polkadot & X \\
-    Celestia & X \\
-    Espresso & X \\
-    NEAR & X \\
-    Avail & X \\
-    \hline
-\end{tabular}
-\end{table}
-
-\vspace{2em}
-
-\paragraph{\textbf{Latency}}
-This measures the maximum inclusion time under stress conditions (e.g., full block utilization).
-\begin{itemize}
-    \item \textbf{Test Parameters:} Network latency, data size, node count
-    \item \textbf{Metrics:} Latency (seconds)
-    \item \textbf{Finality Impact:} Evaluates how consensus finality duration contributes to overall latency, including delayed confirmations or resistance under high-load conditions.
-\end{itemize}
-
-\begin{table}[h!]
-\centering
-\caption{Worst-Case Data Latency}
-\label{tab:worstcase_inclusion_latency}
-\setlength{\tabcolsep}{5pt}
-\renewcommand{\arraystretch}{1.1}
-\begin{tabular}{|l|c|}
-    \hline
-    \textbf{Protocol} & \textbf{Latency (s)} \\
-    \hline
-    Polkadot & X \\
-    Celestia & X \\
-    Espresso & X \\
-    NEAR & X \\
-    Avail & X \\
-    \hline
-\end{tabular}
-\end{table}
-
-\vspace{3em}
-
-
-\paragraph{\textbf{Data Retrieval}}
-We measure the time required to fetch data blobs under adverse conditions.
-\begin{itemize}
-    \item \textbf{Test Parameters:} Network latency, node failures, retrieval requests per second
-    \item \textbf{Metrics:} Data Retrieval Time (s)
-    \item \textbf{Node Failure Impact:} Evaluates retrieval degradation under partial or complete node unavailability, including re-routing latency and redundancy recovery performance.
-\end{itemize}
-
-\begin{table}[h!]
-\centering
-\caption{Worst-Case Data Retrieval Latency}
-\label{tab:worstcase_retrieval_latency}
-\setlength{\tabcolsep}{5pt}
-\renewcommand{\arraystretch}{1.1}
-\begin{tabular}{|l|c|}
-    \hline
-    \textbf{Protocol} & \textbf{Retrieval Latency (s)} \\
-    \hline
-    Polkadot & X \\
-    Celestia & X \\
-    Espresso & X \\
-    NEAR & X \\
-    Avail & X \\
-    \hline
-\end{tabular}
-\end{table}
-
-
-\vspace{5em}
-
-% ----------------------------------------------------------
-% 1.1.4 EFFICIENCY Add dummy box plot graph here
-% ----------------------------------------------------------
-\subsubsection{\textbf{Efficiency}}
-This section focuses on comparative efficiency based on best and worst metrics of throughput, TPS, and cost per MB results. 
-Efficiency metrics are derived from normalized performance ratios under controlled network environments.
-
-\vspace{2em}
-
-\paragraph{\textbf{Data}}
-This subsection evaluates data transmission and Latency efficiency across DA (Data Availability) solutions.  
-It compares bandwidth utilization, encoding overhead, and redundancy management under variable network conditions.  
-Key considerations include:
-\vspace{1em}
-
-\begin{itemize}
-    \item \textbf{Latency:} Reflects the overall efficiency of data flow, capturing how quickly transactions move from submission to availability. Lower latency directly translates to higher throughput and better real-time performance across DA layers.
-\end{itemize}
-
-These metrics provide a foundation for comparing the raw data handling capability of each DA layer independent of consensus or proof generation complexity.
-
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.4\textwidth]{./figures/output.png}
-    \caption{Latency efficiency comparison across DA solutions}
-    \label{fig:efficiency_boxplot}
-\end{figure}
-
-\vspace{1em}
-
-\paragraph{\textbf{Costing}}
-Here we compare cost of storage across different sample sizes to analyze the increase in cost with demand.
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.4\textwidth]{./figures/line-cost.png}
-    \caption{\textbf{[DUMMY]} Comparative Cost over different data sizes}
-    \label{fig:efficiency_boxplot}
-\end{figure}
-
-% ===================== NEW SUBSECTION =====================
-\paragraph{\textbf{Storage}}
-This subsection focuses on storage efficiency and persistence trade-offs once data becomes part of the network.  
-It captures how network-level encoding, redundancy schemes, and node distribution affect the overall data footprint and storage cost.
-
-Key considerations include:
-\vspace{1em}
-
-\begin{itemize}
-    \item \textbf{ Data Size (Post-Inclusion):} Analyzes how the effective data size increases once added to the network due to encoding, sharding, and availability sampling. This metric quantifies real storage growth compared to raw payload size, reflecting true on-network storage overhead.
-\end{itemize}
-
-\begin{table}[h!]
-\centering
-\caption{Data Storage and Transfer Metrics Across DA Solutions}
-\label{tab:data_efficiency_metrics}
-\setlength{\tabcolsep}{4pt}
-\renewcommand{\arraystretch}{1.2}
-\begin{tabular}{|l|c|c|c|}
-    \hline
-    \textbf{Protocol} & \textbf{Data Size} \\
-    \hline
-    Polkadot & X \\
-    Celestia & X \\
-    Espresso & X \\
-    NEAR & X \\
-    Avail & X \\
-    \hline
-\end{tabular}
-\end{table}
-
-\vspace{2em}
-
-% ===================== PROOF SUBSECTION =====================
-\paragraph{\textbf{Proof}}
-This subsection focuses on efficiency aspects related to proof generation, verification, and proof size optimization.  
-Proof-related efficiency directly impacts network scalability and client-side verification costs.  
-Key focus points include:
-\begin{itemize}
-    \item \textbf{Proof Size:} Analysis of proof compactness and its relation to network bandwidth and storage.
-    \item \textbf{Proof Computation:} Benchmarks proof generation latency and verification complexity.
-\end{itemize}
-
-\begin{table}[h!]
-\centering
-\caption{Proof Size and Computation Metrics Across DA Solutions}
-\label{tab:proof_efficiency_metrics}
-\setlength{\tabcolsep}{6pt}
-\renewcommand{\arraystretch}{1.2}
-\begin{tabular}{|l|c|c|}
-    \hline
-    \textbf{Protocol} & \textbf{Proof Size (kB)} & \textbf{Proof Computation (ms)} \\
-    \hline
-    Polkadot & X & X \\
-    Celestia & X & X \\
-    Espresso & X & X \\
-    NEAR & X & X \\
-    Avail & X & X \\
-    \hline
-\end{tabular}
-\end{table}
-
-This evaluation highlights the trade-offs between computational efficiency and proof soundness within different DA architectures.
-
-\vspace{1em}
-
-
-% ==========================================================
-% I.2 SECURITY ASSUMPTIONS
-% ==========================================================
-\subsection{\textbf{Security Assumptions}}
-In this section, we outline the security assumptions made during the evaluation of the DA solutions. 
-These assumptions are critical for understanding the context in which the solutions are being assessed and the potential vulnerabilities that may arise.
-
-
-\begin{table}[ht]
-\centering
-\caption{Security Assumptions of Major Data Availability Solutions}
-\setlength{\tabcolsep}{6pt}
-\renewcommand{\arraystretch}{1.25}
-\begin{tabular}{|p{2cm}|p{3.5cm}|p{2cm}|p{2cm}|p{2cm}|}
-\hline
-\textbf{Network} &
-\textbf{Honest Majority} &
-\textbf{DA Sampling Size} &
-\textbf{Validator Count (Approx.)} &
-\textbf{Nakamoto Coefficient} \\
-\hline
-\textbf{Polkadot (ELVES)} &
-$\geq \tfrac{2}{3}$ honest validators &
-600 & X & X \\
-\hline
-\textbf{Celestia} &
-$\geq \tfrac{2}{3}$ & $\geq 1$ honest full/light node for DA sampling &
-100 & X \\
-\hline
-\textbf{Espresso (Tiramisu)} &
-$\geq \tfrac{2}{3}$ honest DA committee member or fallback node &
-100 & X & X \\
-\hline
-\textbf{NEAR} &
-$\geq \tfrac{2}{3}$ honest validators per shard &
-500 & X & X \\
-\hline
-\textbf{Avail} &
-$\geq \tfrac{2}{3}$ honest for consensus; $\geq 1$ honest sampler for DA detection &
-105 & X & X \\
-\hline
-\end{tabular}
-\label{tab:da-security-assumptions}
-\end{table}
-
-\vspace{3em}
-
-% ==========================================================
-% I.3 VALIDATOR COSTING
-% ==========================================================
-\subsection{\textbf{Validator Costing}}
-In this section, we will analyze the costs incurred by validators in maintaining and operating each DA solution. 
-This includes hardware costs, bandwidth costs, and any other operational expenses associated with running a validator node.
-
-\begin{table*}[ht]
-\centering
-\caption{Minimum or Recommended Hardware Requirements for DA/Validator Nodes 
-(Data sourced from network documentation: \cite{Polkadot_Validator_Requirements}, \cite{Celestia_Nodes_Overview}, \cite{Espresso_Mainnet_Node}, \cite{NEAR_Validator_Hardware}, \cite{Avail_FullNode_Overview})}
-\setlength{\tabcolsep}{8pt}  % Increased spacing between columns
-\renewcommand{\arraystretch}{1.2}
-\begin{tabular}{|l|c|c|c|c|c|c|}
-\hline
-\textbf{Network} & \textbf{CPU} & \textbf{RAM} & \textbf{Storage} & \textbf{Bandwidth} & \textbf{Entry Fees} & \textbf{Cost}\\ 
-\hline
-Polkadot & 8 cores & 32\,GB & 2\,TB NVMe & 500\,Mbps & \$XXX & \$XXX \\ 
-Celestia & 8 cores & 64\,GB & 8\,TB NVMe & 1\,Gbps & \$XXX & \$XXX \\ 
-Espresso & 4 cores & 8\,GB & 1\,TB SSD & 100\,Mbps & \$XXX & \$XXX \\ 
-NEAR & 8 cores & 32\,GB & 3\,TB NVMe & - & \$XXX & \$XXX \\ 
-Avail & 4 cores & 8\,GB & 20\,GB SSD & 50\,Mbps & \$XXX & \$XXX \\
-\hline
-\end{tabular}
-\label{tab:da-node-reqs}
-\end{table*}
+\subsection{Reproducibility}
+\label{sec:meth-reproducibility}
+
+All collection scripts, raw datasets, analysis notebooks, and generated figures are published in a public repository under Apache~2.0 (code) and CC~BY~4.0 (data) licenses.
+Docker environments encapsulate dependencies for each collector.
+Per-protocol \texttt{chain\_config.json} files record exact protocol parameters, governance milestones, and era boundaries active during collection.
+Analysis is implemented in Python (pandas, matplotlib) with Jupyter notebooks that regenerate all figures and tables from the raw CSV data.
+Additionally, interactive dashboards are published for real-time exploration of the collected data.

@@ -1,57 +1,106 @@
-\documentclass[conference]{IEEEtran} % IEEE conference style
-\usepackage{makecell}  % For better table cell formatting
-\usepackage[utf8]{inputenc} % Ensure proper encoding
-\usepackage{graphicx}       % For figures
-\usepackage{amsmath}        % For equations
-\usepackage{hyperref}       % For clickable refs
-\usepackage{cite}           % For citations
-\usepackage{rotating} % for sidewaystable if needed
-\usepackage{adjustbox} % for resizing
-\usepackage{array} % for better column types
-\usepackage{float}  % For H placement specifier
+\documentclass[journal]{IEEEtran}
+
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{hyperref}
+
+\newtheorem{definition}{Definition}
+\usepackage{cite}
+\usepackage{adjustbox}
+\usepackage{array}
+\usepackage{float}
 \usepackage{caption}
 \usepackage{subcaption}
-\usepackage{booktabs}  % For better-looking tables
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{xcolor}
+\usepackage{url}
 
 \graphicspath{{./figures/}}
 \captionsetup{
     font=small,
     labelfont=bf,
-    width=0.9\textwidth
+    width=0.95\linewidth
 }
 
-\title{Comparative Study of Data Availability Schemes in Various Blockchains}
+% Compact list environments
+\newcommand{\squishlist}{\begin{itemize}\setlength{\itemsep}{1pt}\setlength{\parskip}{0pt}\setlength{\parsep}{0pt}}
+\newcommand{\squishend}{\end{itemize}}
+
+\title{Benchmarking Blockchain Data Availability:\\A Comparative Empirical Study of Six Production DA Protocols}
+
 \author{
-    Pranjal Sarode \\ Chainscore Labs \\ pranjal@chainscore.finance
-    \and
-    Prasad Kumkar \\ Chainscore Labs \\ prasad@chainscore.finance
+    \IEEEauthorblockN{Prasad Kumkar, Pranjal Sarode}
+    \IEEEauthorblockA{\\Chainscore Labs, Pune, IN
+    \\\{prasad, pranjal\}@chainscore.finance}
 }
+
 \begin{document}
 
 \maketitle
 
 \begin{abstract}
-    This study makes a comparative benchmarking of various Data Availability (DA) protocols which includes Polkadot's ELVES, Avail, Celestia, Espresso's Tiramisu and NEAR's sharded DA. This work compares various system parameters including bandwidth, time, latency, block time, block size, robustness, and costing of data availability, and extends the analysis to other emerging factors affecting performance and scalability.
+Data availability (DA) is a critical bottleneck in blockchain scalability, yet no empirical cross-protocol comparison exists using production network data.
+This paper presents the first comprehensive benchmarking study of six DA protocols (Polkadot ELVES, Ethereum EIP-4844/PeerDAS, Celestia, Espresso Tiramisu, NEAR, and Avail) using 90 days of mainnet data (November 2025--February 2026).
+We introduce a taxonomy that classifies DA architectures along three paradigms: Data Availability Sampling (DAS), Verifiable Information Dispersal (VID), and validator-set recovery.
+Our empirical analysis measures throughput (MiB/s), cost (\$/MiB), utilization, and block dynamics across all six protocols under a unified methodology.
+Key findings include: (i) all protocols operate well below saturation ($<$50\% utilization), making current measurements demand-constrained rather than supply-constrained; (ii) DA costs span seven orders of magnitude across protocols, from nano-dollars (Espresso) to cents per MiB (Celestia); (iii) no protocol implements slashing for pure data withholding, with enforcement remaining indirect across all designs; and (iv) DA is universally treated as temporary, with retention windows ranging from 85~minutes to 18~days.
+We release all collection tooling, datasets, and analysis notebooks under open licenses to enable reproducibility.
 \end{abstract}
 
+\begin{IEEEkeywords}
+data availability, blockchain scalability, erasure coding, data availability sampling, benchmarking, rollups
+\end{IEEEkeywords}
+
+% ================================================================
 \section{Introduction}
-\input{sections/introduction.tex}
+\label{sec:introduction}
+\input{sections/introduction}
 
-\clearpage  % This will force a page break
+% ================================================================
+\section{Background and Related Work}
+\label{sec:background}
+\input{sections/background}
 
+% ================================================================
+\section{Protocol Architecture Comparison}
+\label{sec:architecture}
+\input{sections/architecture}
 
+% ================================================================
 \section{Methodology}
-\input{sections/methodology.tex}
+\label{sec:methodology}
+\input{sections/methodology}
 
-% \section{Results}
-% \input{sections/results.tex}
+% ================================================================
+\section{Empirical Results}
+\label{sec:results}
+\input{sections/results}
 
-% \section{Conclusion}
-% \input{sections/conclusion.tex}
+% ================================================================
+\section{Security and Trust Analysis}
+\label{sec:security}
+\input{sections/security}
 
-\clearpage  % This will force a page break
+% ================================================================
+\section{Discussion}
+\label{sec:discussion}
+\input{sections/discussion}
 
+% ================================================================
+\section{Conclusion}
+\label{sec:conclusion}
+\input{sections/conclusion}
+
+% ================================================================
+\section*{Acknowledgment}
+This work was supported by the Web3 Foundation under the W3F Grants Program.
+The authors thank the Web3 Foundation for their support of open blockchain research.
+All data, code, and analysis artifacts produced in this study are released under open licenses (Apache~2.0 for software, CC~BY~4.0 for data and documentation).
 
 \bibliographystyle{IEEEtran}
 \bibliography{references}
+
 \end{document}

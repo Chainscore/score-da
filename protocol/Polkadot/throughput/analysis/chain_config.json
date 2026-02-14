@@ -1,0 +1,51 @@
+{
+  "blockRange": {
+    "start": 29936981,
+    "end": 29951381
+  },
+  "config": {
+    "maxPovBytes": 10485760,
+    "numCores": 100,
+    "validatorCount": 600,
+    "backingGroupSize": 5,
+    "effectiveCores": 100,
+    "cadence": 6,
+    "protocolMaxMibps": 166.66666666666666,
+    "neededApprovals": 30,
+    "nDelayTranches": 213,
+    "noShowSlots": 3,
+    "zerothDelayTrancheWidth": 0
+  },
+  "milestones": [
+    {
+      "ref": 1200,
+      "label": "Validators 400→500 (usable cores 80→100)",
+      "block": 23120301,
+      "timestamp": 1729856238000
+    },
+    {
+      "ref": 1480,
+      "label": "PoV limit 5→10 MiB",
+      "block": 25342222,
+      "timestamp": 1743233346000
+    },
+    {
+      "ref": 1484,
+      "label": "Validators 500→600 (usable cores 100→120)",
+      "block": 25164320,
+      "timestamp": 1742159838000
+    },
+    {
+      "ref": 1536,
+      "label": "Cores 62→66",
+      "block": 25786439,
+      "timestamp": 1745920674001
+    },
+    {
+      "ref": 1629,
+      "label": "Cores 66→100",
+      "block": 26803000,
+      "timestamp": 1752061098000
+    }
+  ]
+}
