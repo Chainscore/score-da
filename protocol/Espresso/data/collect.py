@@ -281,6 +281,8 @@ def main():
     parser = argparse.ArgumentParser(description="Espresso DA — full block collection")
     parser.add_argument("--days", type=int, default=DEFAULT_DAYS,
                         help=f"Number of days to collect (default: {DEFAULT_DAYS})")
+    parser.add_argument("--blocks", type=int, default=None,
+                        help="Number of blocks to collect (overrides --days)")
     parser.add_argument("--workers", type=int, default=DEFAULT_WORKERS,
                         help=f"Concurrent fetch workers (default: {DEFAULT_WORKERS})")
     parser.add_argument("--base-url", type=str, default=DEFAULT_BASE_URL)
@@ -308,13 +310,19 @@ def main():
     fee_contract = cc.get("fee_contract", "")
     log.info(f"Chain config: max_block_size={max_block_size}  base_fee={base_fee} wei/byte")
 
-    # --- 2. Find start height (N days ago) ---
-    start_ts = tip_ts - (num_days * 86400)
-    log.info(f"Binary searching for height at {num_days} days ago...")
-    start_height = find_height_at_timestamp(base_url, start_ts, 0, tip)
-    actual_start_ts = header_timestamp(base_url, start_height)
-    start_dt = datetime.fromtimestamp(actual_start_ts, tz=timezone.utc)
-    log.info(f"Start: height={start_height}  time={start_dt.isoformat()}")
+    # --- 2. Find start height ---
+    if args.blocks is not None:
+        start_height = max(0, tip - args.blocks)
+        actual_start_ts = header_timestamp(base_url, start_height)
+        start_dt = datetime.fromtimestamp(actual_start_ts, tz=timezone.utc)
+        log.info(f"Start: height={start_height}  time={start_dt.isoformat()} (--blocks {args.blocks})")
+    else:
+        start_ts = tip_ts - (num_days * 86400)
+        log.info(f"Binary searching for height at {num_days} days ago...")
+        start_height = find_height_at_timestamp(base_url, start_ts, 0, tip)
+        actual_start_ts = header_timestamp(base_url, start_height)
+        start_dt = datetime.fromtimestamp(actual_start_ts, tz=timezone.utc)
+        log.info(f"Start: height={start_height}  time={start_dt.isoformat()}")
     total_blocks = tip - start_height
     log.info(f"Range: {total_blocks:,} blocks over ~{num_days} days")
 

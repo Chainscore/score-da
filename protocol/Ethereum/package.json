@@ -1,0 +1,25 @@
+{
+  "name": "ethereum-protocol",
+  "version": "1.0.0",
+  "description": "Ethereum DA (EIP-4844 blobs) throughput and cost analysis tools",
+  "scripts": {
+    "collect": "npx tsx data/collect.ts",
+    "collect:90d": "npx tsx data/collect.ts --days 90",
+    "collect:all": "npx tsx data/collect.ts --start-date 2024-03-13"
+  },
+  "keywords": [
+    "ethereum",
+    "data-availability",
+    "eip-4844",
+    "blobs",
+    "blockchain"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "tsx": "^4.0.0"
+  },
+  "dependencies": {
+    "@google-cloud/bigquery": "^7.0.0"
+  }
+}

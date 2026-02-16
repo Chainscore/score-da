@@ -14,64 +14,64 @@ WORKDIR /app
 # ============================================
 FROM python-base as avail-python
 
-WORKDIR /app/protocol/Avail
+WORKDIR /app/protocol/avail
 
 # Copy Python dependencies
-COPY protocol/Avail/pyproject.toml .
+COPY protocol/avail/pyproject.toml .
 
 # Install Python dependencies using uv
 RUN uv pip install --system -r pyproject.toml
 
 # Copy Python scripts
-COPY protocol/Avail/*.py .
+COPY protocol/avail/*.py .
 
 # ============================================
 # Espresso Protocol Setup
 # ============================================
 FROM python-base as espresso-python
 
-WORKDIR /app/protocol/Espresso
+WORKDIR /app/protocol/espresso
 
 # Copy Python dependencies
-COPY protocol/Espresso/pyproject.toml .
+COPY protocol/espresso/pyproject.toml .
 
 # Install Python dependencies using uv
 RUN uv pip install --system -r pyproject.toml
 
 # Copy Python scripts
-COPY protocol/Espresso/*.py .
+COPY protocol/espresso/*.py .
 
 # ============================================
 # Near Protocol Setup
 # ============================================
 FROM python-base as near-python
 
-WORKDIR /app/protocol/Near
+WORKDIR /app/protocol/near
 
 # Copy Python dependencies
-COPY protocol/Near/pyproject.toml .
+COPY protocol/near/pyproject.toml .
 
 # Install Python dependencies using uv
 RUN uv pip install --system -r pyproject.toml
 
 # Copy Python scripts
-COPY protocol/Near/*.py .
+COPY protocol/near/*.py .
 
 # ============================================
 # Celestia Protocol Setup
 # ============================================
 FROM python-base as celestia-python
 
-WORKDIR /app/protocol/Celestia
+WORKDIR /app/protocol/celestia
 
 # Copy Python dependencies
-COPY protocol/Celestia/pyproject.toml .
+COPY protocol/celestia/pyproject.toml .
 
 # Install Python dependencies using uv
 RUN uv pip install --system -r pyproject.toml
 
 # Copy any Python scripts (if they exist)
-COPY protocol/Celestia/*.py . 2>/dev/null || true
+COPY protocol/celestia/*.py . 2>/dev/null || true
 
 # ============================================
 # Node.js Base Setup
@@ -85,32 +85,32 @@ WORKDIR /app
 # ============================================
 FROM node-base as avail-node
 
-WORKDIR /app/protocol/Avail
+WORKDIR /app/protocol/avail
 
 # Copy package files
-COPY protocol/Avail/package*.json .
+COPY protocol/avail/package*.json .
 
 # Install dependencies
 RUN npm install
 
 # Copy JavaScript files
-COPY protocol/Avail/*.js .
+COPY protocol/avail/*.js .
 
 # ============================================
 # Polkadot Node.js Setup
 # ============================================
 FROM node-base as polkadot-node
 
-WORKDIR /app/protocol/Polkadot
+WORKDIR /app/protocol/polkadot
 
 # Copy package files
-COPY protocol/Polkadot/package*.json .
+COPY protocol/polkadot/package*.json .
 
 # Install dependencies
 RUN npm install
 
 # Copy JavaScript files
-COPY protocol/Polkadot/*.js .
+COPY protocol/polkadot/*.js .
 
 # ============================================
 # Final Multi-Protocol Image
@@ -132,20 +132,23 @@ WORKDIR /app
 COPY protocol /app/protocol
 
 # Install all Python dependencies
-RUN cd /app/protocol/Avail && uv pip install --system -r pyproject.toml && \
-    cd /app/protocol/Espresso && uv pip install --system -r pyproject.toml && \
-    cd /app/protocol/Near && uv pip install --system -r pyproject.toml && \
-    cd /app/protocol/Celestia && uv pip install --system -r pyproject.toml
+RUN cd /app/protocol/avail && uv pip install --system -r pyproject.toml && \
+    cd /app/protocol/espresso && uv pip install --system -r pyproject.toml && \
+    cd /app/protocol/near && uv pip install --system -r pyproject.toml && \
+    cd /app/protocol/celestia && uv pip install --system -r pyproject.toml
 
 # Install all Node.js dependencies
-RUN cd /app/protocol/Avail && npm install && \
-    cd /app/protocol/Polkadot && npm install
+RUN cd /app/protocol/avail && npm install && \
+    cd /app/protocol/near && npm install && \
+    cd /app/protocol/polkadot && npm install && \
+    cd /app/protocol/ethereum && npm install
 
-# Copy README files
-COPY protocol/*/README.md /app/protocol/
+# Copy entrypoint script
+COPY collect.sh /app/collect.sh
+RUN chmod +x /app/collect.sh
 
 # Set environment variable for Python unbuffered output
 ENV PYTHONUNBUFFERED=1
 
-# Default command
-CMD ["/bin/bash"]
+ENTRYPOINT ["/app/collect.sh"]
+CMD []

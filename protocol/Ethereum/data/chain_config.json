@@ -1,0 +1,65 @@
+{
+  "blockRange": {
+    "start": 19426587,
+    "end": 24465653
+  },
+  "dateRange": {
+    "start": "2024-03-13",
+    "end": "2026-02-15"
+  },
+  "totalBlocks": 5039067,
+  "blocksWithBlobs": 3485978,
+  "totalBlobs": 16959022,
+  "totalBlobDataMib": 2119877.75,
+  "params": {
+    "bytesPerBlob": 131072,
+    "blobGasPerBlob": 131072,
+    "avgBlockTimeSec": 12
+  },
+  "forks": [
+    {
+      "name": "Dencun (EIP-4844)",
+      "activation_block": 19426587,
+      "activation_epoch": 269568,
+      "target_blobs": 3,
+      "max_blobs": 6,
+      "blob_gas_per_blob": 131072,
+      "update_fraction": 3338477
+    },
+    {
+      "name": "Pectra (EIP-7691)",
+      "activation_block": null,
+      "activation_epoch": 364032,
+      "target_blobs": 6,
+      "max_blobs": 9,
+      "blob_gas_per_blob": 131072,
+      "update_fraction": 5007716
+    },
+    {
+      "name": "BPO1 (EIP-7892)",
+      "activation_block": 23975796,
+      "activation_epoch": null,
+      "target_blobs": 10,
+      "max_blobs": 15,
+      "blob_gas_per_blob": 131072,
+      "update_fraction": 8346193
+    },
+    {
+      "name": "BPO2 (EIP-7892)",
+      "activation_block": null,
+      "activation_epoch": 419072,
+      "target_blobs": 14,
+      "max_blobs": 21,
+      "blob_gas_per_blob": 131072,
+      "update_fraction": 11684671
+    }
+  ],
+  "priceRange": {
+    "min_usd": 1471.3608854365523,
+    "max_usd": 4829.225541798332,
+    "from": "2025-02-17",
+    "to": "2026-02-16",
+    "points": 365
+  },
+  "collectedAt": "2026-02-16T12:48:31.262Z"
+}

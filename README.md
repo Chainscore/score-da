@@ -7,7 +7,7 @@ Empirical throughput and cost analysis of Data Availability protocols.
 ```
 da-rsrch/
 ├── protocol/           # Per-protocol data collection and analysis
-│   ├── ethereum/       # EIP-4844 blobs (Dune queries only)
+│   ├── ethereum/       # EIP-4844 blobs (BigQuery + TypeScript collector)
 │   ├── Espresso/       # Tiramisu DA (Python collector)
 │   ├── Celestia/       # Celenium API (Python collector)
 │   ├── avail/          # Substrate RPC (TypeScript collector)

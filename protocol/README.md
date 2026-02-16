@@ -4,7 +4,7 @@ Each subdirectory collects 90-day block data and price feeds for one DA protocol
 
 | Protocol | Collector | Data Source | Block Time |
 |----------|-----------|-------------|------------|
-| [Ethereum](ethereum/) | None (Dune SQL) | Dune Analytics | 12s |
+| [Ethereum](ethereum/) | TypeScript | Google BigQuery + CoinGecko | 12s |
 | [Espresso](Espresso/) | Python | Explorer API + CoinGecko | ~1s |
 | [Celestia](Celestia/) | Python | Celenium API + CoinGecko | ~6s |
 | [Avail](avail/) | TypeScript | RPC (WSS) + CoinGecko | 20s |

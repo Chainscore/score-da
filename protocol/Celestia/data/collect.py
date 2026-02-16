@@ -287,7 +287,7 @@ def fetch_page(offset: int, limiter: RateLimiter) -> list[dict]:
     return [parse_block(b) for b in data]
 
 
-def collect_blocks(days: int, workers: int, resume: bool) -> list[dict]:
+def collect_blocks(days: int, workers: int, resume: bool, blocks: int = None) -> list[dict]:
     """
     Fetch all blocks for the given number of days using concurrent workers.
 
@@ -297,7 +297,7 @@ def collect_blocks(days: int, workers: int, resume: bool) -> list[dict]:
     global shutdown_requested
 
     tip = get_block_count()
-    total_blocks = int(days * BLOCKS_PER_DAY)
+    total_blocks = blocks if blocks else int(days * BLOCKS_PER_DAY)
     total_pages = math.ceil(total_blocks / PAGE_SIZE)
 
     print(f"Chain tip:     {tip:,}")
@@ -623,6 +623,8 @@ def main():
         description="Celestia DA — 90-day block & price collector")
     parser.add_argument("--days", type=int, default=90,
                         help="Days of block history (default: 90)")
+    parser.add_argument("--blocks", type=int, default=None,
+                        help="Number of blocks to collect (overrides --days)")
     parser.add_argument("--workers", type=int, default=3,
                         help="Concurrent fetch workers (default: 3)")
     parser.add_argument("--resume", action="store_true",
@@ -643,7 +645,7 @@ def main():
         return
 
     # Collect blocks
-    blocks = collect_blocks(days=args.days, workers=args.workers, resume=args.resume)
+    blocks = collect_blocks(days=args.days, workers=args.workers, resume=args.resume, blocks=args.blocks)
 
     if not blocks:
         print("No blocks collected.", file=sys.stderr)
