@@ -3,12 +3,9 @@
   "version": "1.0.0",
   "description": "NEAR DA protocol throughput and cost analysis tools",
   "scripts": {
-    "collect": "npx tsx collect.ts",
-    "collect:lake": "node --max-old-space-size=4096 node_modules/.bin/tsx collect.ts --source lake",
-    "collect:90d": "node --max-old-space-size=4096 node_modules/.bin/tsx collect.ts --days 90",
-    "plot:throughput": "python3 throughput/plot.py",
-    "plot:cost": "python3 cost/plot.py",
-    "plot": "python3 throughput/plot.py && python3 cost/plot.py"
+    "collect": "npx tsx data/collect.ts",
+    "collect:lake": "npx tsx data/collect.ts --source lake",
+    "collect:90d": "npx tsx data/collect.ts --days 90"
   },
   "keywords": [
     "near",

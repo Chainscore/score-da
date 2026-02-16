@@ -148,6 +148,10 @@ Several methodological challenges arise from comparing heterogeneous protocols:
     \item \textbf{Upper-bound throughput for Polkadot}: the relay chain does not expose actual PoV sizes on-chain (only commitments). Our throughput measurement uses $\text{included\_candidates} \times \text{max\_pov\_size}$, which is an upper bound. Actual throughput is lower since real parachains typically use 1--3~MiB per candidate.
 
     \item \textbf{Protocol upgrades within window}: Ethereum underwent two parameter changes (BPO1, BPO2) and Celestia transitioned eras during our observation period. We segment analysis by protocol era where applicable and treat these transitions as natural experiments (Section~\ref{sec:results-upgrades}).
+
+    \item \textbf{Throughput measurement conventions}: Two definitional choices affect comparability with other sources (e.g., L2Beat).
+    First, for Ethereum we report protocol maximum throughput using the \emph{absolute maximum} blob count per block (21 under BPO2), whereas some trackers use the EIP-4844 \emph{target} blob count (14 under BPO2), below which fees trend toward zero. Both are valid: the target represents the fee-market equilibrium, while the absolute maximum represents the hard protocol ceiling.
+    Second, for Celestia we measure \emph{user data throughput} (the original data square, ODS), not the full 2D Reed--Solomon encoded square. The extended square is $4\times$ larger (a $k{\times}k$ ODS becomes $2k{\times}2k$ after encoding), so sources that report total encoded bandwidth will show approximately $4\times$ our figures. We report user data throughput because it reflects the amount of application-level data that can be posted per unit time.
 \end{enumerate}
 
 \subsection{Reproducibility}

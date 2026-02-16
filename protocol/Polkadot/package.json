@@ -2,13 +2,9 @@
   "name": "polkadot-protocol",
   "version": "1.0.0",
   "description": "Polkadot DA protocol testing and analysis tools",
-  "main": "polkadot_add_data.js",
   "scripts": {
-    "start": "node polkadot_add_data.js",
-    "throughput": "npx tsx throughput/collect.ts",
-    "throughput:plot": "npx tsx throughput/plot.ts",
-    "cost": "npx tsx cost/collect.ts",
-    "cost:plot": "npx tsx cost/plot.ts"
+    "throughput": "npx tsx data/throughput/collect.ts",
+    "cost": "npx tsx data/cost/collect.ts"
   },
   "keywords": [
     "polkadot",

@@ -132,12 +132,14 @@ The 2D structure further enables row- or column-level reconstruction: if samplin
 Avail light clients sample random cells from the data matrix; each cell is accompanied by a KZG opening proof.
 With 10 random samples, an Avail light client achieves $1 - (1/2)^{10} \approx 99.9\%$ confidence ($1 - 1/1024$)~\cite{Avail_The_DA_Blockchain}.
 The use of KZG commitments provides an additional guarantee beyond sampling: the algebraic properties of polynomial commitments allow the light client to verify that each sampled cell is consistent with the committed row polynomial, effectively verifying encoding correctness without fraud proofs.
+Notably, Avail light clients retrieve sampled cells from a dedicated Kademlia DHT in a light-client-only P2P network before falling back to full-node RPC; cells fetched via RPC are uploaded back into the DHT, creating a self-healing replication layer that strengthens availability as light client participation grows.
 
 \textbf{Ethereum} is progressively deploying DAS through the PeerDAS specification (EIP-7594).
 Under PeerDAS, each blob is extended from 64 to 128 evaluation points (columns), and each validator is responsible for custody of a subset of columns determined by its node ID.
 The current specification sets \texttt{SAMPLES\_PER\_SLOT} $= 8$ columns as the minimum custody requirement per validator~\cite{EIP-4844}.
 Confidence in Ethereum's DAS is emergent at the system level rather than per-client: individual validators do not perform independent random sampling in the Celestia/Avail sense; instead, the aggregate custody across the validator set ensures that all 128 columns are held by at least one honest validator with high probability.
 This design reflects Ethereum's philosophy of leveraging its large validator set (${\sim}1{,}000{,}000$ validators) rather than requiring each light client to independently sample.
+PeerDAS also introduces a ``supernode'' role: nodes that subscribe to all 128~data column subnets and can reconstruct the full data matrix from partial columns. The Fulu networking specification requires at least one supernode on the network for reconstruction of missing data, adding a qualitative trust assumption not present in the pre-PeerDAS regime where every consensus node downloaded all blob data~\cite{EIP-7594}.
 
 The security of DAS across all three protocols rests on two critical assumptions: (i)~at least one honest, non-eclipsed full node must hold the complete data and respond to sampling requests, and (ii)~sufficient sampling participation must exist in the network to ensure that withholding is detected before the data propagation window closes.
 An adversary capable of eclipsing a light client's peer connections can cause the client to falsely conclude that data is available (or unavailable) regardless of the true state.
@@ -263,31 +265,31 @@ Light client DAS &
 Block time &
   6\,s (relay) &
   12\,s &
-  12\,s &
-  ${\sim}1$\,s &
-  ${\sim}1.3$\,s &
+  6\,s &
+  ${\sim}2$\,s &
+  ${\sim}0.6$\,s &
   20\,s \\
 Max DA capacity &
-  ${\sim}67$\,MiB/block &
-  0.75\,MiB (6 blobs) &
-  ${\sim}2$\,MiB &
-  30\,MiB/block &
-  4\,MiB/shard &
-  ${\sim}2$\,MiB \\
+  10\,MiB/core $\times$ 100 &
+  2.63\,MiB (BPO2) &
+  ${\sim}8$\,MiB &
+  ${\sim}1$\,MiB &
+  4\,MiB/shard $\times$ 9 &
+  ${\sim}4$\,MiB \\
 Finality &
   GRANDPA (${\sim}12$--$60$\,s) &
   Casper FFG (${\sim}13$\,min) &
-  Single-slot (${\sim}12$\,s) &
+  Single-slot (${\sim}6$\,s) &
   HotShot (${\sim}1$\,s) &
   ${\sim}2$\,s (Doomslug) &
   GRANDPA (${\sim}20$--$60$\,s) \\
 DA retention &
   ${\sim}24$\,h &
   ${\sim}18$\,days &
-  ${\sim}21$\,days &
-  85\,min (default) &
+  ${\sim}30$\,days &
+  7\,d &
   ${\sim}5$ epochs &
-  ${\sim}24$\,h \\
+  ${\sim}85$\,min \\
 Fee model &
   Weight-based &
   EIP-1559 blob market &

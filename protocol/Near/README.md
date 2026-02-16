@@ -9,36 +9,44 @@
 
 ## Data Collection
 
-Single collector (`collect.ts`) fetches per-block DA metrics and NEAR/USD prices. Auto-selects NEAR Lake S3 for large collections (>50K blocks) or RPC for smaller ones.
+Single collector (`data/collect.ts`) fetches per-block DA metrics and NEAR/USD prices. Auto-selects NEAR Lake S3 for large collections (>50K blocks) or RPC for smaller ones.
 
 ```bash
 cd protocol/near
 npm install
 
 # Collect last day (RPC)
-npx tsx collect.ts
+npx tsx data/collect.ts
 
 # Collect 90 days (~13M blocks, uses Lake S3, ~13h)
-npx tsx collect.ts --days 90
+npx tsx data/collect.ts --days 90
 
 # Force source
-npx tsx collect.ts --source lake --days 90 --concurrency 200
+npx tsx data/collect.ts --source lake --days 90 --concurrency 200
 ```
 
 Incremental — re-run to resume from where it left off.
+
+## Dune Upload
+
+Block and price CSVs are uploaded to Dune as:
+- `dune.prasadkumkar.near_blocks` — all CSVs from `data/blocks/`
+- `dune.prasadkumkar.near_prices` — `data/prices.csv`
 
 ## Structure
 
 ```
 near/
-├── collect.ts
-├── analysis/
+├── data/
+│   ├── collect.ts          # unified collector
 │   ├── chain_config.json
 │   ├── prices.csv
 │   ├── collect.log
-│   └── data/             # per-day CSVs
-├── throughput/            # Dune SQL queries
-├── cost/                  # Dune SQL queries
+│   └── blocks/             # per-day CSVs
+├── queries/
+│   ├── near-daily.sql      # Dune: daily aggregation
+│   └── near-hourly.sql     # Dune: hourly aggregation
+├── analysis/               # Dune screenshots (future)
 ├── package.json
 └── research.md
 ```

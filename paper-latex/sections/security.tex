@@ -35,8 +35,9 @@ However, the small operator count (20) means that the effective trust assumption
 
 \paragraph{NEAR}
 NEAR's Nightshade sharding applies the BFT threshold per shard.
-With 6~shards and approximately 400~validators, the per-shard committee size depends on stake distribution.
+With 9~shards and approximately 400~validators, the per-shard committee size depends on stake distribution.
 A critical assumption is that each shard independently maintains $< 1/3$ Byzantine nodes; an adversary who concentrates stake in a single shard can potentially compromise that shard's DA at lower total cost than compromising the network-wide threshold~\cite{NEAR_Nightshade_Scaling_Blockchain}.
+In practice, however, most mainnet validators currently track all shards rather than only their assigned shard, which means the per-shard BFT assumption is more theoretical than operational: DA benefits from full-network replication even though the protocol is designed for shard-local storage.
 
 \paragraph{Avail}
 Avail's BABE/GRANDPA consensus requires $\geq 2/3$ honest validators for both block production and finality.
@@ -60,7 +61,7 @@ Ethereum & $f < n/3$ (stake) & $\sim$1M & Casper FFG & $\sim$12.8\,min & 32 ETH 
 Celestia & $f < n/3$ (stake) & $\sim$100 & CometBFT & Single-slot ($\sim$6\,s) & Variable \\
 Espresso & $f < n/3$ & 100 (20 operators) & HotShot & $\sim$1--2\,s & None (permissioned) \\
 NEAR & $f < n/3$ per shard & $\sim$400 & Nightshade & $\sim$2\,s & Seat-price auction \\
-Avail & $f < n/3$ & TBD & BABE + GRANDPA & 20--60\,s & Variable \\
+Avail & $f < n/3$ & $\sim$100 & BABE + GRANDPA & 20--60\,s & Variable \\
 \bottomrule
 \end{tabular}
 \end{table*}

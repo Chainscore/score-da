@@ -28,9 +28,9 @@ Table~\ref{tab:protocol_params} summarizes the active protocol parameters during
 \toprule
 \textbf{Parameter} & \textbf{Polkadot} & \textbf{Ethereum} & \textbf{Celestia} & \textbf{Espresso} & \textbf{NEAR} & \textbf{Avail} \\
 \midrule
-Block/slot time & 6\,s & 12\,s & 6\,s & $\sim$2--3\,s & $\sim$1\,s & 20\,s \\
-Max DA per block & 10\,MiB $\times$ cores & 2.63\,MiB (BPO2) & 8\,MiB & $\sim$1\,MiB & 4\,MB/call & 64\,MiB \\
-Protocol max MiB/s & $\sim$167 & $\sim$0.22 & $\sim$1.31 & $\sim$0.37 & TBD & $\sim$3.2 \\
+Block/slot time & 6\,s & 12\,s & 6\,s & $\sim$2--3\,s & $\sim$0.6\,s & 20\,s \\
+Max DA per block & 10\,MiB $\times$ cores & 2.63\,MiB (BPO2) & 8\,MiB & $\sim$1\,MiB & 4\,MiB $\times$ 9 shards & $\sim$4\,MiB \\
+Protocol max MiB/s & $\sim$167 & $\sim$0.22 & $\sim$1.31 & $\sim$0.37 & $\sim$59 & $\sim$0.21 \\
 Retention & 25\,h & $\sim$18\,d & 30\,d & 7\,d & $\sim$2.5\,d & $\sim$85\,min \\
 Native token & DOT & ETH & TIA & ETH (fees) & NEAR & AVAIL \\
 \bottomrule
@@ -149,8 +149,8 @@ Polkadot & $\sim$167 & TBD & TBD & TBD \\
 Ethereum & 0.22 & $\sim$0.045 & $\sim$0.051 & $\sim$23\% \\
 Celestia & 1.31 & $\sim$0.018 & $\sim$0.024 & $\sim$5\% \\
 Espresso & 0.37 & $\sim$0.002 & $\sim$0.003 & $\sim$1.5\% \\
-NEAR & TBD & TBD & TBD & TBD \\
-Avail & 3.2 & $\sim$0.001 & $\sim$0.002 & $<$1\% \\
+NEAR & $\sim$59 & TBD & TBD & TBD \\
+Avail & 0.21 & $\sim$0.001 & $\sim$0.002 & $<$1\% \\
 \bottomrule
 \end{tabular}
 \end{table}

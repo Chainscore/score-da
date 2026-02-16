@@ -18,21 +18,37 @@ Protocol max throughput = `effective_cores * max_pov / cadence`.
 ## Setup
 
 ```bash
-cd protocol/polkadot
+cd protocol/Polkadot
 npm install
 ```
 
 ## Usage
 
 ```bash
-# Throughput: collect block data + generate charts
+# Throughput: collect block data
 npm run throughput -- --blocks 5000
-npm run throughput:plot
+npm run throughput -- --days 90
 
-# Cost: collect coretime pricing + generate charts
+# Cost: collect coretime pricing
 npm run cost
-npm run cost:plot
+npm run cost -- --ondemand-blocks 5000
 ```
+
+## Dune Dashboards
+
+Collected data is uploaded to Dune under the `dune.prasad_chainscorelabs` namespace.
+
+| Table | Source |
+|-------|--------|
+| `polkadot_blocks` | `data/throughput/blocks/*.csv` |
+| `polkadot_sales` | `data/cost/sales.csv` |
+| `polkadot_purchases` | `data/cost/purchases.csv` |
+| `polkadot_renewals` | `data/cost/renewals.csv` |
+| `polkadot_prices` | `data/cost/dot_prices.csv` |
+
+Queries in `queries/`:
+- **polkadot-daily.sql** — all dashboard metrics (throughput, utilization, data volume, cost, pipeline health, parachain diversity, availability, cumulative) with 7d/30d rolling averages
+- **polkadot-hourly.sql** — throughput, utilization, data volume, pipeline health, diversity at hourly granularity with 24h rolling averages
 
 ## Key Governance Changes
 
@@ -47,16 +63,26 @@ npm run cost:plot
 ## Structure
 
 ```
-polkadot/
-├── throughput/
-│   ├── collect.ts
-│   ├── plot.ts
-│   └── analysis/        # CSV + SVG output
-├── cost/
-│   ├── collect.ts
-│   ├── plot.ts
-│   └── analysis/        # CSV + SVG output
-├── polkadot_add_data.js # Paseo testnet tx tool
+Polkadot/
+├── data/
+│   ├── throughput/
+│   │   ├── collect.ts
+│   │   ├── chain_config.json
+│   │   ├── collect.log
+│   │   └── blocks/          # per-day CSVs
+│   └── cost/
+│       ├── collect.ts
+│       ├── broker_config.json
+│       ├── cost_config.json
+│       ├── dot_prices.csv
+│       ├── ondemand.csv
+│       ├── purchases.csv
+│       ├── renewals.csv
+│       └── sales.csv
+├── queries/
+│   ├── polkadot-daily.sql
+│   └── polkadot-hourly.sql
+├── analysis/                 # Dune screenshots
 ├── package.json
-└── research.md
+└── README.md
 ```
