@@ -30,14 +30,32 @@ As Espresso matures toward a permissionless deployment with active economic secu
 \subsection{The Cost--Throughput Frontier}
 \label{sec:disc-frontier}
 
-Plotting DA cost against protocol maximum throughput reveals no simple inverse relationship.
+Figure~\ref{fig:capacity_cost} plots DA cost against protocol maximum throughput, revealing no simple inverse relationship.
 Espresso offers both low cost and moderate throughput, but its cost is economically meaningless (Mainnet~0 artifact).
 Celestia and Avail provide moderate throughput at moderate cost.
-Polkadot provides the highest theoretical throughput ($\sim$167~MiB/s) at a cost that is difficult to compare directly since coretime prices bundled execution, not just DA.
+Polkadot provides the highest theoretical throughput ($\sim$167~MiB/s) at an extremely low per-MiB cost ($\sim$\$5$\times$10$^{-6}$/MiB), though this reflects coretime bundling execution and DA together.
+NEAR's high capacity ($\sim$59~MiB/s) is paired with the highest meaningful cost ($\sim$\$0.51/MiB), placing it in the opposite quadrant from Polkadot.
 Ethereum provides the lowest per-block throughput among the six but benefits from the strongest network effects, economic security, and longest retention.
+
+The cross-protocol comparison charts (Figures~\ref{fig:cross_throughput}--\ref{fig:retention_cost}) make this heterogeneity visually explicit.
+Protocols do not cluster along a single efficiency frontier; instead, they occupy distinct positions reflecting different design philosophies: Polkadot optimizes for high-throughput parachain validation, NEAR for general-purpose smart contract execution, Ethereum for censorship resistance and economic security, and Celestia/Avail for purpose-built modular DA.
 
 This observation underscores that \emph{cost and throughput alone are insufficient metrics for DA evaluation}.
 Retention, trust assumptions, light client capabilities, and ecosystem integration are equally important, a finding that purely quantitative benchmarks risk overlooking.
+
+\subsection{Polkadot's Scaling Headroom}
+\label{sec:disc-polkadot}
+
+Our empirical findings directly address the grant's central question regarding Polkadot's DA scaling trajectory.
+With only $\sim$26 of 100 cores engaged (Figure~\ref{fig:polkadot_core}), Polkadot has approximately 74\% idle DA capacity.
+This translates to potential throughput growth from the current $\sim$43~MiB/s (upper bound) toward the $\sim$167~MiB/s maximum without any protocol parameter changes.
+
+The coretime market provides a natural scaling mechanism: as more parachains join and core utilization increases, coretime prices will rise, generating revenue to fund additional validator security.
+The current bulk coretime cost of $\sim$\$5$\times$10$^{-6}$/MiB (Table~\ref{tab:cost_summary}) is so low that cost is unlikely to be a barrier to DA scaling in the near term.
+
+Compared to other protocols, Polkadot's combination of high throughput, low cost, and large headroom is distinctive.
+The primary limitation is the upper-bound nature of our throughput measurement: actual PoV sizes are smaller than the 10~MiB maximum, and true throughput depends on parachain workload characteristics.
+Future work with access to actual PoV sizes would enable more precise capacity analysis.
 
 \subsection{Implications for Rollup Developers}
 \label{sec:disc-rollups}
@@ -102,6 +120,8 @@ A 90-day window provides a snapshot, not a longitudinal view.
 Protocol behavior under different market conditions, governance events, or adoption phases may differ.
 Our open-source tooling enables future researchers to extend the measurement window.
 
-\paragraph{Incomplete data for some protocols}
-Some table entries remain marked TBD where data collection was incomplete at publication time.
-This reflects the practical difficulty of collecting and normalizing cross-protocol data at scale, a challenge that itself motivates the open-source tooling contribution of this work.
+\paragraph{Cross-protocol normalization}
+Comparing cost across protocols with different pricing models (blob gas, coretime, gas/byte, fixed fee) requires normalization choices that may obscure economic nuances.
+Polkadot's coretime bundles execution and DA, making per-MiB cost an imperfect metric.
+NEAR's gas pricing reflects general smart-contract costs, not DA-specific fees.
+Our retention-adjusted annualized cost metric (Table~\ref{tab:annualized_cost} and Figure~\ref{fig:retention_cost}) partially addresses this, but no single metric fully captures the economic trade-offs.

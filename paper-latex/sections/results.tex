@@ -45,91 +45,120 @@ Native token & DOT & ETH & TIA & ETH (fees) & NEAR & AVAIL \\
 Figure~\ref{fig:throughput_panels} presents per-protocol throughput time series, plotting observed throughput (actual DA payload per unit time) against the protocol maximum.
 All protocols use a logarithmic y-axis to accommodate the wide dynamic range between observed and maximum throughput.
 
-% === THROUGHPUT FIGURE (4 protocols) ===
+% === THROUGHPUT FIGURE (6 protocols, 3×2 grid) ===
 \begin{figure*}[t]
     \centering
-    \begin{subfigure}[b]{0.48\textwidth}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \includegraphics[width=\textwidth]{figures/polkadot_throughput.png}
+        \caption{Polkadot}
+        \label{fig:throughput_polkadot}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.32\textwidth}
         \includegraphics[width=\textwidth]{figures/eth_throughput.png}
         \caption{Ethereum}
         \label{fig:throughput_eth}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[b]{0.48\textwidth}
+    \begin{subfigure}[b]{0.32\textwidth}
         \includegraphics[width=\textwidth]{figures/celestia_throughput.png}
         \caption{Celestia}
         \label{fig:throughput_celestia}
     \end{subfigure}
 
     \vspace{0.3cm}
-    \begin{subfigure}[b]{0.48\textwidth}
+    \begin{subfigure}[b]{0.32\textwidth}
         \includegraphics[width=\textwidth]{figures/espresso_throughput.png}
         \caption{Espresso}
         \label{fig:throughput_espresso}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[b]{0.48\textwidth}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \includegraphics[width=\textwidth]{figures/near_throughput.png}
+        \caption{NEAR}
+        \label{fig:throughput_near}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.32\textwidth}
         \includegraphics[width=\textwidth]{figures/avail_throughput.png}
         \caption{Avail}
         \label{fig:throughput_avail}
     \end{subfigure}
 
-    \caption{Observed DA throughput (MiB/s) versus protocol maximum for four protocols over the 90-day observation window (Polkadot and NEAR omitted pending data collection).
-    All protocols operate well below their theoretical capacity ceiling (red/shaded region), indicating demand-constrained rather than supply-constrained regimes.
-    Ethereum~(a) shows clear step-function increases in the maximum at BPO1 (Dec~9) and BPO2 (Jan~7).
-    Celestia~(b) shows the December~13--22 throughput surge approaching the protocol maximum.
-    Espresso~(c) exhibits two distinct activity phases (Nov, Dec--Jan) followed by collapse.
-    Avail~(d) shows peak activity around Dec~4--10 with a subsequent decline.}
+    \caption{Observed DA throughput (MiB/s) versus protocol maximum for all six protocols over the 90-day observation window.
+    All protocols operate well below their theoretical capacity ceiling, indicating demand-constrained rather than supply-constrained regimes.
+    Polkadot~(a) reports an upper-bound throughput of $\sim$43~MiB/s against a $\sim$167~MiB/s maximum; actual PoV sizes are smaller.
+    Ethereum~(b) shows clear step-function increases in the maximum at BPO1 (Dec~9) and BPO2 (Jan~7).
+    Celestia~(c) shows the December~13--22 throughput surge approaching the protocol maximum.
+    Espresso~(d) exhibits two distinct activity phases (Nov, Dec--Jan) followed by collapse.
+    NEAR~(e) operates at $\sim$0.1~MiB/s against a $\sim$59~MiB/s maximum, reflecting low utilization despite high absolute data volume.
+    Avail~(f) shows peak activity around Dec~4--10 with a subsequent decline.}
     \label{fig:throughput_panels}
 \end{figure*}
 
 Key observations:
 
 \begin{enumerate}
-    \item \textbf{Universal under-utilization}: No protocol sustained more than 50\% utilization over the 90-day window. Ethereum showed the highest sustained utilization ($\sim$60--70\% during the Pectra era, declining to $\sim$20--30\% after each BPO capacity increase). Celestia operated at $\sim$3--5\% in steady state, with a single extraordinary spike exceeding 100\% utilization during December~13--22. Espresso peaked at $\sim$3\% utilization and Avail at $\sim$3--5\%.
+    \item \textbf{Universal under-utilization}: No protocol sustained more than 50\% utilization over the 90-day window. Polkadot showed remarkably stable utilization at $\sim$25--27\%, with $\sim$26 of 100 cores engaged per day. Ethereum showed the highest peak utilization ($\sim$60--70\% during the Pectra era, declining to $\sim$20--30\% after each BPO capacity increase). Celestia operated at $\sim$3--5\% in steady state, with a single extraordinary spike exceeding 100\% utilization during December~13--22. NEAR operated at only $\sim$0.18\% utilization despite processing $\sim$9~GiB/day in absolute volume. Espresso peaked at $\sim$3\% utilization and Avail at $\sim$3--5\%.
 
     \item \textbf{Demand, not supply}: Because all protocols are demand-constrained, observed throughput reflects ecosystem adoption and rollup activity, not protocol performance limits. Comparing raw observed MiB/s across protocols would be misleading (it would measure market share, not engineering capability).
 
-    \item \textbf{Polkadot's upper-bound caveat}: Our Polkadot throughput uses $\text{included} \times \text{max\_pov}$, yielding an upper bound. Actual PoV sizes are smaller, so true throughput is lower than reported.
+    \item \textbf{Polkadot's upper-bound caveat}: Our Polkadot throughput uses $\text{included} \times \text{max\_pov}$, yielding an upper bound of $\sim$43~MiB/s. Actual PoV sizes are smaller (typically 1--3~MiB per PoV, not the full 10~MiB maximum), so true throughput is lower than reported.
+
+    \item \textbf{NEAR's volume paradox}: Despite the lowest utilization in our set ($\sim$0.18\%), NEAR processes $\sim$9~GiB/day of DA payload---more than Celestia's $\sim$2~GiB/day baseline---because NEAR's maximum capacity ($\sim$59~MiB/s across 9~shards) is vastly larger than current demand.
 \end{enumerate}
 
 \subsubsection{Utilization}
 
 Figure~\ref{fig:utilization_panels} shows DA utilization as a percentage of protocol capacity.
 
-% === UTILIZATION FIGURE (4 available + 2 placeholder) ===
+% === UTILIZATION FIGURE (6 protocols, 3×2 grid) ===
 \begin{figure*}[t]
     \centering
-    \begin{subfigure}[b]{0.48\textwidth}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \includegraphics[width=\textwidth]{figures/polkadot_utilization.png}
+        \caption{Polkadot}
+        \label{fig:util_polkadot}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.32\textwidth}
         \includegraphics[width=\textwidth]{figures/eth_utilization.png}
         \caption{Ethereum}
         \label{fig:util_eth}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[b]{0.48\textwidth}
+    \begin{subfigure}[b]{0.32\textwidth}
         \includegraphics[width=\textwidth]{figures/celestia_utilization.png}
         \caption{Celestia}
         \label{fig:util_celestia}
     \end{subfigure}
 
     \vspace{0.3cm}
-    \begin{subfigure}[b]{0.48\textwidth}
+    \begin{subfigure}[b]{0.32\textwidth}
         \includegraphics[width=\textwidth]{figures/espresso_utilization.png}
         \caption{Espresso}
         \label{fig:util_espresso}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[b]{0.48\textwidth}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \includegraphics[width=\textwidth]{figures/near_utilization.png}
+        \caption{NEAR}
+        \label{fig:util_near}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.32\textwidth}
         \includegraphics[width=\textwidth]{figures/avail_utilization.png}
         \caption{Avail}
         \label{fig:util_avail}
     \end{subfigure}
 
-    \caption{DA utilization (\%) for four protocols over the 90-day observation window (Polkadot and NEAR pending).
-    Ethereum~(a) shows the highest sustained utilization ($\sim$65\% in Pectra), with clear step-drops after each BPO capacity increase as the denominator grew faster than demand.
-    Celestia~(b) experienced the only near-saturation event: utilization exceeded 100\% during December~13--22, driven by a sustained demand surge.
-    Espresso~(c) shows two usage phases peaking at $\sim$3\%, with near-complete collapse by February.
-    Avail~(d) typically operates at 0.1--1\% utilization with brief spikes to $\sim$3--5\%.
-    All panels use logarithmic y-axes except Ethereum.}
+    \caption{DA utilization (\%) for all six protocols over the 90-day observation window.
+    Polkadot~(a) exhibits remarkably stable utilization at $\sim$25--27\%, reflecting steady parachain demand against 100 available cores.
+    Ethereum~(b) shows the highest peak utilization ($\sim$65\% in Pectra), with clear step-drops after each BPO capacity increase as the denominator grew faster than demand.
+    Celestia~(c) experienced the only near-saturation event: utilization exceeded 100\% during December~13--22, driven by a sustained demand surge.
+    Espresso~(d) shows two usage phases peaking at $\sim$3\%, with near-complete collapse by February.
+    NEAR~(e) operates at $\sim$0.18\% utilization---the lowest in our set---despite processing the second-highest absolute data volume.
+    Avail~(f) typically operates at 0.1--1\% utilization with brief spikes to $\sim$3--5\%.}
     \label{fig:utilization_panels}
 \end{figure*}
 
@@ -145,14 +174,16 @@ Table~\ref{tab:throughput_summary} provides aggregate throughput and utilization
 \toprule
 \textbf{Protocol} & \textbf{Max MiB/s} & \textbf{p50 MiB/s} & \textbf{Mean MiB/s} & \textbf{Mean Util.} \\
 \midrule
-Polkadot & $\sim$167 & TBD & TBD & TBD \\
+Polkadot & $\sim$167 & $\sim$42.8$^\dagger$ & $\sim$43.0$^\dagger$ & $\sim$25.8\% \\
 Ethereum & 0.22 & $\sim$0.045 & $\sim$0.051 & $\sim$23\% \\
 Celestia & 1.31 & $\sim$0.018 & $\sim$0.024 & $\sim$5\% \\
 Espresso & 0.37 & $\sim$0.002 & $\sim$0.003 & $\sim$1.5\% \\
-NEAR & $\sim$59 & TBD & TBD & TBD \\
+NEAR & $\sim$59 & $\sim$0.107 & $\sim$0.108 & $\sim$0.18\% \\
 Avail & 0.21 & $\sim$0.001 & $\sim$0.002 & $<$1\% \\
 \bottomrule
 \end{tabular}
+\vspace{2pt}
+\raggedright\footnotesize{$^\dagger$Upper bound: assumes max PoV size per included candidate.}
 \end{table}
 
 \subsection{Cost Analysis}
@@ -163,39 +194,53 @@ Avail & 0.21 & $\sim$0.001 & $\sim$0.002 & $<$1\% \\
 Figure~\ref{fig:cost_quantiles} presents per-protocol cost quantile bands (p10/p50/p90) over the observation window.
 The y-axes use logarithmic scaling, which is essential given the seven-order-of-magnitude range across protocols.
 
-% === COST QUANTILE BANDS (4-panel) ===
+% === COST QUANTILE BANDS (6-panel, 3×2 grid) ===
 \begin{figure*}[t]
     \centering
-    \begin{subfigure}[b]{0.48\textwidth}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \includegraphics[width=\textwidth]{figures/polkadot_cost.png}
+        \caption{Polkadot}
+        \label{fig:cost_q_polkadot}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.32\textwidth}
         \includegraphics[width=\textwidth]{figures/eth_cost_quantiles.png}
         \caption{Ethereum}
         \label{fig:cost_q_eth}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[b]{0.48\textwidth}
+    \begin{subfigure}[b]{0.32\textwidth}
         \includegraphics[width=\textwidth]{figures/celestia_cost_quantiles.png}
         \caption{Celestia}
         \label{fig:cost_q_celestia}
     \end{subfigure}
 
     \vspace{0.3cm}
-    \begin{subfigure}[b]{0.48\textwidth}
+    \begin{subfigure}[b]{0.32\textwidth}
         \includegraphics[width=\textwidth]{figures/espresso_cost_quantiles.png}
         \caption{Espresso}
         \label{fig:cost_q_espresso}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[b]{0.48\textwidth}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \includegraphics[width=\textwidth]{figures/near_cost.png}
+        \caption{NEAR}
+        \label{fig:cost_q_near}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.32\textwidth}
         \includegraphics[width=\textwidth]{figures/avail_cost_quantiles.png}
         \caption{Avail}
         \label{fig:cost_q_avail}
     \end{subfigure}
 
-    \caption{Cost quantile bands (\$/MiB) for each protocol, showing fee market maturity and price volatility.
-    Ethereum~(a) shows an initial spike during the Pectra era followed by stabilization at $\sim$\$0.00001 under BPO1/BPO2.
-    Celestia~(b) exhibits a downward cost trend from $\sim$\$0.05 to $\sim$\$0.02 over the window, partially driven by TIA price decline.
-    Espresso~(c) has extremely tight bands (p10/p50/p90 nearly identical) in the $\sim$\$3$\times$10$^{-9}$ range, tracking ETH/USD since the 1~wei/byte fee is fixed.
-    Avail~(d) shows the widest spread: p50 at $\sim$\$0.008 but p99 spikes reaching \$0.80+, indicating the most volatile cost distribution among the four.}
+    \caption{Cost quantile bands (\$/MiB) for all six protocols, showing fee market maturity and price volatility.
+    Polkadot~(a) shows bulk coretime cost at $\sim$\$5$\times$10$^{-6}$/MiB---sparse data from days with actual purchases only.
+    Ethereum~(b) shows an initial spike during the Pectra era followed by stabilization at $\sim$\$0.00001 under BPO1/BPO2.
+    Celestia~(c) exhibits a downward cost trend from $\sim$\$0.05 to $\sim$\$0.02 over the window, partially driven by TIA price decline.
+    Espresso~(d) has extremely tight bands (p10/p50/p90 nearly identical) in the $\sim$\$3$\times$10$^{-9}$ range, tracking ETH/USD since the 1~wei/byte fee is fixed.
+    NEAR~(e) shows p50 cost at $\sim$\$0.30--\$0.75/MiB, the highest among protocols with meaningful fee markets, declining over the window.
+    Avail~(f) shows the widest spread: p50 at $\sim$\$0.008 but p99 spikes reaching \$0.80+, indicating the most volatile cost distribution.}
     \label{fig:cost_quantiles}
 \end{figure*}
 
@@ -213,14 +258,16 @@ Table~\ref{tab:cost_summary} presents the cost distribution across protocols.
 \toprule
 \textbf{Protocol} & \textbf{p50} & \textbf{p90} & \textbf{p99} & \textbf{VWAP} & \textbf{Pricing} \\
 \midrule
-Polkadot & TBD & TBD & TBD & TBD & Coretime \\
+Polkadot & $\sim$5$\times$10$^{-6}$$^\ast$ & $\sim$5$\times$10$^{-6}$ & --- & $\sim$1.4$\times$10$^{-5}$ & Coretime \\
 Ethereum & $\sim$4$\times$10$^{-4}$ & $\sim$5$\times$10$^{-3}$ & $\sim$0.021 & $\sim$5$\times$10$^{-3}$ & Blob gas \\
 Celestia & $\sim$0.021 & $\sim$0.06 & $\sim$0.40 & $\sim$0.03 & Gas/byte \\
 Espresso & $\sim$3$\times$10$^{-9}$ & $\sim$3.5$\times$10$^{-9}$ & $\sim$8$\times$10$^{-9}$ & $\sim$3$\times$10$^{-9}$ & Fixed fee \\
-NEAR & TBD & TBD & TBD & TBD & Gas \\
+NEAR & $\sim$0.51 & $\sim$0.93 & $\sim$1.50 & $\sim$0.48 & Gas \\
 Avail & $\sim$0.008 & $\sim$0.03 & $\sim$0.80 & $\sim$0.02 & Fee+modifier \\
 \bottomrule
 \end{tabular}
+\vspace{2pt}
+\raggedright\footnotesize{$^\ast$Sparse: only 14/94 days had bulk coretime purchases. Cost is per-MiB amortized over max PoV capacity.}
 \end{table}
 
 Key findings:
@@ -235,6 +282,10 @@ Key findings:
     \item \textbf{Ethereum's Pectra-era pricing anomaly}: During the Pectra era (pre-Dec~9), Ethereum's p50 cost was $\sim$\$4$\times$10$^{-10}$/MiB, comparable to Espresso's placeholder fee. The BPO capacity increases paradoxically \emph{increased} observed median cost by attracting sufficient demand to activate the exponential pricing mechanism.
 
     \item \textbf{Celestia's cost is trending downward}: Over the full window, Celestia's cost declined from $\sim$\$0.05 to $\sim$\$0.02/MiB (Figure~\ref{fig:cost_q_celestia}), partially reflecting TIA token price decline (\$0.85$\to$\$0.30) and partially reflecting post-upgrade capacity growth.
+
+    \item \textbf{NEAR has the highest meaningful cost}: NEAR's p50 cost of $\sim$\$0.51/MiB (Figure~\ref{fig:cost_q_near}) is the highest among protocols with active fee markets, declining over the window from $\sim$\$0.75 to $\sim$\$0.30/MiB. This reflects NEAR's gas-based pricing applied to substantial per-receipt encoded data.
+
+    \item \textbf{Polkadot cost is sparse but negligible}: Bulk coretime purchases occurred on only 14 of 94~days, yielding a p50 of $\sim$\$5$\times$10$^{-6}$/MiB (Figure~\ref{fig:cost_q_polkadot}). This extremely low per-MiB cost reflects that coretime bundles execution and DA together; the DA component is effectively a byproduct of core acquisition.
 \end{enumerate}
 
 \subsubsection{Annualized Cost}
@@ -251,18 +302,20 @@ Table~\ref{tab:annualized_cost} normalizes cost by retention window, revealing t
 \toprule
 \textbf{Protocol} & \textbf{Retention} & \textbf{Reposts/yr} & \textbf{p50 \$/MiB/yr} \\
 \midrule
+NEAR & $\sim$2.5\,d & $\sim$146 & $\sim$74.7 \\
 Avail & $\sim$85\,min & $\sim$6{,}176 & $\sim$49.4 \\
-Polkadot & 25\,h & $\sim$350 & TBD \\
-NEAR & $\sim$2.5\,d & $\sim$146 & TBD \\
-Espresso & 7\,d & $\sim$52 & $\sim$1.6$\times$10$^{-7}$ \\
-Ethereum & $\sim$18\,d & $\sim$21 & $\sim$0.008 \\
+Polkadot & 25\,h & $\sim$350 & $\sim$0.002 \\
 Celestia & 30\,d & $\sim$12 & $\sim$0.25 \\
+Ethereum & $\sim$18\,d & $\sim$21 & $\sim$0.008 \\
+Espresso & 7\,d & $\sim$52 & $\sim$1.6$\times$10$^{-7}$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 This normalization reveals that protocols with short retention windows that appear inexpensive at spot cost may become expensive when continuous availability is required.
-Avail's 85-minute retention means data must be reposted $\sim$6{,}176 times per year, amplifying its p50 cost from a modest \$0.008/MiB to $\sim$\$49/MiB/year---the most expensive option by this measure.
+NEAR's high spot cost (\$0.51/MiB) combined with moderate retention (2.5~days, requiring $\sim$146 reposts/year) yields the highest annualized cost at $\sim$\$74.7/MiB/year.
+Avail's 85-minute retention means data must be reposted $\sim$6{,}176 times per year, amplifying its p50 cost from a modest \$0.008/MiB to $\sim$\$49/MiB/year---the second most expensive option.
+Polkadot's extremely low spot cost ($\sim$\$5$\times$10$^{-6}$/MiB) remains negligible even after 350$\times$ annualization.
 Conversely, Ethereum's relatively long 18-day retention means its annualized multiplier is only $\sim$21$\times$, and Celestia's 30-day window yields a 12$\times$ multiplier.
 
 \subsection{Block Dynamics}
@@ -299,19 +352,38 @@ Fixed-cadence protocols (Ethereum 12\,s, Polkadot 6\,s, Avail 20\,s) produce tri
 
 Figure~\ref{fig:payload_panels} presents daily DA payload volume for each protocol, providing an absolute measure of ecosystem adoption that complements the rate-normalized throughput metric.
 
-% === DAILY PAYLOAD VOLUME (3-panel) ===
+% === DAILY PAYLOAD VOLUME (6-panel, 3×2 grid) ===
 \begin{figure*}[t]
     \centering
+    \begin{subfigure}[b]{0.32\textwidth}
+        \includegraphics[width=\textwidth]{figures/polkadot_payload.png}
+        \caption{Polkadot}
+        \label{fig:payload_polkadot}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.32\textwidth}
+        \includegraphics[width=\textwidth]{figures/near_payload.png}
+        \caption{NEAR}
+        \label{fig:payload_near}
+    \end{subfigure}
+    \hfill
     \begin{subfigure}[b]{0.32\textwidth}
         \includegraphics[width=\textwidth]{figures/celestia_payload.png}
         \caption{Celestia}
         \label{fig:payload_celestia}
     \end{subfigure}
-    \hfill
+
+    \vspace{0.3cm}
     \begin{subfigure}[b]{0.32\textwidth}
         \includegraphics[width=\textwidth]{figures/espresso_payload.png}
         \caption{Espresso}
         \label{fig:payload_espresso}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.32\textwidth}
+        \includegraphics[width=\textwidth]{figures/eth_payload.png}
+        \caption{Ethereum}
+        \label{fig:payload_eth}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{0.32\textwidth}
@@ -320,10 +392,13 @@ Figure~\ref{fig:payload_panels} presents daily DA payload volume for each protoc
         \label{fig:payload_avail}
     \end{subfigure}
 
-    \caption{Daily DA payload volume (MiB) for Celestia, Espresso, and Avail over the 90-day window.
-    Celestia~(a) shows baseline hourly payload of 30--100~MiB, with the December~13--22 surge reaching $>$1{,}000~MiB/hr.
-    Espresso~(b) exhibits two burst periods (Nov: 500--700~MiB/day, Dec--Jan: 700--850~MiB/day) followed by collapse to $<$50~MiB/day---characteristic of a Mainnet~0 deployment with non-organic traffic.
-    Avail~(c) peaked at $\sim$650~MiB/day around Dec~4--10 with a similar declining trend.}
+    \caption{Daily DA payload volume (MiB) for all six protocols over the 90-day window.
+    Polkadot~(a) shows the highest volume at $\sim$3.5--3.8~TiB/day (upper bound), dwarfing all other protocols.
+    NEAR~(b) processes $\sim$9~GiB/day, making it the second-highest by absolute volume despite its low utilization.
+    Celestia~(c) shows baseline payload of 1--2~GiB/day, with the December~13--22 surge reaching $>$10~GiB/day.
+    Espresso~(d) exhibits two burst periods (Nov: 500--700~MiB/day, Dec--Jan: 700--850~MiB/day) followed by collapse to $<$50~MiB/day---characteristic of a Mainnet~0 deployment with non-organic traffic.
+    Ethereum~(e) shows steady growth from $\sim$2~GiB/day at Dencun to $\sim$4--5~GiB/day post-BPO, with clear step increases at each capacity upgrade.
+    Avail~(f) peaked at $\sim$650~MiB/day around Dec~4--10 with a similar declining trend.}
     \label{fig:payload_panels}
 \end{figure*}
 
@@ -369,6 +444,29 @@ Each increase created a capacity shock visible across multiple metrics.
     \label{fig:eth_eras}
 \end{figure}
 
+Figure~\ref{fig:eth_pct_floor} shows the percentage of blocks where the blob base fee sat at the 1-wei minimum floor.
+During the Pectra era, the fee was at floor $\sim$30--80\% of the time; post-BPO2, the fee rarely touches the floor, indicating the fee market is fully active.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\columnwidth]{figures/eth_pct_at_floor.png}
+    \caption{Percentage of blocks at the blob base fee floor (1~wei) over the observation window.
+    The dramatic decline post-BPO2 confirms that increased capacity attracted sufficient demand to sustain an active fee market.}
+    \label{fig:eth_pct_floor}
+\end{figure}
+
+Figure~\ref{fig:eth_target_actual} overlays Ethereum's actual utilization against its target utilization (the level at which the exponential pricing mechanism activates).
+When actual utilization exceeds the target, the blob base fee increases exponentially; when below, it decays.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\columnwidth]{figures/eth_target_vs_actual.png}
+    \caption{Ethereum target vs.\ actual DA utilization (\%) with era boundary lines.
+    During the Pectra era, actual utilization frequently exceeded the target, driving the initial fee spike.
+    Post-BPO1/BPO2, utilization remains near or below the target, producing the stable low-fee regime.}
+    \label{fig:eth_target_actual}
+\end{figure}
+
 \subsubsection{Celestia: December Utilization Spike}
 
 During December~13--22, Celestia experienced a sustained demand surge that pushed utilization near and beyond 100\%. This was the only near-saturation event observed across any protocol in our window (Figure~\ref{fig:util_celestia}).
@@ -381,3 +479,135 @@ During December~13--22, Celestia experienced a sustained demand surge that pushe
 
 This event provides empirical evidence that Celestia's fee market functions as designed under load, a validation that is typically only demonstrated through synthetic stress tests.
 The event also confirms our characterization of the DA landscape as demand-constrained: even Celestia's saturation was a transient event lasting approximately 9~days, after which the protocol returned to steady-state under-utilization.
+
+\subsection{Polkadot: Core Engagement and Scaling Headroom}
+\label{sec:results-polkadot}
+
+Polkadot's coretime architecture provides a unique lens on DA scaling.
+Figure~\ref{fig:polkadot_core} shows core engagement---the percentage of available cores actively occupied by parachains---alongside the number of distinct parachains.
+Over the 90-day window, only $\sim$26 of 100 available cores were engaged, yielding $\sim$74\% idle capacity.
+
+\begin{figure}[t]
+    \centering
+    \begin{subfigure}[b]{\columnwidth}
+        \includegraphics[width=\textwidth]{figures/polkadot_core_engagement.png}
+        \caption{Core engagement (\%)}
+        \label{fig:polkadot_core_engagement}
+    \end{subfigure}
+
+    \vspace{0.3cm}
+    \begin{subfigure}[b]{\columnwidth}
+        \includegraphics[width=\textwidth]{figures/polkadot_parachain_diversity.png}
+        \caption{Parachain diversity and core engagement}
+        \label{fig:polkadot_parachain_diversity}
+    \end{subfigure}
+
+    \caption{Polkadot core engagement and parachain diversity over the 90-day window.
+    Panel~(a) shows $\sim$26\% core engagement, meaning $\sim$74 of 100 available cores are idle.
+    Panel~(b) overlays distinct active parachains with core engagement, showing a stable ecosystem of $\sim$26 unique parachains.
+    This provides a direct answer to the scaling question: Polkadot can accommodate roughly 3$\times$ more parachains before core saturation.}
+    \label{fig:polkadot_core}
+\end{figure}
+
+This observation has direct implications for the grant's research question regarding Polkadot's DA scaling trajectory.
+The relay chain can accommodate roughly three times more parachains at the current PoV size before core saturation, without any parameter changes.
+Combined with the coretime pricing mechanism (which adjusts core prices based on demand), this creates a natural scaling path: as more parachains join, core engagement increases, coretime prices rise, and the network generates more revenue to fund security.
+
+\subsection{Cross-Protocol Comparison}
+\label{sec:results-cross}
+
+The preceding per-protocol analyses reveal individual behavior; this subsection presents head-to-head comparisons that reveal the competitive landscape.
+
+\subsubsection{Combined Throughput}
+
+Figure~\ref{fig:cross_throughput} overlays 7-day rolling average throughput for all six protocols on a single logarithmic chart.
+The five-order-of-magnitude range---from Avail's $\sim$0.001~MiB/s to Polkadot's $\sim$43~MiB/s (upper bound)---underscores the diversity of the DA landscape.
+Dashed reference lines indicate each protocol's maximum capacity.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\columnwidth]{figures/cross_throughput.png}
+    \caption{Combined DA throughput (7d rolling avg, log scale) for all six protocols.
+    Polkadot and NEAR have vastly higher capacity ceilings than the other four protocols, but all operate well below their respective maxima.}
+    \label{fig:cross_throughput}
+\end{figure}
+
+\subsubsection{Combined Utilization}
+
+Figure~\ref{fig:cross_utilization} shows utilization on a shared linear axis.
+Polkadot ($\sim$26\%) and Ethereum ($\sim$23\% mean, higher in Pectra) lead in sustained utilization, while Celestia, Espresso, NEAR, and Avail all operate below 5\%.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\columnwidth]{figures/cross_utilization.png}
+    \caption{Combined DA utilization (7d rolling avg) for all six protocols on a shared axis.
+    Polkadot and Ethereum sustain the highest utilization; Celestia's December spike is the only event approaching saturation.}
+    \label{fig:cross_utilization}
+\end{figure}
+
+\subsubsection{Combined Cost}
+
+Figure~\ref{fig:cross_cost} presents p50 cost per MiB on a logarithmic axis for protocols with meaningful cost data.
+The seven-order-of-magnitude spread---from Espresso's $\sim$\$3$\times$10$^{-9}$/MiB to NEAR's $\sim$\$0.50/MiB---demonstrates that DA pricing reflects fundamentally different economic designs.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\columnwidth]{figures/cross_cost.png}
+    \caption{Combined p50 DA cost (\$/MiB, log scale) over the 90-day window.
+    Espresso and Polkadot costs are near-zero (placeholder fee and coretime byproduct, respectively), while NEAR commands the highest cost among active fee markets.}
+    \label{fig:cross_cost}
+\end{figure}
+
+\subsubsection{Cumulative Data Volume}
+
+Figure~\ref{fig:cross_cumulative} shows cumulative data volume over the 90-day window.
+Polkadot dominates at $\sim$340~TiB (upper bound), followed by NEAR at $\sim$833~GiB, Ethereum at $\sim$392~GiB, and Celestia at $\sim$200~GiB.
+Espresso and Avail trail at $<$50~GiB each.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\columnwidth]{figures/cross_cumulative.png}
+    \caption{Cumulative DA volume (GiB, log scale) over the 90-day observation window.
+    Polkadot's upper-bound volume dwarfs all other protocols; NEAR ranks second despite its low utilization.}
+    \label{fig:cross_cumulative}
+\end{figure}
+
+\subsubsection{Capacity--Cost Landscape}
+
+Figure~\ref{fig:capacity_cost} summarizes the DA landscape in a single scatter chart: each protocol is plotted by its maximum throughput (x-axis, log) against p50 cost (y-axis, log), with bubble size proportional to mean utilization.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\columnwidth]{figures/cross_capacity_vs_cost.png}
+    \caption{DA protocol landscape: maximum throughput vs.\ p50 cost, with bubble size indicating mean utilization.
+    No simple inverse relationship exists between capacity and cost; protocols cluster by design philosophy rather than along a single efficiency frontier.}
+    \label{fig:capacity_cost}
+\end{figure}
+
+\subsubsection{Encoding Overhead}
+
+Figure~\ref{fig:encoding_overhead} compares per-byte overhead across protocols, showing the trade-off between encoding redundancy and proof system sophistication.
+DAS-based protocols (Celestia, Avail, Ethereum) require 2--4$\times$ encoding redundancy, while validator-recovery protocols (NEAR) transmit data at 1$\times$.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\columnwidth]{figures/cross_encoding_overhead.png}
+    \caption{Per-byte overhead: encoding redundancy factor and proof size per sample.
+    Higher encoding rates (Celestia~4$\times$, Polkadot~3$\times$) use simpler proofs, while lower rates (Ethereum, Avail~2$\times$) use algebraically richer KZG commitments.}
+    \label{fig:encoding_overhead}
+\end{figure}
+
+\subsubsection{Retention-Adjusted Cost}
+
+Figure~\ref{fig:retention_cost} illustrates the dramatic impact of retention window on effective cost.
+Short-retention protocols that appear inexpensive at spot rates become costly when annualized, while long-retention protocols benefit from low repost multipliers.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\columnwidth]{figures/cross_retention_adjusted_cost.png}
+    \caption{Retention-adjusted DA cost: spot p50 (\$/MiB) vs.\ annualized (\$/MiB/yr).
+    NEAR's high spot cost combined with short retention yields the highest annualized cost.
+    Avail's 85-minute retention amplifies its modest spot cost by 6{,}176$\times$.
+    Polkadot's negligible spot cost remains negligible even after annualization.}
+    \label{fig:retention_cost}
+\end{figure}

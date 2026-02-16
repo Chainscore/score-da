@@ -42,22 +42,6 @@ RUN uv pip install --system -r pyproject.toml
 COPY protocol/espresso/*.py .
 
 # ============================================
-# Near Protocol Setup
-# ============================================
-FROM python-base as near-python
-
-WORKDIR /app/protocol/near
-
-# Copy Python dependencies
-COPY protocol/near/pyproject.toml .
-
-# Install Python dependencies using uv
-RUN uv pip install --system -r pyproject.toml
-
-# Copy Python scripts
-COPY protocol/near/*.py .
-
-# ============================================
 # Celestia Protocol Setup
 # ============================================
 FROM python-base as celestia-python
@@ -134,7 +118,6 @@ COPY protocol /app/protocol
 # Install all Python dependencies
 RUN cd /app/protocol/avail && uv pip install --system -r pyproject.toml && \
     cd /app/protocol/espresso && uv pip install --system -r pyproject.toml && \
-    cd /app/protocol/near && uv pip install --system -r pyproject.toml && \
     cd /app/protocol/celestia && uv pip install --system -r pyproject.toml
 
 # Install all Node.js dependencies

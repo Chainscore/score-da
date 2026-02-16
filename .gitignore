@@ -51,6 +51,6 @@ Thumbs.db
 *.fls
 # *.pdf
 
-grant.md
-reports/
+# grant.md
+# reports/
 .claude

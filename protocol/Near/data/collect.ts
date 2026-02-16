@@ -624,34 +624,65 @@ async function fetchNearPrices90d(): Promise<PricePoint[]> {
 // CSV I/O
 // ---------------------------------------------------------------------------
 
-async function loadExistingBlocks(): Promise<Row[]> {
+/**
+ * Scan existing CSV files and return only the set of block heights present,
+ * without loading full row data into memory. This avoids OOM when existing
+ * data is large (e.g. 13M rows / ~1GB CSV).
+ */
+async function scanExistingHeights(): Promise<Set<number>> {
   const dataDir = path.join(OUTPUT_DIR, "blocks");
+  const heights = new Set<number>();
   try {
     const files = (await readdir(dataDir)).filter((f) => f.endsWith(".csv")).sort();
-    const allRows: Row[] = [];
+    for (const file of files) {
+      const text = await readFile(path.join(dataDir, file), "utf-8");
+      const lines = text.trim().split("\n").slice(1);
+      for (const line of lines) {
+        if (!line.trim()) continue;
+        const comma = line.indexOf(",");
+        if (comma > 0) heights.add(parseInt(line.slice(0, comma)));
+      }
+    }
+  } catch {}
+  return heights;
+}
+
+/**
+ * Load rows from existing CSV files, filtered to a specific block range.
+ * Only files whose date-based name could contain blocks in the range are read.
+ */
+async function loadExistingBlocksInRange(
+  startHeight: number,
+  endHeight: number
+): Promise<Row[]> {
+  const dataDir = path.join(OUTPUT_DIR, "blocks");
+  const rows: Row[] = [];
+  try {
+    const files = (await readdir(dataDir)).filter((f) => f.endsWith(".csv")).sort();
     for (const file of files) {
       const text = await readFile(path.join(dataDir, file), "utf-8");
       const lines = text.trim().split("\n").slice(1);
       for (const line of lines) {
         if (!line.trim()) continue;
         const [bh, ts, ns, teb, tgu, tgl, cp, gp, btm] = line.split(",");
-        allRows.push({
-          block_height: parseInt(bh),
-          timestamp_ms: parseInt(ts),
-          num_shards: parseInt(ns),
-          total_encoded_bytes: parseInt(teb),
-          total_gas_used: parseInt(tgu),
-          total_gas_limit: parseInt(tgl),
-          chunks_produced: parseInt(cp),
-          gas_price: gp,
-          block_time_ms: parseInt(btm),
-        });
+        const h = parseInt(bh);
+        if (h >= startHeight && h <= endHeight) {
+          rows.push({
+            block_height: h,
+            timestamp_ms: parseInt(ts),
+            num_shards: parseInt(ns),
+            total_encoded_bytes: parseInt(teb),
+            total_gas_used: parseInt(tgu),
+            total_gas_limit: parseInt(tgl),
+            chunks_produced: parseInt(cp),
+            gas_price: gp,
+            block_time_ms: parseInt(btm),
+          });
+        }
       }
     }
-    return allRows;
-  } catch {
-    return [];
-  }
+  } catch {}
+  return rows;
 }
 
 function computeBlockTimes(rows: Row[]): void {
@@ -779,12 +810,10 @@ async function main(): Promise<void> {
     `Gas: ${gasConfig.per_mib_near.toFixed(6)} NEAR/MiB  (${gasConfig.per_mib_gas.toLocaleString("en-US")} gas/MiB)\n`
   );
 
-  // ---- Load existing data for incremental collection ----
-  const existingRows = await loadExistingBlocks();
-  const existingHeights = new Set(existingRows.map((r) => r.block_height));
-  if (existingRows.length > 0) {
-    const maxH = Math.max(...existingRows.map((r) => r.block_height));
-    console.log(`Existing data: ${existingRows.length} rows (up to block ${maxH})`);
+  // ---- Scan existing heights (lightweight — reads only first CSV column) ----
+  const existingHeights = await scanExistingHeights();
+  if (existingHeights.size > 0) {
+    console.log(`Existing data: ${existingHeights.size.toLocaleString()} blocks on disk`);
   }
 
   // ---- Determine which blocks we still need ----
@@ -795,10 +824,8 @@ async function main(): Promise<void> {
     }
   }
 
-  // Filter existing rows to only those within our target range
-  const allRows: Row[] = existingRows.filter(
-    (r) => r.block_height >= startHeight && r.block_height <= endHeight
-  );
+  // Load only existing rows within the target range (not all historical data)
+  const allRows: Row[] = await loadExistingBlocksInRange(startHeight, endHeight);
 
   if (neededHeights.length === 0) {
     console.log(`All ${totalBlocks.toLocaleString()} blocks already collected!\n`);

@@ -1,23 +1,39 @@
 version: '3.8'
 
 services:
+  # === Data Collection ===
+  # Usage: docker compose run --rm collect <protocol> [options]
+  # Examples:
+  #   docker compose run --rm collect celestia --days 1
+  #   docker compose run --rm collect near --blocks 5000
+  #   docker compose run --rm collect all --days 1
+  collect:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: da-research-collect
+    volumes:
+      - ./protocol:/app/protocol
+    environment:
+      - PYTHONUNBUFFERED=1
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-}
+      - GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS:-}
+
+  # === Interactive shell ===
   da-research:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: da-research-protocols
     volumes:
-      # Mount protocol directories for development
       - ./protocol:/app/protocol
-      # Mount environment files if needed
-      - ./protocol/Avail/.env:/app/protocol/Avail/.env:ro
-      - ./protocol/Polkadot/.env:/app/protocol/Polkadot/.env:ro
     environment:
       - PYTHONUNBUFFERED=1
     working_dir: /app
     stdin_open: true
     tty: true
-    command: /bin/bash
+    entrypoint: /bin/bash
 
   # Individual protocol services (optional)
   avail:
@@ -26,13 +42,13 @@ services:
       dockerfile: Dockerfile
     container_name: da-research-avail
     volumes:
-      - ./protocol/Avail:/app/protocol/Avail
-    working_dir: /app/protocol/Avail
+      - ./protocol/avail:/app/protocol/avail
+    working_dir: /app/protocol/avail
     environment:
       - PYTHONUNBUFFERED=1
     stdin_open: true
     tty: true
-    command: /bin/bash
+    entrypoint: /bin/bash
 
   espresso:
     build:
@@ -40,13 +56,13 @@ services:
       dockerfile: Dockerfile
     container_name: da-research-espresso
     volumes:
-      - ./protocol/Espresso:/app/protocol/Espresso
-    working_dir: /app/protocol/Espresso
+      - ./protocol/espresso:/app/protocol/espresso
+    working_dir: /app/protocol/espresso
     environment:
       - PYTHONUNBUFFERED=1
     stdin_open: true
     tty: true
-    command: /bin/bash
+    entrypoint: /bin/bash
 
   near:
     build:
@@ -54,13 +70,15 @@ services:
       dockerfile: Dockerfile
     container_name: da-research-near
     volumes:
-      - ./protocol/Near:/app/protocol/Near
-    working_dir: /app/protocol/Near
+      - ./protocol/near:/app/protocol/near
+    working_dir: /app/protocol/near
     environment:
       - PYTHONUNBUFFERED=1
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-}
     stdin_open: true
     tty: true
-    command: /bin/bash
+    entrypoint: /bin/bash
 
   polkadot:
     build:
@@ -68,13 +86,13 @@ services:
       dockerfile: Dockerfile
     container_name: da-research-polkadot
     volumes:
-      - ./protocol/Polkadot:/app/protocol/Polkadot
-    working_dir: /app/protocol/Polkadot
+      - ./protocol/polkadot:/app/protocol/polkadot
+    working_dir: /app/protocol/polkadot
     environment:
       - PYTHONUNBUFFERED=1
     stdin_open: true
     tty: true
-    command: /bin/bash
+    entrypoint: /bin/bash
 
   celestia:
     build:
@@ -82,10 +100,25 @@ services:
       dockerfile: Dockerfile
     container_name: da-research-celestia
     volumes:
-      - ./protocol/Celestia:/app/protocol/Celestia
-    working_dir: /app/protocol/Celestia
+      - ./protocol/celestia:/app/protocol/celestia
+    working_dir: /app/protocol/celestia
     environment:
       - PYTHONUNBUFFERED=1
     stdin_open: true
     tty: true
-    command: /bin/bash
+    entrypoint: /bin/bash
+
+  ethereum:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: da-research-ethereum
+    volumes:
+      - ./protocol/ethereum:/app/protocol/ethereum
+    working_dir: /app/protocol/ethereum
+    environment:
+      - PYTHONUNBUFFERED=1
+      - GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS:-}
+    stdin_open: true
+    tty: true
+    entrypoint: /bin/bash
