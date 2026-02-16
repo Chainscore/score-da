@@ -42,8 +42,8 @@ services:
       dockerfile: Dockerfile
     container_name: da-research-avail
     volumes:
-      - ./protocol/avail:/app/protocol/avail
-    working_dir: /app/protocol/avail
+      - ./protocol/Avail:/app/protocol/Avail
+    working_dir: /app/protocol/Avail
     environment:
       - PYTHONUNBUFFERED=1
     stdin_open: true
@@ -56,8 +56,8 @@ services:
       dockerfile: Dockerfile
     container_name: da-research-espresso
     volumes:
-      - ./protocol/espresso:/app/protocol/espresso
-    working_dir: /app/protocol/espresso
+      - ./protocol/Espresso:/app/protocol/Espresso
+    working_dir: /app/protocol/Espresso
     environment:
       - PYTHONUNBUFFERED=1
     stdin_open: true
@@ -70,8 +70,8 @@ services:
       dockerfile: Dockerfile
     container_name: da-research-near
     volumes:
-      - ./protocol/near:/app/protocol/near
-    working_dir: /app/protocol/near
+      - ./protocol/Near:/app/protocol/Near
+    working_dir: /app/protocol/Near
     environment:
       - PYTHONUNBUFFERED=1
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-}
@@ -86,8 +86,8 @@ services:
       dockerfile: Dockerfile
     container_name: da-research-polkadot
     volumes:
-      - ./protocol/polkadot:/app/protocol/polkadot
-    working_dir: /app/protocol/polkadot
+      - ./protocol/Polkadot:/app/protocol/Polkadot
+    working_dir: /app/protocol/Polkadot
     environment:
       - PYTHONUNBUFFERED=1
     stdin_open: true
@@ -100,8 +100,8 @@ services:
       dockerfile: Dockerfile
     container_name: da-research-celestia
     volumes:
-      - ./protocol/celestia:/app/protocol/celestia
-    working_dir: /app/protocol/celestia
+      - ./protocol/Celestia:/app/protocol/Celestia
+    working_dir: /app/protocol/Celestia
     environment:
       - PYTHONUNBUFFERED=1
     stdin_open: true
@@ -114,8 +114,8 @@ services:
       dockerfile: Dockerfile
     container_name: da-research-ethereum
     volumes:
-      - ./protocol/ethereum:/app/protocol/ethereum
-    working_dir: /app/protocol/ethereum
+      - ./protocol/Ethereum:/app/protocol/Ethereum
+    working_dir: /app/protocol/Ethereum
     environment:
       - PYTHONUNBUFFERED=1
       - GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS:-}

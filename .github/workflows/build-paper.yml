@@ -37,7 +37,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ steps.tag.outputs.tag }}
-          release_name: Research Paper - ${{ steps.tag.outputs.tag }}
+          release_name: Comparative Study of Data Availability Schemes in Various Blockchains - ${{ steps.tag.outputs.tag }}
           body: |
             Automated release of research paper PDF
             

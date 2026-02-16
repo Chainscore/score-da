@@ -46,26 +46,26 @@ EOF
 
 proto_dir() {
   case "$1" in
-    celestia)            echo /app/protocol/celestia ;;
-    espresso)            echo /app/protocol/espresso ;;
-    avail)               echo /app/protocol/avail ;;
-    near)                echo /app/protocol/near ;;
-    ethereum)            echo /app/protocol/ethereum ;;
-    polkadot-throughput) echo /app/protocol/polkadot ;;
-    polkadot-cost)       echo /app/protocol/polkadot ;;
-    polkadot)            echo /app/protocol/polkadot ;;
+    celestia)            echo /app/protocol/Celestia ;;
+    espresso)            echo /app/protocol/Espresso ;;
+    avail)               echo /app/protocol/Avail ;;
+    near)                echo /app/protocol/Near ;;
+    ethereum)            echo /app/protocol/Ethereum ;;
+    polkadot-throughput) echo /app/protocol/Polkadot ;;
+    polkadot-cost)       echo /app/protocol/Polkadot ;;
+    polkadot)            echo /app/protocol/Polkadot ;;
   esac
 }
 
 # ── Collect commands ──────────────────────────────────────────────────────────
 
-collect_celestia()            { cd /app/protocol/celestia && python3 data/collect.py "$@"; }
-collect_espresso()            { cd /app/protocol/espresso && python3 data/collect.py "$@"; }
-collect_avail()               { cd /app/protocol/avail    && npx tsx data/collect.ts "$@"; }
-collect_near()                { cd /app/protocol/near     && npx tsx data/collect.ts "$@"; }
-collect_ethereum()            { cd /app/protocol/ethereum && npx tsx data/collect.ts "$@"; }
-collect_polkadot_throughput() { cd /app/protocol/polkadot && npx tsx data/throughput/collect.ts "$@"; }
-collect_polkadot_cost()       { cd /app/protocol/polkadot && npx tsx data/cost/collect.ts "$@"; }
+collect_celestia()            { cd /app/protocol/Celestia && python3 data/collect.py "$@"; }
+collect_espresso()            { cd /app/protocol/Espresso && python3 data/collect.py "$@"; }
+collect_avail()               { cd /app/protocol/Avail    && npx tsx data/collect.ts "$@"; }
+collect_near()                { cd /app/protocol/Near     && npx tsx data/collect.ts "$@"; }
+collect_ethereum()            { cd /app/protocol/Ethereum && npx tsx data/collect.ts "$@"; }
+collect_polkadot_throughput() { cd /app/protocol/Polkadot && npx tsx data/throughput/collect.ts "$@"; }
+collect_polkadot_cost()       { cd /app/protocol/Polkadot && npx tsx data/cost/collect.ts "$@"; }
 
 # ── Transform commands (all Python, no extra args) ────────────────────────────
 

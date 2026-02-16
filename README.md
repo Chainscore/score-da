@@ -7,20 +7,34 @@ Empirical throughput and cost analysis of Data Availability protocols.
 ```
 da-rsrch/
 ├── protocol/           # Per-protocol data collection and analysis
-│   ├── ethereum/       # EIP-4844 blobs (BigQuery + TypeScript collector)
-│   ├── espresso/       # Tiramisu DA (Python collector)
-│   ├── celestia/       # Celenium API (Python collector)
-│   ├── avail/          # Substrate RPC (TypeScript collector)
-│   ├── near/           # NEAR Lake S3 + RPC (TypeScript collector)
-│   ├── polkadot/       # Relay chain + Coretime (TypeScript collector)
+│   ├── Ethereum/       # EIP-4844 blobs (BigQuery + TypeScript collector)
+│   ├── Espresso/       # Tiramisu DA (Python collector)
+│   ├── Celestia/       # Celenium API (Python collector)
+│   ├── Avail/          # Substrate RPC (TypeScript collector)
+│   ├── Near/           # NEAR Lake S3 + RPC (TypeScript collector)
+│   ├── Polkadot/       # Relay chain + Coretime (TypeScript collector)
 │   └── shared/         # Common Python utilities (transform + plot helpers)
 ├── paper-latex/        # IEEE paper (LaTeX)
-├── dashboard/          # Next.js benchmarking dashboard
 ├── Dockerfile
-└── docker-compose.yml
+├── docker-compose.yml
+├── LICENSE             # Apache 2.0 (code)
+└── LICENSE-DATA        # CC BY 4.0 (data & documentation)
 ```
 
 See each subdirectory's README for setup and usage.
+
+## Dune Dashboards
+
+| Protocol | Dashboard |
+|----------|-----------|
+| Polkadot | [dune.com/prasad_chainscore/polkadot-da-analysis](https://dune.com/prasad_chainscore/polkadot-da-analysis) |
+| Ethereum | [dune.com/prasad_chainscore/ethereum-da-analysis](https://dune.com/prasad_chainscore/ethereum-da-analysis) |
+| Celestia | [dune.com/prasad_chainscore/celestia-da-analysis](https://dune.com/prasad_chainscore/celestia-da-analysis) |
+| Espresso | [dune.com/prasad_chainscore/espresso-tiramisu-da](https://dune.com/prasad_chainscore/espresso-tiramisu-da) |
+| NEAR | [dune.com/prasad_chainscore/near-da-analysis](https://dune.com/prasad_chainscore/near-da-analysis) |
+| Avail | [dune.com/prasad_chainscore/avail-da-analysis](https://dune.com/prasad_chainscore/avail-da-analysis) |
+
+SQL queries powering these dashboards are in each protocol's `queries/` directory.
 
 ## Data Pipeline (Docker)
 

@@ -21,8 +21,13 @@
   "license": "MIT",
   "type": "module",
   "dependencies": {
+    "@polkadot/keyring": "13.5.9",
+    "@polkadot/util": "13.5.9",
+    "@polkadot/util-crypto": "13.5.9",
     "avail-js-sdk": "^0.4.2",
-    "dotenv": "^17.2.1"
+    "dotenv": "^17.2.1",
+    "node-fetch": "^3.3.2",
+    "p-limit": "^7.2.0"
   },
   "devDependencies": {
     "tsx": "^4.0.0"

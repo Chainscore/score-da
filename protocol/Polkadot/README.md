@@ -34,7 +34,9 @@ npm run cost
 npm run cost -- --ondemand-blocks 5000
 ```
 
-## Dune Dashboards
+## Dune Dashboard
+
+[dune.com/prasad_chainscore/polkadot-da-analysis](https://dune.com/prasad_chainscore/polkadot-da-analysis)
 
 Collected data is uploaded to Dune under the `dune.prasad_chainscorelabs` namespace.
 
@@ -60,15 +62,25 @@ Queries in `queries/`:
 | #1536 | 2025-04-29 | Cores 62->66 |
 | #1629 | 2025-07-09 | Cores 66->100 |
 
+## Transform & Plot
+
+```bash
+# Aggregate throughput/blocks/ + cost/ data → daily.csv + hourly.csv
+python3 data/transform.py
+
+# Generate figures from daily.csv → analysis/out/*.png
+python3 analysis/plot.py
+```
+
 ## Structure
 
 ```
 Polkadot/
 ├── data/
+│   ├── transform.py        # throughput + cost data → daily.csv + hourly.csv
 │   ├── throughput/
 │   │   ├── collect.ts
 │   │   ├── chain_config.json
-│   │   ├── collect.log
 │   │   └── blocks/          # per-day CSVs
 │   └── cost/
 │       ├── collect.ts
@@ -82,7 +94,11 @@ Polkadot/
 ├── queries/
 │   ├── polkadot-daily.sql
 │   └── polkadot-hourly.sql
-├── analysis/                 # Dune screenshots
+├── analysis/
+│   ├── plot.py              # daily.csv → out/*.png
+│   ├── daily.csv
+│   ├── hourly.csv
+│   └── out/                 # generated figures (PNG + SVG)
 ├── package.json
 └── README.md
 ```

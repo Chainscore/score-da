@@ -42,8 +42,7 @@
 \maketitle
 
 \begin{abstract}
-Data availability (DA) is a critical bottleneck in blockchain scalability, yet no empirical cross-protocol comparison exists using production network data.
-This paper presents the first comprehensive benchmarking study of six DA protocols (Polkadot ELVES, Ethereum EIP-4844/PeerDAS, Celestia, Espresso Tiramisu, NEAR, and Avail) using 90 days of mainnet data (November 2025--February 2026).
+Data Availability (DA) is a critical bottleneck in blockchain scalability, this paper presents a comprehensive benchmarking study of six DA protocols (Polkadot ELVES, Ethereum EIP-4844/PeerDAS, Celestia, Espresso Tiramisu, NEAR, and Avail) using 90 days of mainnet data (November 2025--February 2026).
 We introduce a taxonomy that classifies DA architectures along three paradigms: Data Availability Sampling (DAS), Verifiable Information Dispersal (VID), and validator-set recovery.
 Our empirical analysis measures throughput (MiB/s), cost (\$/MiB), utilization, and block dynamics across all six protocols under a unified methodology.
 Key findings include: (i) all protocols operate well below saturation ($<$50\% utilization), making current measurements demand-constrained rather than supply-constrained; (ii) DA costs span seven orders of magnitude across protocols, from nano-dollars (Espresso) to cents per MiB (Celestia); (iii) no protocol implements slashing for pure data withholding, with enforcement remaining indirect across all designs; and (iv) DA is universally treated as temporary, with retention windows ranging from 85~minutes to 18~days.

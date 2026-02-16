@@ -1,0 +1,40 @@
+{
+  "blockRange": {
+    "start": 10438543,
+    "end": 10438593,
+    "count": 50,
+    "fetchedRows": 51
+  },
+  "config": {
+    "maxBlockSize": 1000000,
+    "baseFee": 1,
+    "feeContract": "0x9fce21c3f7600aa63392a5f5713986b39bb98884",
+    "avgBlockTimeMs": 1816.3,
+    "medianBlockTimeMs": 1000,
+    "protocolMaxMibps": 0.9537
+  },
+  "milestones": [
+    {
+      "label": "Cappuccino testnet",
+      "date": "2024-05-01",
+      "note": "VID (Savoiardi) integration"
+    },
+    {
+      "label": "Decaf testnet",
+      "date": "2024-09-01",
+      "note": "Larger operator set"
+    },
+    {
+      "label": "Mainnet 0 launch",
+      "date": "2024-11-01",
+      "note": "Initial permissioned mainnet"
+    },
+    {
+      "label": "PoS testnet (Decaf)",
+      "date": "2025-04-01",
+      "note": "v1 API + PoS support"
+    }
+  ],
+  "collectedAt": "2026-02-16T16:54:37.321962+00:00",
+  "baseUrl": "https://query.main.net.espresso.network"
+}

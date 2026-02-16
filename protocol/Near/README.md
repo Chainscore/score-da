@@ -12,7 +12,7 @@
 Single collector (`data/collect.ts`) fetches per-block DA metrics and NEAR/USD prices. Auto-selects NEAR Lake S3 for large collections (>50K blocks) or RPC for smaller ones.
 
 ```bash
-cd protocol/near
+cd protocol/Near
 npm install
 
 # Collect last day (RPC)
@@ -27,26 +27,42 @@ npx tsx data/collect.ts --source lake --days 90 --concurrency 200
 
 Incremental — re-run to resume from where it left off.
 
-## Dune Upload
+## Dune Dashboard
+
+[dune.com/prasad_chainscore/near-da-analysis](https://dune.com/prasad_chainscore/near-da-analysis)
 
 Block and price CSVs are uploaded to Dune as:
 - `dune.prasadkumkar.near_blocks` — all CSVs from `data/blocks/`
 - `dune.prasadkumkar.near_prices` — `data/prices.csv`
 
+## Transform & Plot
+
+```bash
+# Aggregate blocks/ + prices.csv → daily.csv + hourly.csv
+python3 data/transform.py
+
+# Generate figures from daily.csv → analysis/out/*.png
+python3 analysis/plot.py
+```
+
 ## Structure
 
 ```
-near/
+Near/
 ├── data/
 │   ├── collect.ts          # unified collector
+│   ├── transform.py        # blocks/ + prices → daily.csv + hourly.csv
 │   ├── chain_config.json
 │   ├── prices.csv
-│   ├── collect.log
 │   └── blocks/             # per-day CSVs
 ├── queries/
 │   ├── near-daily.sql      # Dune: daily aggregation
 │   └── near-hourly.sql     # Dune: hourly aggregation
-├── analysis/               # Dune screenshots (future)
+├── analysis/
+│   ├── plot.py             # daily.csv → out/*.png
+│   ├── daily.csv
+│   ├── hourly.csv
+│   └── out/                # generated figures (PNG + SVG)
 ├── package.json
-└── research.md
+└── README.md
 ```

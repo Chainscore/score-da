@@ -25,6 +25,20 @@ python3 data/collect_prices.py [--days 90]
 
 Block collection is resumable — re-run the same command to pick up where it left off.
 
+## Transform & Plot
+
+```bash
+# Aggregate blocks/ + prices.csv → daily.csv + hourly.csv
+python3 data/transform.py
+
+# Generate figures from daily.csv → analysis/out/*.png
+python3 analysis/plot.py
+```
+
+## Dune Dashboard
+
+[dune.com/prasad_chainscore/espresso-tiramisu-da](https://dune.com/prasad_chainscore/espresso-tiramisu-da)
+
 ## Structure
 
 ```
@@ -32,16 +46,20 @@ Espresso/
 ├── data/
 │   ├── collect.py           # block collector (Espresso explorer API)
 │   ├── collect_prices.py    # ETH/USD price collector (CoinGecko)
+│   ├── transform.py         # blocks/ + prices → daily.csv + hourly.csv
 │   ├── chain_config.json
 │   ├── prices.csv
 │   └── blocks/              # per-day CSVs
 ├── queries/                 # Dune SQL queries
 │   ├── espresso-daily.sql
 │   └── espresso-hourly.sql
-├── analysis/                # Dune chart screenshots
-├── collect.log
+├── analysis/
+│   ├── plot.py              # daily.csv → out/*.png
+│   ├── daily.csv
+│   ├── hourly.csv
+│   └── out/                 # generated figures (PNG + SVG)
 ├── pyproject.toml
-└── research.md
+└── README.md
 ```
 
 ## Cost Model

@@ -11,7 +11,7 @@
 Connects to Avail mainnet RPC (WSS) via `avail-js-sdk`. Extracts `submitData` extrinsic bytes and `TransactionFeePaid` events per block. Prices from CoinGecko.
 
 ```bash
-cd protocol/avail
+cd protocol/Avail
 npm install
 
 # Last 1000 blocks (~30s)
@@ -26,20 +26,39 @@ npx tsx data/collect.ts --prices-only
 
 Rotates across 7 public RPC endpoints on failure. `--days` mode skips existing day-files on re-run.
 
+## Transform & Plot
+
+```bash
+# Aggregate blocks/ + prices.csv → daily.csv + hourly.csv
+python3 data/transform.py
+
+# Generate figures from daily.csv → analysis/out/*.png
+python3 analysis/plot.py
+```
+
+## Dune Dashboard
+
+[dune.com/prasad_chainscore/avail-da-analysis](https://dune.com/prasad_chainscore/avail-da-analysis)
+
 ## Structure
 
 ```
-avail/
+Avail/
 ├── data/
 │   ├── collect.ts          # block + price collector (RPC + CoinGecko)
+│   ├── transform.py        # blocks/ + prices → daily.csv + hourly.csv
 │   ├── chain_config.json
 │   ├── prices.csv
 │   └── blocks/             # per-day CSVs
 ├── queries/                # Dune SQL queries
 │   ├── avail-daily.sql
 │   └── avail-hourly.sql
-├── analysis/               # Dune chart screenshots
+├── analysis/
+│   ├── plot.py             # daily.csv → out/*.png
+│   ├── daily.csv
+│   ├── hourly.csv
+│   └── out/                # generated figures (PNG + SVG)
 ├── package.json
 ├── pyproject.toml
-└── research.md
+└── README.md
 ```

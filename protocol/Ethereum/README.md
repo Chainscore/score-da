@@ -46,7 +46,9 @@ npm run collect:all
 npx tsx data/collect.ts --start-date 2024-03-13 --end-date 2025-01-01
 ```
 
-## Dune Dashboards
+## Dune Dashboard
+
+[dune.com/prasad_chainscore/ethereum-da-analysis](https://dune.com/prasad_chainscore/ethereum-da-analysis)
 
 Collected data is uploaded to Dune under the `dune.prasad_chainscorelabs` namespace.
 
@@ -63,12 +65,23 @@ Queries in `queries/`:
 - **cost-quantile-bands-viz.sql** — daily cost p10/p50/p90 bands, VWAP, time-at-floor
 - **cost-summary-stats.sql** — summary statistics by era (p50/p90/p99/ES99)
 
+## Transform & Plot
+
+```bash
+# Aggregate blocks/ + eth_prices.csv → daily.csv + hourly.csv
+python3 data/transform.py
+
+# Generate figures from daily.csv → analysis/out/*.png
+python3 analysis/plot.py
+```
+
 ## Structure
 
 ```
 Ethereum/
 ├── data/
 │   ├── collect.ts          # BigQuery + CoinGecko collector
+│   ├── transform.py        # blocks/ + prices → daily.csv + hourly.csv
 │   ├── chain_config.json   # fork params + collection metadata
 │   ├── eth_prices.csv      # ETH/USD daily prices
 │   └── blocks/             # per-day CSVs
@@ -79,7 +92,11 @@ Ethereum/
 │   ├── cost-analysis-fork-aware.sql
 │   ├── cost-quantile-bands-viz.sql
 │   └── cost-summary-stats.sql
-├── analysis/               # Dune chart screenshots
+├── analysis/
+│   ├── plot.py             # daily.csv → out/*.png
+│   ├── daily.csv
+│   ├── hourly.csv
+│   └── out/                # generated figures (PNG + SVG)
 ├── package.json
 └── README.md
 ```

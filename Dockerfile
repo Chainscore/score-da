@@ -14,48 +14,48 @@ WORKDIR /app
 # ============================================
 FROM python-base as avail-python
 
-WORKDIR /app/protocol/avail
+WORKDIR /app/protocol/Avail
 
 # Copy Python dependencies
-COPY protocol/avail/pyproject.toml .
+COPY protocol/Avail/pyproject.toml .
 
 # Install Python dependencies using uv
 RUN uv pip install --system -r pyproject.toml
 
 # Copy Python scripts
-COPY protocol/avail/*.py .
+COPY protocol/Avail/*.py .
 
 # ============================================
 # Espresso Protocol Setup
 # ============================================
 FROM python-base as espresso-python
 
-WORKDIR /app/protocol/espresso
+WORKDIR /app/protocol/Espresso
 
 # Copy Python dependencies
-COPY protocol/espresso/pyproject.toml .
+COPY protocol/Espresso/pyproject.toml .
 
 # Install Python dependencies using uv
 RUN uv pip install --system -r pyproject.toml
 
 # Copy Python scripts
-COPY protocol/espresso/*.py .
+COPY protocol/Espresso/*.py .
 
 # ============================================
 # Celestia Protocol Setup
 # ============================================
 FROM python-base as celestia-python
 
-WORKDIR /app/protocol/celestia
+WORKDIR /app/protocol/Celestia
 
 # Copy Python dependencies
-COPY protocol/celestia/pyproject.toml .
+COPY protocol/Celestia/pyproject.toml .
 
 # Install Python dependencies using uv
 RUN uv pip install --system -r pyproject.toml
 
 # Copy any Python scripts (if they exist)
-COPY protocol/celestia/*.py . 2>/dev/null || true
+COPY protocol/Celestia/*.py . 2>/dev/null || true
 
 # ============================================
 # Node.js Base Setup
@@ -69,32 +69,32 @@ WORKDIR /app
 # ============================================
 FROM node-base as avail-node
 
-WORKDIR /app/protocol/avail
+WORKDIR /app/protocol/Avail
 
 # Copy package files
-COPY protocol/avail/package*.json .
+COPY protocol/Avail/package*.json .
 
 # Install dependencies
 RUN npm install
 
 # Copy JavaScript files
-COPY protocol/avail/*.js .
+COPY protocol/Avail/*.js .
 
 # ============================================
 # Polkadot Node.js Setup
 # ============================================
 FROM node-base as polkadot-node
 
-WORKDIR /app/protocol/polkadot
+WORKDIR /app/protocol/Polkadot
 
 # Copy package files
-COPY protocol/polkadot/package*.json .
+COPY protocol/Polkadot/package*.json .
 
 # Install dependencies
 RUN npm install
 
 # Copy JavaScript files
-COPY protocol/polkadot/*.js .
+COPY protocol/Polkadot/*.js .
 
 # ============================================
 # Final Multi-Protocol Image
@@ -116,15 +116,15 @@ WORKDIR /app
 COPY protocol /app/protocol
 
 # Install all Python dependencies
-RUN cd /app/protocol/avail && uv pip install --system -r pyproject.toml && \
-    cd /app/protocol/espresso && uv pip install --system -r pyproject.toml && \
-    cd /app/protocol/celestia && uv pip install --system -r pyproject.toml
+RUN cd /app/protocol/Avail && uv pip install --system -r pyproject.toml && \
+    cd /app/protocol/Espresso && uv pip install --system -r pyproject.toml && \
+    cd /app/protocol/Celestia && uv pip install --system -r pyproject.toml
 
 # Install all Node.js dependencies
-RUN cd /app/protocol/avail && npm install && \
-    cd /app/protocol/near && npm install && \
-    cd /app/protocol/polkadot && npm install && \
-    cd /app/protocol/ethereum && npm install
+RUN cd /app/protocol/Avail && npm install && \
+    cd /app/protocol/Near && npm install && \
+    cd /app/protocol/Polkadot && npm install && \
+    cd /app/protocol/Ethereum && npm install
 
 # Copy entrypoint script
 COPY collect.sh /app/collect.sh

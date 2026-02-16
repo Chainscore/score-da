@@ -39,20 +39,38 @@ python3 data/collect.py --days 90 --resume
 python3 data/collect.py --prices-only
 ```
 
+## Transform & Plot
+
+```bash
+# Aggregate blocks/ + prices.csv → daily.csv + hourly.csv
+python3 data/transform.py
+
+# Generate figures from daily.csv → analysis/out/*.png
+python3 analysis/plot.py
+```
+
+## Dune Dashboard
+
+[dune.com/prasad_chainscore/celestia-da-analysis](https://dune.com/prasad_chainscore/celestia-da-analysis)
+
 ## Structure
 
 ```
 Celestia/
 ├── data/
 │   ├── collect.py          # block + price collector (Celenium + CoinGecko)
+│   ├── transform.py        # blocks/ + prices → daily.csv + hourly.csv
 │   ├── chain_config.json
 │   ├── prices.csv
 │   └── blocks/             # per-day CSVs (~14K rows/day)
 ├── queries/                # Dune SQL queries
 │   ├── celestia-daily.sql
 │   └── celestia-hourly.sql
-├── analysis/               # Dune chart screenshots
-├── collect.log
+├── analysis/
+│   ├── plot.py             # daily.csv → out/*.png
+│   ├── daily.csv
+│   ├── hourly.csv
+│   └── out/                # generated figures (PNG + SVG)
 ├── pyproject.toml
-└── research.md
+└── README.md
 ```
