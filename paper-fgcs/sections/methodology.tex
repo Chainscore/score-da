@@ -1,0 +1,164 @@
+% ================================================================
+% SECTION IV: METHODOLOGY
+% ================================================================
+
+This section details our data collection framework, metric definitions, normalization approach, and reproducibility provisions.
+
+\subsection{Data Collection Framework}
+\label{sec:meth-collection}
+
+We collect per-block production data from six DA protocols over a 90-day observation window (November~15, 2025 through February~14, 2026).
+For each protocol, we develop custom collection scripts that interface with mainnet RPC endpoints or explorer APIs, extracting block-level metrics at the granularity needed for throughput and cost analysis.
+All collectors are resumable: interrupted runs checkpoint progress in per-day CSV files and resume from the last collected block.
+
+Table~\ref{tab:collection_summary} summarizes the data sources, block counts, and collection methods for each protocol.
+
+\begin{table*}[t]
+\centering
+\caption{Data Collection Summary Across Six DA Protocols (90-Day Window)}
+\label{tab:collection_summary}
+\setlength{\tabcolsep}{3pt}
+\footnotesize
+\begin{tabular}{llrlll}
+\toprule
+\textbf{Protocol} & \textbf{Source} & \textbf{Blocks} & \textbf{Key Fields} & \textbf{Language} & \textbf{Price Source} \\
+\midrule
+Polkadot & Relay chain RPC & $\sim$1.3M & candidates backed/included, bitfields, core index & TypeScript & CoinGecko (DOT) \\
+Ethereum & Execution + Beacon RPC & $\sim$648K & blob\_gas\_used, excess\_blob\_gas, blob count & Python/SQL & CoinGecko (ETH) \\
+Celestia & Celenium API & $\sim$1.3M & blobs\_size, square\_size, fill\_rate, fee\_utia & Python & CoinGecko (TIA) \\
+Espresso & Query-service API & $\sim$2.9M & size\_bytes, num\_transactions, block\_time\_ms & Python & CoinGecko (ETH) \\
+NEAR & NEAR Lake S3 + RPC & $\sim$7.8M & total\_encoded\_bytes, gas\_used, gas\_price & TypeScript & CoinGecko (NEAR) \\
+Avail & Substrate RPC & $\sim$389K & submit\_data\_bytes, block\_fee\_plancks & TypeScript & CoinGecko (AVAIL) \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+For each protocol, the collector captures the following:
+
+\paragraph{Polkadot}
+We scan relay chain blocks via the Polkadot.js RPC API, extracting three event types per block: \texttt{paraInclusion.CandidateBacked}, \texttt{paraInclusion.CandidateIncluded}, and \texttt{paraInclusion.CandidateTimedOut}.
+We also parse the \texttt{paraInherent.enter} extrinsic to extract signed availability bitfield counts and per-core availability fractions.
+Throughput is computed as an upper bound: $\text{included} \times \text{maxPovBytes} / \text{cadence}$, since the relay chain does not expose actual PoV sizes (only commitments).
+Cost data is collected separately from the Coretime chain, scanning \texttt{broker.Purchased}, \texttt{broker.Renewed}, and \texttt{broker.SaleInitialized} events, as well as relay chain \texttt{onDemand.OnDemandOrderPlaced} events.
+
+\paragraph{Ethereum}
+We collect per-block header fields (\texttt{blob\_gas\_used}, \texttt{excess\_blob\_gas}) from execution-layer RPC endpoints across the full 90-day window, which spans four regimes: Pectra (target~6, max~9), Fusaka (same blob parameters, plus PeerDAS and the EIP-7918 fee floor, from block 23{,}935{,}694 on December~3, 2025), BPO1 (target~10, max~15, from block 23{,}975{,}778 on December~9), and BPO2 (target~14, max~21, from block 24{,}179{,}383 on January~7, 2026). Era boundaries are the first blocks at or after each fork's activation slot.
+The blob base fee is computed from the header's \texttt{excess\_blob\_gas} using the EIP-4844 exponential pricing formula with the update fraction of the active era.
+ETH/USD prices are sampled hourly from CoinGecko.
+
+\paragraph{Celestia}
+Block data is retrieved from the Celenium indexer API, which provides 22 columns per block including \texttt{blobs\_size}, \texttt{blobs\_count}, \texttt{square\_size}, \texttt{fill\_rate}, and \texttt{fee\_utia}.
+The window spans app version~5 and version~6 (from 24~November 2025), and a maximum-square increase from 128 to 256 (8 to 32~MiB) on 3~December 2025; we compute capacity with the maximum in force on each day.
+
+\paragraph{Espresso}
+We fetch all blocks from the Espresso query-service explorer API using binary search to locate the start height and 20 concurrent workers fetching 100 blocks per page ($\sim$1,630~blocks/s collection rate).
+Each block record contains \texttt{size\_bytes}, \texttt{num\_transactions}, and \texttt{block\_time\_ms}.
+Since HotShot uses responsive consensus, block times are variable (no fixed cadence).
+The base fee has been verified as 1~wei/byte since genesis across headers from height~1K to~10.3M.
+
+\paragraph{NEAR}
+We employ a dual-source strategy: NEAR Lake S3 for bulk historical collection ($\sim$275~blocks/s at concurrency~100) and NEAR RPC as fallback ($\sim$2.5~blocks/s).
+Per-block fields include \texttt{num\_shards}, \texttt{total\_encoded\_bytes} (sum of chunk encoded lengths), \texttt{total\_gas\_used}, and \texttt{gas\_price}.
+
+\paragraph{Avail}
+The collector uses the Polkadot.js API (Avail is Substrate-based) to extract \texttt{submit\_data\_bytes}, \texttt{submit\_data\_count}, and \texttt{block\_fee\_plancks} (from \texttt{TransactionFeePaid} events) per block.
+Runtime version (\texttt{spec\_version}) is tracked to account for parameter changes.
+
+\subsection{Metric Definitions}
+\label{sec:meth-metrics}
+
+We define four primary metric categories, applied consistently across all protocols.
+
+\subsubsection{Throughput (MiB/s)}
+
+We distinguish three throughput measures:
+
+\begin{itemize}
+    \item \textbf{Protocol maximum}: the theoretical ceiling given current parameters.
+    Protocol-specific formulas:
+    \begin{align}
+        T_{\max}^{\text{Polkadot}} &= \frac{\text{effective\_cores} \times \text{max\_pov}}{\text{cadence}} \label{eq:tmax-polkadot} \\
+        T_{\max}^{\text{Ethereum}} &= \frac{\text{max\_blobs} \times 128\text{ KiB}}{\text{slot\_time}} \label{eq:tmax-ethereum} \\
+        T_{\max}^{\text{Celestia}} &= \frac{\text{max\_data\_bytes}}{\text{avg\_block\_time}} \label{eq:tmax-celestia}
+    \end{align}
+    where effective\_cores $= \min(\text{num\_cores}, \lfloor\text{validators}/5\rfloor)$ and cadence is 6s (async backing) for Polkadot.
+
+    \item \textbf{Observed throughput}: measured from production data as
+    \begin{equation}
+        T_{\text{obs}} = \frac{\sum \text{payload\_bytes}}{\Delta t \times 2^{20}} \quad \text{(MiB/s)}
+    \end{equation}
+    aggregated at hourly and daily granularity.
+
+    \item \textbf{Utilization}: $U = T_{\text{obs}} / T_{\max}$, representing the fraction of available DA capacity in use.
+\end{itemize}
+
+\subsubsection{Cost (\$/MiB)}
+
+Cost normalization requires care, as protocols use fundamentally different pricing models:
+
+\begin{itemize}
+    \item \textbf{Per-byte fee markets} (Celestia, Espresso, Avail): cost is directly computable from on-chain fee data and token prices.
+    \begin{equation}
+        \text{cost\_per\_MiB} = \text{fee\_per\_byte} \times 2^{20} \times \text{token\_USD}
+    \end{equation}
+
+    \item \textbf{Blob gas market} (Ethereum): cost follows EIP-4844 exponential pricing:
+    \begin{equation}
+        \text{cost\_per\_MiB} = \frac{\text{blobBaseFee}_{\text{gwei}} \times 2^{20}}{10^{9}} \times \text{ETH\_USD}
+    \end{equation}
+
+    \item \textbf{Coretime pricing} (Polkadot): DA is bundled with execution capacity. We compute:
+    \begin{equation}
+        \text{cost\_per\_MiB} = \frac{\text{coretime\_price\_DOT} \times \text{DOT\_USD}}{\text{max\_MiB\_per\_region}}
+    \end{equation}
+    for bulk coretime, and $\text{fee\_paid} / \text{max\_pov\_MiB}$ for on-demand.
+    This yields a \emph{best-case} cost assuming full PoV utilization every block.
+
+    \item \textbf{Gas + storage staking} (NEAR): upload cost is gas-based (burned); state storage requires locking 1~NEAR per 100~KB. Rollup DA blobs avoid state costs by using function call inputs (pruned).
+\end{itemize}
+
+We report spot cost at percentiles (p50, p90, p99) and volume-weighted average price (VWAP) over the 90-day window.
+
+\subsubsection{Annualized Cost}
+
+Since DA is universally temporary (all protocols prune data), continuous availability requires periodic reposting.
+We define:
+\begin{equation}
+    \text{cost\_per\_MiB\_year} = \text{cost\_per\_MiB} \times \frac{365}{\text{retention\_days}}
+\end{equation}
+This normalization applies only where the protocol defines a retention window (Polkadot 25~h, NEAR $\sim$1.5~d, Celestia 7~d sampling window, Ethereum $\sim$18~d); Avail and Espresso leave retention to node operators, so we report their spot cost only.
+
+\subsubsection{Block Dynamics}
+
+We measure block time distributions (p10, p50, p90), block size distributions, and empty block rates.
+For protocols with variable block times (Espresso's responsive HotShot consensus), we report the empirical distribution rather than a fixed value.
+
+\subsection{Normalization and Comparability}
+\label{sec:meth-normalization}
+
+Several methodological challenges arise from comparing heterogeneous protocols:
+
+\begin{enumerate}
+    \item \textbf{Demand-constrained measurements}: all six protocols operate well below their theoretical capacity during our observation window ($<$50\% utilization). Observed throughput therefore reflects \emph{demand}, not protocol capability. We report both observed and maximum throughput and emphasize that empirical results characterize current usage patterns, not protocol limits.
+
+    \item \textbf{Token price volatility}: USD-denominated costs are sensitive to token prices, which fluctuated during our window (e.g., ETH ranged \$2,000--\$4,000; TIA ranged \$0.30--\$0.85). We use contemporaneous hourly prices from CoinGecko rather than fixed spot rates, and report VWAP alongside percentile distributions.
+
+    \item \textbf{Apples-to-oranges pricing}: Polkadot prices blockspace (coretime), not bytes. Ethereum prices blob gas. Celestia and Espresso price per byte. We normalize all to \$/MiB but note that Polkadot's cost includes execution capacity (not just DA), making its per-MiB figure a lower bound on pure DA cost.
+
+    \item \textbf{Upper-bound throughput for Polkadot}: the relay chain does not expose actual PoV sizes on-chain (only commitments). Our throughput measurement uses $\text{included\_candidates} \times \text{max\_pov\_size}$, which is an upper bound. Actual throughput is lower since real parachains typically use 1--3~MiB per candidate.
+
+    \item \textbf{Protocol upgrades within window}: Ethereum underwent three upgrades (Fusaka, BPO1, BPO2) and Celestia transitioned eras during our observation period. We segment analysis by protocol era where applicable and treat these transitions as natural experiments (Section~\ref{sec:results-upgrades}).
+
+    \item \textbf{Throughput measurement conventions}: Two definitional choices affect comparability with other sources (e.g., L2Beat).
+    First, for Ethereum we report protocol maximum throughput using the \emph{absolute maximum} blob count per block (21 under BPO2), whereas some trackers use the EIP-4844 \emph{target} blob count (14 under BPO2), below which fees trend toward zero. Both are valid: the target represents the fee-market equilibrium, while the absolute maximum represents the hard protocol ceiling.
+    Second, for Celestia we measure \emph{user data throughput} (the original data square, ODS), not the full 2D Reed--Solomon encoded square. The extended square is $4\times$ larger (a $k{\times}k$ ODS becomes $2k{\times}2k$ after encoding), so sources that report total encoded bandwidth will show approximately $4\times$ our figures. We report user data throughput because it reflects the amount of application-level data that can be posted per unit time.
+\end{enumerate}
+
+\subsection{Reproducibility}
+\label{sec:meth-reproducibility}
+
+All collection scripts, raw datasets, analysis notebooks, and generated figures are published in a public repository under Apache~2.0 (code) and CC~BY~4.0 (data) licenses.
+Docker environments encapsulate dependencies for each collector.
+Per-protocol \texttt{chain\_config.json} files record exact protocol parameters, governance milestones, and era boundaries active during collection.
+Analysis is implemented in Python (pandas, matplotlib); scripts regenerate all figures and tables from the raw CSV data.
+Additionally, interactive dashboards are published for real-time exploration of the collected data.

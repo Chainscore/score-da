@@ -1,0 +1,7 @@
+Author biographies (max 100 words each; submit with a passport-style photo per author as a separate file)
+
+Prasad Kumkar
+[Role] at Chainscore Labs, Pune, India. [Education.] [Research interests: e.g. blockchain scalability, data availability, distributed systems measurement.] [Notable prior work / projects.]
+
+Pranjal Sarode
+[Role] at Chainscore Labs, Pune, India. [Education.] [Research interests.] [Notable prior work / projects.]

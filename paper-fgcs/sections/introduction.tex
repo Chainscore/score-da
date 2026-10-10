@@ -1,0 +1,33 @@
+% ================================================================
+% SECTION I: INTRODUCTION
+% ================================================================
+
+Blockchain scalability hinges on a deceptively simple requirement: every participant must be confident that block data has been published and is retrievable.
+This property, known as \emph{data availability} (DA), underpins the security of rollups, parachains, and sharded architectures alike.
+Without DA guarantees, validators cannot verify state transitions, light clients cannot detect fraud, and the trust model of the entire system collapses to that of a permissioned committee~\cite{Saif_Survey_DA_Rollups}.
+
+The past three years have witnessed a proliferation of DA solutions.
+Ethereum introduced blob-carrying transactions (EIP-4844) and, with the Fusaka upgrade in December 2025, activated PeerDAS for cell-level sampling~\cite{EIP-4844, EIP-7594}.
+Celestia launched the first dedicated DA network with two-dimensional erasure coding and namespace-filtered sampling~\cite{AlBassam_LazyLedger}.
+Polkadot's ELVES protocol distributes erasure-coded parachain data across its validator set with approval-gated finality~\cite{Jeff_Burdges_ELVES}.
+Espresso's Tiramisu introduces a three-layer Verifiable Information Dispersal (VID) architecture that explicitly rejects DAS in favor of algebraic dispersal proofs~\cite{Espresso:Hotshot_and_Triamisu}.
+NEAR provides sharding-based DA through Nightshade with a rollup-oriented blob store~\cite{NEAR_Nightshade_Scaling_Blockchain}, and Avail combines KZG polynomial commitments with DAS-enabled light clients on a Substrate-based chain~\cite{Avail_The_DA_Blockchain}.
+
+Despite this activity, the field lacks an empirical, cross-protocol comparison grounded in production data.
+Existing comparisons are qualitative surveys~\cite{Saif_Survey_DA_Rollups, Thibault2022Rollups}, vendor-authored, or measurements of a single protocol~\cite{Heimbach2025BlobFee, Lee2025BlobSharing}.
+No study has simultaneously measured throughput, cost, and utilization across multiple DA networks under a unified methodology.
+This gap is consequential: rollup developers choosing a DA backend, protocol designers evaluating trade-offs, and researchers assessing the state of the art all lack a common empirical baseline.
+
+This paper fills that gap. Our contributions are:
+
+\begin{enumerate}
+    \item \textbf{A taxonomy of DA architectures} that classifies protocols along three paradigms (Data Availability Sampling, Verifiable Information Dispersal, and validator-set recovery) and along orthogonal dimensions of encoding scheme and commitment type (Section~\ref{sec:background}).
+
+    \item \textbf{A qualitative architecture comparison} of encoding redundancy, commitment schemes (KZG vs.\ NMT vs.\ Merkle), and verification mechanisms across all six protocols, grounded in protocol specifications and documentation (Section~\ref{sec:architecture}).
+
+    \item \textbf{An empirical benchmarking study} using 90~days of production mainnet data (November 2025--February 2026) across Polkadot, Ethereum, Celestia, Espresso, NEAR, and Avail, measuring throughput (MiB/s), cost (\$/MiB), utilization (\%), and block dynamics under consistent definitions (Section~\ref{sec:results}).
+
+    \item \textbf{A comparative security analysis} of trust assumptions, Byzantine fault tolerance thresholds, data withholding enforcement, and retention policies across all six protocols (Section~\ref{sec:security}).
+
+    \item \textbf{Open-source tooling and datasets}: all data collection scripts, raw datasets, and analysis notebooks are released under Apache~2.0 (code) and CC~BY~4.0 (data) licenses to enable reproducibility and longitudinal extension.
+\end{enumerate}

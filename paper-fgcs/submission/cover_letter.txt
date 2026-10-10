@@ -1,0 +1,34 @@
+[Date]
+
+To the Editor-in-Chief
+Future Generation Computer Systems
+
+Dear Editor,
+
+We submit our manuscript "Blockchain Data Availability: Benchmarking Throughput, Economics, Utilization, and Security of Six Production Protocols" for consideration as a Full Length Article in Future Generation Computer Systems.
+
+Data availability (DA) layers are now core infrastructure for blockchain scaling. Rollups and parachains depend on them, yet the community has no common empirical baseline for choosing between designs. Our paper provides one. We collected 90 days of block-level mainnet data (November 2025 to February 2026, over 14 million blocks) from six production DA protocols: Polkadot, Ethereum (EIP-4844 and PeerDAS), Celestia, Espresso, NEAR and Avail. We compare their throughput, cost, utilization and security under a single methodology.
+
+The main contributions are:
+- A taxonomy of DA architectures, organized around three verification paradigms (sampling, verifiable dispersal and validator-set recovery), with a comparison of their encodings and commitments.
+- A cross-protocol measurement study. Every protocol's mean utilization is below 40%. Median costs span more than eight orders of magnitude. Protocol-defined retention (25 hours to 18 days) reorders the cost ranking once costs are annualized.
+- A natural experiment on Ethereum's blob market across the Fusaka (PeerDAS) upgrade and two blob-parameter-only forks. It shows that the fee floor was lifted by EIP-7918 rather than by demand following capacity increases. A comparable capacity increase on Celestia preceded its largest demand surge, which was absorbed without a fee response.
+- A security comparison showing that no production protocol slashes for pure data withholding.
+- Open-source collection and analysis tooling and datasets (Apache 2.0 / CC BY 4.0), archived on Zenodo [DOI].
+
+The work fits the journal's scope on distributed systems infrastructure, monitoring tools, protocols, and scaling and performance. It should interest readers working on blockchain systems, distributed storage and large-scale infrastructure measurement.
+
+This manuscript has not been published and is not under consideration elsewhere. [If posted: A preprint is available at arXiv:XXXX.XXXXX.] All authors have approved the submission. The work was funded by a Web3 Foundation grant. The authors are employed by Chainscore Labs, which develops software in the Polkadot ecosystem; this is declared in the manuscript. All data and code are public so the results can be independently reproduced.
+
+Suggested reviewers (optional):
+[Name, affiliation, email, expertise]
+[Name, affiliation, email, expertise]
+[Name, affiliation, email, expertise]
+
+Thank you for considering our manuscript.
+
+Sincerely,
+Prasad Kumkar (corresponding author)
+Chainscore Labs, Pune, India
+prasad@chainscorelabs.com
+ORCID: https://orcid.org/0009-0007-4742-9153

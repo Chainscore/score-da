@@ -1,0 +1,125 @@
+% ================================================================
+% SECTION VI: SECURITY AND TRUST ANALYSIS
+% ================================================================
+
+This section analyzes the security properties and trust assumptions of each DA protocol, focusing on Byzantine fault tolerance, data withholding enforcement, retention guarantees, and decentralization characteristics.
+
+\subsection{Byzantine Fault Tolerance}
+\label{sec:security-bft}
+
+All six protocols inherit the classical BFT bound of $f < n/3$, where $f$ is the number of Byzantine-faulty nodes and $n$ is the total committee or validator set size.
+However, the practical manifestation of this threshold varies substantially.
+
+\paragraph{Polkadot}
+Polkadot's relay chain requires $\geq 2/3$ of validators to sign availability bitfields before a parachain block can be included and finalized.
+With approximately 600~active validators, the system tolerates up to $\sim$200 Byzantine faults.
+The ELVES protocol further strengthens this through approval checking: randomly selected validators re-execute parachain blocks post-inclusion, and a single invalid execution triggers a dispute that can slash the responsible validators~\cite{Jeff_Burdges_ELVES}.
+The probability of an invalid block escaping detection decreases exponentially with the number of approval checkers.
+
+\paragraph{Ethereum}
+Ethereum's Casper FFG requires a $2/3$ supermajority of validators (by stake weight) to finalize blocks.
+With approximately 1~million active validators, the economic security backing finality exceeds \$30~billion (at ETH $\sim$\$3,000).
+PeerDAS distributes custody across the validator set: each validator holds a subset of blob columns, and system-level availability confidence emerges from the aggregate custody distribution~\cite{EIP-7594}.
+The large validator set makes coordinated withholding attacks economically prohibitive.
+
+\paragraph{Celestia}
+Celestia runs CometBFT (Tendermint) consensus, which requires $\geq 2/3$ of validators (by stake weight) to commit each block.
+The validator set is capped at 100 in the current configuration.
+DAS provides an additional layer of security: even if validators finalize a block with unavailable data, light client sampling will probabilistically detect the withholding~\cite{AlBassam_FraudDA}.
+This two-layer model (consensus BFT + sampling) provides stronger guarantees than consensus alone, at the cost of requiring sufficient light client participation.
+
+\paragraph{Espresso}
+Espresso's HotShot consensus operates with 100~nodes across 20~operators in the Mainnet~0 configuration.
+The DA certificate requires $\geq 2/3$ of committee signatures, tolerating up to $\sim$33 Byzantine nodes.
+However, the small operator count (20) means that the effective trust assumption is closer to $f < 7$ at the operator level~\cite{Espresso:Hotshot_and_Triamisu}.
+
+\paragraph{NEAR}
+NEAR's Nightshade sharding applies the BFT threshold per shard.
+With 9~shards and approximately 400~validators, the per-shard committee size depends on stake distribution.
+A critical assumption is that each shard independently maintains $< 1/3$ Byzantine nodes; an adversary who concentrates stake in a single shard can potentially compromise that shard's DA at lower total cost than compromising the network-wide threshold~\cite{NEAR_Nightshade_Scaling_Blockchain}.
+In practice, however, most mainnet validators currently track all shards rather than only their assigned shard, which means the per-shard BFT assumption is more theoretical than operational: DA benefits from full-network replication even though the protocol is designed for shard-local storage.
+
+\paragraph{Avail}
+Avail's BABE/GRANDPA consensus requires $\geq 2/3$ honest validators for both block production and finality.
+DAS light clients provide independent verification, analogous to Celestia's model.
+The VectorX bridge to Ethereum introduces an additional trust surface: bridge liveness depends on the prover infrastructure, and the approximately 2-hour bridge delay creates a window during which Avail-native finality and Ethereum-bridged attestations may diverge~\cite{Avail_The_DA_Blockchain}.
+
+Table~\ref{tab:bft_comparison} summarizes the BFT characteristics across protocols.
+
+\begin{table*}[t]
+\centering
+\caption{Byzantine Fault Tolerance and Validator Set Characteristics}
+\label{tab:bft_comparison}
+\setlength{\tabcolsep}{3pt}
+\footnotesize
+\begin{tabular}{lccccc}
+\toprule
+\textbf{Protocol} & \textbf{BFT Threshold} & \textbf{Validator Count} & \textbf{Consensus} & \textbf{Finality} & \textbf{Stake} \\
+\midrule
+Polkadot & $f < n/3$ & $\sim$600 & BABE + GRANDPA & 12--60\,s & $\sim$1.8M DOT min \\
+Ethereum & $f < n/3$ (stake) & $\sim$1M & Casper FFG & $\sim$12.8\,min & 32 ETH per validator \\
+Celestia & $f < n/3$ (stake) & $\sim$100 & CometBFT & Single-slot ($\sim$6\,s) & Variable \\
+Espresso & $f < n/3$ & 100 (20 operators) & HotShot & $\sim$1--2\,s & None (permissioned) \\
+NEAR & $f < n/3$ per shard & $\sim$400 & Nightshade & $\sim$2\,s & Seat-price auction \\
+Avail & $f < n/3$ & $\sim$100 & BABE + GRANDPA & 20--60\,s & Variable \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\subsection{Data Withholding Enforcement}
+\label{sec:security-withholding}
+
+As established in Section~\ref{subsec:verification}, no protocol implements slashing specifically for data withholding.
+Here we analyze the indirect enforcement mechanisms and their practical effectiveness.
+
+Detection is sampling-based for Celestia, Avail and Ethereum (missing responses to random samples), attestation-based for Polkadot and NEAR (a missing bitfield or chunk endorsement is visible on-chain, but only validator-level withholding is detected), and certificate-based for Espresso (a missing DA certificate blocks finalization).
+
+\paragraph{Enforcement gap}
+The fundamental challenge across all protocols is the \emph{attribution gap}: detecting that data is unavailable does not identify the responsible party.
+A validator that fails to serve a chunk may be offline, network-partitioned, or maliciously withholding, and the protocol cannot distinguish these cases.
+This attribution difficulty explains why no protocol has implemented withholding-specific slashing: the false positive rate (slashing honest nodes experiencing network issues) would be unacceptable.
+
+\subsection{Retention and Persistence}
+\label{sec:security-retention}
+
+No protocol guarantees permanent availability (Table~\ref{tab:feature_comparison}). Four define a window: Polkadot's availability store keeps finalized chunks for 25~hours, NEAR garbage-collects after 5~epochs ($\sim$1.5~days), Celestia light nodes sample within 7~days (CIP-036), and Ethereum serves blobs for 4{,}096~epochs ($\sim$18~days). Avail and Espresso define no network-wide expiry: Avail nodes keep block data by default and Espresso nodes choose their own pruning policy, so availability beyond the latest blocks rests on operators rather than the protocol.
+This variation has critical implications for rollup security:
+
+\begin{itemize}
+    \item \textbf{Fraud proof windows}: Optimistic rollups require a challenge period (typically 7~days) during which fraud proofs can be submitted; the DA layer must retain data at least as long as the challenge period. Polkadot (25~h) and NEAR ($\sim$1.5~d) retain data for less than the standard 7-day fraud-proof window, and Celestia's 7-day sampling window leaves no margin, so rollups must archive data externally or shorten challenge periods; on Avail and Espresso, retention depends on node configuration.
+
+    \item \textbf{Bridging latency}: Cross-chain bridges that verify DA attestations must complete verification within the retention window. Avail's VectorX bridge to Ethereum has an approximately 2-hour attestation delay, during which Avail-native finality and Ethereum-side attestations diverge.
+
+    \item \textbf{Archival burden}: After DA expiry, data persistence shifts to voluntary archival by full nodes, third-party indexers, or rollup operators themselves. No protocol guarantees post-retention data retrievability.
+\end{itemize}
+
+\subsection{Trust Assumptions Summary}
+\label{sec:security-trust}
+
+Table~\ref{tab:trust_summary} maps each protocol's key trust assumptions.
+
+\begin{table*}[t]
+\centering
+\caption{Trust Assumption Comparison Across DA Protocols}
+\label{tab:trust_summary}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.2}
+\footnotesize
+\begin{tabular}{p{1.4cm}p{4.9cm}p{4.9cm}p{4.9cm}}
+\toprule
+\textbf{Protocol} & \textbf{Availability Assumption} & \textbf{Encoding Trust} & \textbf{Additional Assumptions} \\
+\midrule
+Polkadot & $\geq 2/3$ validators honest (bitfield voting) & Validators re-encode and verify (approval checking) & Relay chain liveness \\
+Ethereum & $\geq 2/3$ validators honest (Casper FFG) + sufficient custody distribution & KZG algebraic verification (no fraud proofs needed) & Trusted setup integrity (KZG ceremony) \\
+Celestia & $\geq 2/3$ validators honest + sufficient DAS participation & BEFPs from $\geq 1$ honest full node & $\geq 1$ non-eclipsed honest full node \\
+Espresso & $\geq 2/3$ committee signs DA certificate & KZG + vector commitment algebraic verification & Committee honesty; CDN liveness \\
+NEAR & $< 1/3$ Byzantine per shard & Chunk producers re-encode & Honest shard assignment; no stake concentration \\
+Avail & $\geq 2/3$ validators honest + DAS participation & KZG algebraic verification & Trusted setup integrity; VectorX bridge liveness \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+The trust models fall into three categories.
+\emph{DAS-enhanced protocols} (Celestia, Avail, Ethereum) provide the strongest light client guarantees but require active network participation in sampling.
+\emph{Validator-recovery protocols} (Polkadot, NEAR) provide deterministic guarantees conditioned on validator honesty but offer no independent light client verification.
+\emph{VID-based protocols} (Espresso) provide algebraic guarantees against bribery but depend on committee and fallback infrastructure availability.
