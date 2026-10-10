@@ -1,4 +1,4 @@
-[Date]
+10 October 2026
 
 To the Editor-in-Chief
 Future Generation Computer Systems
@@ -18,12 +18,7 @@ The main contributions are:
 
 The work fits the journal's scope on distributed systems infrastructure, monitoring tools, protocols, and scaling and performance. It should interest readers working on blockchain systems, distributed storage and large-scale infrastructure measurement.
 
-This manuscript has not been published and is not under consideration elsewhere. [If posted: A preprint is available at arXiv:XXXX.XXXXX.] All authors have approved the submission. The work was funded by a Web3 Foundation grant. The authors are employed by Chainscore Labs, which develops software in the Polkadot ecosystem; this is declared in the manuscript. All data and code are public so the results can be independently reproduced.
-
-Suggested reviewers (optional):
-[Name, affiliation, email, expertise]
-[Name, affiliation, email, expertise]
-[Name, affiliation, email, expertise]
+This manuscript has not been published and is not under consideration elsewhere. All authors have approved the submission. The work was funded by a Web3 Foundation grant. The authors are employed by Chainscore Labs, which develops software in the Polkadot ecosystem, and hold ETH and DOT tokens; both are declared in the manuscript. All data and code are public so the results can be independently reproduced.
 
 Thank you for considering our manuscript.
 

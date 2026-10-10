@@ -1,0 +1,7 @@
+Author biographies
+
+Prasad Kumkar
+Prasad Kumkar is the CEO of Chainscore Labs, Pune, India, and leads the company's research and engineering on blockchain infrastructure, including an implementation of the JAM protocol for the Polkadot ecosystem. Research interests include blockchain scalability, data availability, and the empirical measurement of distributed systems.
+
+Pranjal Sarode
+Pranjal Sarode is a software development engineer at Chainscore Labs, Pune, India, working on blockchain infrastructure and data tooling, and built and validated data-collection pipelines for this study. Interests include distributed systems and blockchain data engineering.
