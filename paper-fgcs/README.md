@@ -5,7 +5,7 @@ This folder holds the version of the paper for *Future Generation Computer Syste
 - **Format:** elsarticle 5p double-column. It compiles to **18 pages including references**, exactly the journal's hard limit.
 - **Build:** `pdflatex main && bibtex main && pdflatex main && pdflatex main`
   - `elsarticle.cls` and `elsarticle-num.bst` are bundled here, so any free TeX install (MacTeX, TeX Live) or a free Overleaf account can build it with nothing extra to install.
-- **CHECK markers:** all `[CHECK]` markers are resolved. The last open item is the Zenodo DOI placeholder `ZENODO_DOI`, which is filled in once the release is archived.
+- **CHECK markers:** all `[CHECK]` markers are resolved. The Zenodo concept DOI is `10.5281/zenodo.23276229` (release v1.0.0).
 
 ## Publishing at zero cost
 
@@ -90,7 +90,7 @@ FGCS_COMPACT=1 python3 shared/cross_protocol_fgcs.py
 
 ## Submission checklist
 
-- [ ] Archive on Zenodo:
+- [x] Archive on Zenodo (concept DOI 10.5281/zenodo.23276229):
   1. Sign in to Zenodo with GitHub.
   2. Turn on `Chainscore/score-da`.
   3. Publish GitHub release `v1.0.0`.
