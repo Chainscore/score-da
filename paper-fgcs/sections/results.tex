@@ -3,8 +3,6 @@
 % Ethereum figures recomputed with corrected era boundaries and $/MiB units)
 % ================================================================
 
-This section presents our findings from 90~days of production data, organized by metric.
-
 \subsection{Observation Window and Protocol Eras}
 \label{sec:results-eras}
 
@@ -71,12 +69,13 @@ Avail & 0.21 & $\sim$0.001 & $\sim$0.002 & $<$1\% \\
 \raggedright\footnotesize{$^\dagger$Upper bound: assumes max PoV size per included candidate. Ethereum and Celestia utilization is against the maximum in force on each day.}
 \end{table}
 
-Key observations:
-\begin{enumerate}
-    \item \textbf{Universal under-utilization.} No protocol's mean utilization exceeds 40\%. Polkadot is stable at $\sim$25--27\% ($\sim$26 of 100 cores engaged per day). Ethereum has the highest sustained utilization: $\sim$60\% under Pectra and Fusaka, falling to $\sim$31\% after BPO1 and $\sim$23\% after BPO2 as capacity grew faster than demand. Celestia runs at $\le$1\% in steady state, NEAR at $\sim$0.18\% despite $\sim$9~GiB/day of payload, and Espresso and Avail at a few percent at most.
-    \item \textbf{Demand, not supply.} Because all protocols are demand-constrained, observed throughput reflects ecosystem adoption rather than engineering limits; raw MiB/s comparisons measure market share, not capability.
-    \item \textbf{NEAR's volume paradox.} NEAR has the lowest utilization but the second-highest volume ($\sim$833~GiB over the window, after Polkadot's upper-bound $\sim$340~TiB; Ethereum $\sim$392~GiB; Celestia $\sim$200~GiB), because its $\sim$59~MiB/s capacity across 9~shards far exceeds demand.
-\end{enumerate}
+No protocol's mean utilization exceeds 40\%.
+Ethereum's is the highest: $\sim$60\% under Pectra and Fusaka, falling to $\sim$31\% after BPO1 and $\sim$23\% after BPO2 as capacity grew faster than demand.
+Polkadot is stable at $\sim$25--27\%, with $\sim$26 of 100 cores engaged per day.
+Celestia runs at $\le$1\% in steady state, and Espresso and Avail at a few percent at most.
+With spare capacity everywhere, observed MiB/s shows how much each network is used and says little about what it could carry.
+NEAR has the lowest utilization ($\sim$0.18\%) yet the second-highest volume: $\sim$833~GiB over the window, against Polkadot's upper-bound $\sim$340~TiB, Ethereum's $\sim$392~GiB and Celestia's $\sim$200~GiB.
+It carried $\sim$9~GiB of payload a day, but its $\sim$59~MiB/s capacity across 9~shards is far larger.
 
 \subsection{Cost Analysis}
 \label{sec:results-cost}
@@ -145,15 +144,16 @@ Avail & 0.0096 & 0.032 & 1.05 & 0.0074 & Fee+modifier \\
 \raggedright\footnotesize{$^\ast$Sparse: 14 of 94 days had bulk coretime purchases; amortized over max PoV capacity. Quantiles are over the distribution of daily median costs in the window for every protocol; VWAP is total DA spend divided by total DA volume.}
 \end{table}
 
-Key findings:
-\begin{enumerate}
-    \item \textbf{More than eight orders of magnitude.} Median DA cost ranges from $\sim$\$3$\times$10$^{-9}$/MiB (Espresso) to $\sim$\$0.53/MiB (NEAR). The range reflects different economic designs, not only protocol efficiency.
-    \item \textbf{Espresso's cost is not an economic signal.} The fee has been fixed at 1~wei/byte since genesis, so its curve mirrors ETH/USD (falling from $\sim$\$3.5$\times$10$^{-9}$ to $\sim$\$2$\times$10$^{-9}$ as ETH fell). This is a permissioned Mainnet~0 artifact, not a fee market.
-    \item \textbf{Ethereum's floor exit is driven by EIP-7918, not by BPO demand.} Before Fusaka the blob base fee sat at the 1-wei floor for $\sim$28\% of blocks and the median cost was $\sim$\$4$\times$10$^{-9}$/MiB. From the first post-Fusaka day the floor share drops to zero and median cost jumps six orders of magnitude to $\sim$\$0.009/MiB, before BPO1 adds any capacity (Section~\ref{sec:results-upgrades}).
-    \item \textbf{Avail has the widest spread.} Its median (\$0.0096/MiB) is comparable to Celestia's, but its p99 reaches $\sim$\$1.05 during brief activity surges around December~4 and late December, suggesting the fee modifier amplifies volatility even at low throughput.
-    \item \textbf{NEAR has the highest meaningful cost}, declining from $\sim$\$0.75 to $\sim$\$0.30/MiB over the window, reflecting gas pricing applied to encoded receipt data.
-    \item \textbf{Polkadot's cost is sparse but negligible}, because coretime bundles execution and DA; the DA component is effectively a by-product of core acquisition.
-\end{enumerate}
+Median DA cost spans more than eight orders of magnitude, from $\sim$\$3$\times$10$^{-9}$/MiB on Espresso to $\sim$\$0.53/MiB on NEAR, and much of that range comes from differences in economic design.
+Espresso's fee has been fixed at 1~wei/byte since genesis, so its cost follows ETH/USD, falling from $\sim$\$3.5$\times$10$^{-9}$ to $\sim$\$2$\times$10$^{-9}$ as ETH fell; in the permissioned Mainnet~0 it is a placeholder and carries no information about demand.
+
+Before Fusaka, Ethereum's blob base fee sat at the 1-wei floor on $\sim$28\% of blocks and the median cost was $\sim$\$4$\times$10$^{-9}$/MiB.
+From the first day after Fusaka no block is at the floor and the median rises six orders of magnitude to $\sim$\$0.009/MiB.
+BPO1 had not yet added capacity at that point, so the change comes from EIP-7918 (Section~\ref{sec:results-upgrades}).
+
+Avail's median (\$0.0096/MiB) is close to Celestia's, but its p99 reaches $\sim$\$1.05 during brief activity surges around December~4 and in late December, which suggests that its fee modifier amplifies volatility even at low throughput.
+NEAR's cost fell from $\sim$\$0.75 to $\sim$\$0.30/MiB over the window and is the highest among the active fee markets, because general gas pricing is applied to encoded receipt data.
+Polkadot's cost is observed on few days and is negligible, because coretime pays for execution and DA together.
 
 \subsubsection{Retention-Adjusted Cost}
 Table~\ref{tab:annualized_cost} and Fig.~\ref{fig:landscape}(b) normalize cost by retention (Section~\ref{sec:meth-metrics}).
@@ -191,7 +191,7 @@ Avail and Espresso define no protocol-level expiry, so their cost cannot be annu
         \includegraphics[width=\textwidth]{cross_retention_adjusted_cost.pdf}
         \caption{Spot vs.\ annualized cost}
     \end{subfigure}
-    \caption{DA protocol landscape. Protocols cluster by design philosophy rather than along a single capacity--cost frontier, and retention reorders the cost ranking.}
+    \caption{Capacity, cost and retention. Protocols do not lie on a single capacity--cost frontier, and retention reorders the cost ranking.}
     \label{fig:landscape}
 \end{figure*}
 
@@ -200,12 +200,12 @@ Avail and Espresso define no protocol-level expiry, so their cost cannot be annu
 
 \subsubsection{Ethereum: Pectra $\rightarrow$ Fusaka $\rightarrow$ BPO1 $\rightarrow$ BPO2}
 
-Fig.~\ref{fig:eth} separates the effect of Ethereum's three upgrades.
-\squishlist
-    \item \textbf{Fusaka (fee floor).} Under Pectra the blob fee was at the 1-wei minimum for 5--68\% of blocks per day. Fusaka's EIP-7918 ties a reserve price to the execution base fee; from December~4 no block is at the floor (Fig.~\ref{fig:eth}(c)) and median cost rises to $\sim$\$0.009/MiB, while utilization is unchanged ($\sim$58\%).
-    \item \textbf{BPO1 and BPO2 (capacity).} Each capacity step lowered utilization (from $\sim$58\% to $\sim$31\% to $\sim$23\%) and target utilization (from $\sim$87\% to $\sim$47\% to $\sim$34\%; Fig.~\ref{fig:eth}(b)). Median cost stayed in a narrow \$0.007--0.010/MiB band across both BPO eras (Fig.~\ref{fig:eth}(a)), consistent with fees held near the EIP-7918 reserve price rather than set by congestion.
-    \item \textbf{Demand.} Daily blob volume stayed at $\sim$4.1--4.7~GiB/day across all four eras, so the added capacity has not yet been absorbed.
-\squishend
+Fig.~\ref{fig:eth} separates the effects of the three upgrades.
+Under Pectra the blob fee was at the 1-wei minimum on 5--68\% of blocks per day.
+Fusaka's EIP-7918 ties a reserve price to the execution base fee; from December~4 no block is at the floor (Fig.~\ref{fig:eth}(c)) and the median cost rises to $\sim$\$0.009/MiB, while utilization stays at $\sim$58\%.
+BPO1 and BPO2 each lowered utilization (from $\sim$58\% to $\sim$31\% to $\sim$23\%) and target utilization (from $\sim$87\% to $\sim$47\% to $\sim$34\%; Fig.~\ref{fig:eth}(b)).
+The median cost stayed between \$0.007 and \$0.010/MiB in both BPO eras (Fig.~\ref{fig:eth}(a)), consistent with fees held near the EIP-7918 reserve price instead of being set by congestion.
+Daily blob volume stayed at $\sim$4.1--4.7~GiB in all four eras, so the added capacity has not yet been used.
 
 \begin{figure*}[t]
     \centering
@@ -229,13 +229,12 @@ Fig.~\ref{fig:eth} separates the effect of Ethereum's three upgrades.
 
 Celestia raised its maximum square from 128 to 256 on December~3, quadrupling capacity to $\sim$5.3~MiB/s.
 From December~16 to~21, daily throughput rose eighty-fold, from a baseline of $\sim$0.015~MiB/s to $\sim$1.2~MiB/s. That is $\sim$22\% of the new ceiling, but it would have saturated the pre-December capacity of 1.33~MiB/s.
-Cost did \emph{not} rise: the daily median fell slightly (\$0.020 to \$0.017/MiB) and the p90 collapsed onto the median, indicating that the surge consisted of large blobs posted at the minimum gas price rather than competing demand. Afterwards throughput and the p90 returned to their pre-event levels.
-The episode shows capacity being added ahead of demand: the largest demand event in our window did not exercise the fee market.
+Cost did not rise: the daily median fell slightly (\$0.020 to \$0.017/MiB) and the p90 collapsed onto the median, indicating that the surge consisted of large blobs posted at the minimum gas price rather than competing demand. Afterwards throughput and the p90 returned to their earlier levels, so the largest demand event in the window never tested the fee market.
 
 \subsection{Block Dynamics and Polkadot Core Engagement}
 \label{sec:results-blocks}
 
-Fig.~\ref{fig:blocks}(a--b) shows block time distributions for the two protocols where they are informative; fixed-cadence protocols (Ethereum 12\,s, Polkadot 6\,s, Avail 20\,s) are trivially tight.
+Fig.~\ref{fig:blocks}(a--b) shows block time distributions for the two protocols where they are informative; the fixed-cadence protocols (Ethereum 12\,s, Polkadot 6\,s, Avail 20\,s) are omitted.
 Celestia holds 5--6\,s after an elevated p90 in mid-November.
 Espresso's responsive HotShot consensus has p10~$\sim$1\,s and p50~$\sim$2\,s, with a p90 that falls from $\sim$6.5\,s in the first weeks to $\sim$3\,s by February.
 
