@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2025-2026 Chainscore Labs
 """Ethereum EIP-4844 Blob DA — Generate research paper figures from daily.csv.
 
 Extra charts: pct_time_at_floor, era transitions as vertical lines.

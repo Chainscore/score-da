@@ -1,3 +1,5 @@
+-- SPDX-License-Identifier: Apache-2.0
+-- Copyright 2025-2026 Chainscore Labs
 -- Ethereum DA Throughput - MiB/s with Rolling Averages
 -- Shows actual, max, and expected throughput across upgrade eras
 -- Includes 24h, 30d, 90d rolling averages

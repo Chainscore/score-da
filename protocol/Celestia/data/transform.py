@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2025-2026 Chainscore Labs
 """Celestia DA: Local transform pipeline.
 
 Replicates celestia-daily.sql and celestia-hourly.sql locally.
@@ -19,7 +21,16 @@ import numpy as np
 import pandas as pd
 
 GAS_PER_BLOB_BYTE = 8
-DA_RETENTION_DAYS = 30.0
+DA_RETENTION_DAYS = 7.0      # light-node sampling window, CIP-036 (celestia-node v0.25.3, Sep 2025)
+
+# Maximum original data square, set by governance (not by app version):
+#   prop #5 (Jan 2025): square 128 = 8 MiB; prop #8 (applied 2025-12-03 23:03 UTC,
+#   height 8,794,914): square 256 = 32 MiB. Celenium's fill_rate is measured against
+#   the genesis block size (1.87 MiB), so it is not used for utilization.
+SQUARE_256_HEIGHT = 8_794_914
+CAP_BEFORE = 8 * MiB
+CAP_AFTER = 32 * MiB
+BLOCK_TIME_S = 6.03          # mean block time in the window
 
 DATA_DIR = os.path.dirname(os.path.abspath(__file__))
 BLOCKS_DIR = os.path.join(DATA_DIR, "blocks")
@@ -46,11 +57,14 @@ def build_period(blocks: pd.DataFrame, prices: pd.DataFrame, period: str):
         np.nan,
     )
 
+    blocks["_capacity_bytes"] = np.where(blocks["height"] >= SQUARE_256_HEIGHT, CAP_AFTER, CAP_BEFORE).astype(float)
+
     g = blocks.groupby(pcol)
 
     stats = g.agg(
         max_version_app=("version_app", "max"),
         block_count=("height", "size"),
+        avg_capacity_bytes=("_capacity_bytes", "mean"),
         blocks_with_blobs=("blobs_count", lambda s: (s > 0).sum()),
         total_blobs_bytes=("blobs_size", lambda s: s.astype(float).sum()),
         total_blobs_count=("blobs_count", "sum"),
@@ -101,10 +115,10 @@ def build_period(blocks: pd.DataFrame, prices: pd.DataFrame, period: str):
     df = stats.merge(bt, on=pcol).merge(sq, on=pcol).merge(bl, on=pcol).merge(gp, on=pcol)
 
     # ── Era detection ────────────────────────────────────────────────────────
-    era_info = df["max_version_app"].apply(detect_era)
-    df["era"] = era_info.apply(lambda x: x[0])
-    df["max_data_bytes"] = era_info.apply(lambda x: x[1]).astype(float)
-    df["era_block_time_s"] = era_info.apply(lambda x: x[2])
+    df["era"] = np.where(df["avg_capacity_bytes"] >= CAP_AFTER, "square 256 (32 MiB)",
+                         np.where(df["avg_capacity_bytes"] <= CAP_BEFORE, "square 128 (8 MiB)", "transition"))
+    df["max_data_bytes"] = df["avg_capacity_bytes"]
+    df["era_block_time_s"] = BLOCK_TIME_S
 
     # ── Derived columns ─────────────────────────────────────────────────────
     period_label = "daily" if period == "day" else "hourly"
@@ -117,8 +131,8 @@ def build_period(blocks: pd.DataFrame, prices: pd.DataFrame, period: str):
         df[f"{period_label}_blob_mib"],
         df["block_count"].astype(float) * bt_s,
     )
-    df["utilization_pct"] = df["avg_fill_rate"] * 100.0
     df["max_mib_per_s"] = (df["max_data_bytes"] / MiB) / df["era_block_time_s"]
+    df["utilization_pct"] = safe_div(df["actual_mib_per_s"], df["max_mib_per_s"]) * 100.0
 
     # Gas-based cost
     df["avg_gas_price_utia"] = safe_div(df["total_fee_utia"], df["total_gas_used"])

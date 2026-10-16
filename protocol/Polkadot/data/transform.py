@@ -1,9 +1,17 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2025-2026 Chainscore Labs
 """Polkadot DA: Local transform pipeline.
 
 Replicates polkadot-daily.sql and polkadot-hourly.sql locally.
 
-Throughput upper bound = included × max_pov / cadence (no actual PoV sizes).
-Utilization = included / effective_cores.
+PoV sizes are not exposed on the relay chain. Throughput is estimated as
+included × EST_POV_BYTES / cadence, where EST_POV_BYTES is the inclusion-weighted
+mean parachain-side PoV proxy from pov/estimate_pov.py (proof_size + extrinsic bytes,
+17 parachains, 47% of inclusions). EST_POV_LOW_BYTES excludes two parachains with a
+fixed proof_size reservation. The old included × max_pov figure is kept as ub_mib_per_s
+(an upper bound, not volume).
+Core occupancy = included / effective_cores (per relay block).
+Utilization = estimated throughput / maximum throughput.
 Bulk cost/MiB = region_price / max_mib_per_region.
 Chain params: 6s cadence, backing_group_size=5, 1 DOT = 1e10 planck.
 """
@@ -24,6 +32,8 @@ CADENCE_S = 6.0
 BACKING_GROUP_SIZE = 5
 DOT_PLANCK = 1e10
 MAX_POV_MIB = 10.0           # post-#1480
+EST_POV_BYTES = 1_184_938     # pov/summary.json: weighted_mean_pov_bytes
+EST_POV_LOW_BYTES = 300_137   # pov/summary.json: weighted_mean_pov_bytes_excl_reserved
 REGION_LENGTH_TS = 5040       # timeslices per region
 TIMESLICE_PERIOD = 80         # blocks per timeslice
 BLOCKS_PER_DAY = 86400 / CADENCE_S  # 14400
@@ -117,10 +127,13 @@ def build_daily(blocks: pd.DataFrame, prices: pd.DataFrame,
     df["max_pov_mib"] = df["max_pov_bytes"] / MiB
 
     # ── Throughput derived ───────────────────────────────────────────────────
-    df["actual_mib_per_s"] = df["avg_included"] * df["max_pov_bytes"] / CADENCE_S / MiB
+    df["ub_mib_per_s"] = df["avg_included"] * df["max_pov_bytes"] / CADENCE_S / MiB
+    df["actual_mib_per_s"] = df["avg_included"] * EST_POV_BYTES / CADENCE_S / MiB
+    df["est_low_mib_per_s"] = df["avg_included"] * EST_POV_LOW_BYTES / CADENCE_S / MiB
     df["max_mib_per_s"] = df["effective_cores"].astype(float) * df["max_pov_bytes"] / CADENCE_S / MiB
-    df["utilization_pct"] = safe_div(df["avg_included"], df["effective_cores"].astype(float)) * 100.0
-    df["daily_data_mib"] = df["avg_included"] * df["max_pov_bytes"] / MiB * BLOCKS_PER_DAY
+    df["core_occupancy_pct"] = safe_div(df["avg_included"], df["effective_cores"].astype(float)) * 100.0
+    df["utilization_pct"] = safe_div(df["actual_mib_per_s"], df["max_mib_per_s"]) * 100.0
+    df["daily_data_mib"] = df["avg_included"] * EST_POV_BYTES / MiB * BLOCKS_PER_DAY
 
     # Pipeline health
     df["pipeline_efficiency_pct"] = safe_div(df["avg_included"], df["avg_backed"]) * 100.0
@@ -198,7 +211,7 @@ def build_daily(blocks: pd.DataFrame, prices: pd.DataFrame,
 
     # ── Rolling & Cumulative ─────────────────────────────────────────────────
     df = add_rolling(df, pcol, [
-        "actual_mib_per_s", "utilization_pct", "daily_data_mib",
+        "actual_mib_per_s", "est_low_mib_per_s", "ub_mib_per_s", "utilization_pct", "core_occupancy_pct", "daily_data_mib",
         "bulk_p50_cost_per_mib_usd", "pipeline_efficiency_pct", "core_engagement_pct",
     ], 7, "7d")
     df = add_rolling(df, pcol, [
@@ -249,10 +262,13 @@ def build_hourly(blocks: pd.DataFrame, prices: pd.DataFrame):
     df["max_pov_mib"] = df["max_pov_bytes"] / MiB
 
     # Throughput
-    df["actual_mib_per_s"] = df["avg_included"] * df["max_pov_bytes"] / CADENCE_S / MiB
+    df["ub_mib_per_s"] = df["avg_included"] * df["max_pov_bytes"] / CADENCE_S / MiB
+    df["actual_mib_per_s"] = df["avg_included"] * EST_POV_BYTES / CADENCE_S / MiB
+    df["est_low_mib_per_s"] = df["avg_included"] * EST_POV_LOW_BYTES / CADENCE_S / MiB
     df["max_mib_per_s"] = df["effective_cores"].astype(float) * df["max_pov_bytes"] / CADENCE_S / MiB
-    df["utilization_pct"] = safe_div(df["avg_included"], df["effective_cores"].astype(float)) * 100.0
-    df["hourly_data_mib"] = df["avg_included"] * df["max_pov_bytes"] / MiB * BLOCKS_PER_HOUR
+    df["core_occupancy_pct"] = safe_div(df["avg_included"], df["effective_cores"].astype(float)) * 100.0
+    df["utilization_pct"] = safe_div(df["actual_mib_per_s"], df["max_mib_per_s"]) * 100.0
+    df["hourly_data_mib"] = df["avg_included"] * EST_POV_BYTES / MiB * BLOCKS_PER_HOUR
 
     # Pipeline
     df["pipeline_efficiency_pct"] = safe_div(df["avg_included"], df["avg_backed"]) * 100.0
@@ -269,7 +285,7 @@ def build_hourly(blocks: pd.DataFrame, prices: pd.DataFrame):
 
     # Rolling & Cumulative
     df = add_rolling(df, pcol, [
-        "actual_mib_per_s", "utilization_pct", "hourly_data_mib",
+        "actual_mib_per_s", "est_low_mib_per_s", "ub_mib_per_s", "utilization_pct", "core_occupancy_pct", "hourly_data_mib",
         "pipeline_efficiency_pct", "core_engagement_pct",
     ], 24, "24h")
     df = add_cumulative(df, pcol, ["hourly_data_mib"])

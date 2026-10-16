@@ -2,126 +2,86 @@
 % SECTION VII: DISCUSSION
 % ================================================================
 
-This section synthesizes findings across the empirical and architectural analyses, discusses implications for protocol designers and rollup developers, and acknowledges limitations.
-
-\subsection{DAS vs.\ VID vs.\ Validator Recovery: Empirical Trade-offs}
+\subsection{Trade-offs Between the Three Paradigms}
 \label{sec:disc-paradigms}
 
-Our architectural taxonomy (Section~\ref{sec:architecture}) identified three verification paradigms.
-The empirical data reveals how these paradigms manifest in practice:
-
-\paragraph{DAS protocols (Celestia, Avail, Ethereum)}
-These protocols offer the strongest trust-minimization for light clients; sampling enables resource-constrained nodes to independently verify DA.
-However, DAS protocols face the \emph{participation problem}: sampling confidence degrades if insufficient nodes participate.
-Our observation of Celestia's December utilization spike demonstrates that DAS networks function correctly under load when participation is sufficient.
-Avail's short retention window (85~minutes) partially undermines DAS's trust-minimization advantage: the window for sampling is narrow, and late-joining light clients may be unable to verify historical data.
+\paragraph{Sampling protocols (Celestia, Avail, Ethereum)}
+Celestia and Avail give light clients the strongest guarantees among the six designs, because a resource-constrained node can check availability itself; Ethereum's PeerDAS samples at full nodes only.
+These guarantees weaken if too few nodes sample, a dependence the other two paradigms do not have.
 
 \paragraph{Validator-recovery protocols (Polkadot, NEAR)}
-These protocols provide the tightest coupling between DA and consensus finality.
-Polkadot's finality-gating mechanism (GRANDPA will not finalize blocks with insufficient availability bitfields) is the most direct enforcement mechanism we observe: unavailable data literally cannot be finalized.
-The trade-off is the absence of independent light client verification; trust rests entirely on the validator set.
-For Polkadot's use case (parachain validation), this trade-off is acceptable since the relay chain's validators are the primary consumers of DA; for general-purpose DA (serving external rollups), this model requires rollup operators to trust the validator set.
+Among the six designs, Polkadot's inclusion rule is the most direct enforcement: a candidate is included only after $\geq 2/3$ of availability bitfields attest to chunk custody, and finality is then gated on approval checking.
+In exchange, light clients cannot verify availability themselves.
+For parachain validation this is acceptable, because the relay chain validators are the main consumers of the data; an external rollup using Polkadot or NEAR for DA would have to trust the validator set.
 
 \paragraph{VID protocol (Espresso)}
-Espresso's Tiramisu provides algebraic bribery resistance (a property no other protocol offers), but in its current Mainnet~0 deployment, this theoretical advantage is undermined by the permissioned operator set (20~operators) and absence of slashing.
-The empirically observed near-zero cost (1~wei/byte) confirms that the fee market is a placeholder.
-As Espresso matures toward a permissionless deployment with active economic security, the VID paradigm's advantages may become more practically significant.
+VID disperses shares across the whole operator set, so making certified data unrecoverable requires corrupting a large fraction of operators rather than a small committee. In Mainnet~0 the practical value of this property is limited while the operator set is permissioned (20~operators) and there is no slashing.
+The 1~wei/byte fee is likewise a placeholder.
+Whether VID's advantages matter in practice will depend on a permissionless deployment with economic security behind it.
 
 \subsection{The Cost--Throughput Frontier}
 \label{sec:disc-frontier}
 
-Figure~\ref{fig:capacity_cost} plots DA cost against protocol maximum throughput, revealing no simple inverse relationship.
-Espresso offers both low cost and moderate throughput, but its cost is economically meaningless (Mainnet~0 artifact).
-Celestia and Avail provide moderate throughput at moderate cost.
-Polkadot provides the highest theoretical throughput ($\sim$167~MiB/s) at an extremely low per-MiB cost ($\sim$\$5$\times$10$^{-6}$/MiB), though this reflects coretime bundling execution and DA together.
-NEAR's high capacity ($\sim$59~MiB/s) is paired with the highest meaningful cost ($\sim$\$0.51/MiB), placing it in the opposite quadrant from Polkadot.
-Ethereum provides the lowest per-block throughput among the six but benefits from the strongest network effects, economic security, and longest retention.
+Fig.~\ref{fig:landscape}(a) plots median cost against protocol maximum throughput; across the six protocols, cost and maximum throughput are not inversely related.
+Espresso combines low cost with moderate throughput, but its cost is a Mainnet~0 placeholder.
+Celestia and Avail have moderate throughput at moderate cost.
+Polkadot has the highest maximum throughput ($\sim$167~MiB/s) at a capacity price of $\sim$\$5$\times$10$^{-6}$/MiB, which also covers execution.
+NEAR combines high capacity ($\sim$59~MiB/s) with a marginal DA cost of $\sim$\$0.010/MiB, close to Avail and Ethereum, but its short retention makes it the most expensive layer once cost is annualized.
+After Fusaka, Ethereum offers modest capacity at a cost comparable to Celestia and Avail, with the largest validator set and stake behind it.
 
-The cross-protocol comparison charts (Figures~\ref{fig:cross_throughput}--\ref{fig:retention_cost}) make this heterogeneity visually explicit.
-Protocols do not cluster along a single efficiency frontier; instead, they occupy distinct positions reflecting different design philosophies: Polkadot optimizes for high-throughput parachain validation, NEAR for general-purpose smart contract execution, Ethereum for censorship resistance and economic security, and Celestia/Avail for purpose-built modular DA.
-
-This observation underscores that \emph{cost and throughput alone are insufficient metrics for DA evaluation}.
-Retention, trust assumptions, light client capabilities, and ecosystem integration are equally important, a finding that purely quantitative benchmarks risk overlooking.
+The protocols were built for different jobs: Polkadot for parachain validation, NEAR for general smart-contract execution, Ethereum for censorship resistance and economic security, and Celestia and Avail as dedicated DA layers.
+Cost and throughput therefore do not rank them on their own; retention, trust assumptions, light-client verification and ecosystem integration matter as much.
 
 \subsection{Polkadot's Scaling Headroom}
 \label{sec:disc-polkadot}
-
-Our empirical findings directly address the grant's central question regarding Polkadot's DA scaling trajectory.
-With only $\sim$26 of 100 cores engaged (Figure~\ref{fig:polkadot_core}), Polkadot has approximately 74\% idle DA capacity.
-This translates to potential throughput growth from the current $\sim$43~MiB/s (upper bound) toward the $\sim$167~MiB/s maximum without any protocol parameter changes.
-
-The coretime market provides a natural scaling mechanism: as more parachains join and core utilization increases, coretime prices will rise, generating revenue to fund additional validator security.
-The current bulk coretime cost of $\sim$\$5$\times$10$^{-6}$/MiB (Table~\ref{tab:cost_summary}) is so low that cost is unlikely to be a barrier to DA scaling in the near term.
-
-Compared to other protocols, Polkadot's combination of high throughput, low cost, and large headroom is distinctive.
-The primary limitation is the upper-bound nature of our throughput measurement: actual PoV sizes are smaller than the 10~MiB maximum, and true throughput depends on parachain workload characteristics.
-Future work with access to actual PoV sizes would enable more precise capacity analysis.
+About 41 of Polkadot's 100 cores carried candidates on the sampled days, and the on-demand pool ($\sim$40 cores) had no inclusions on November~18, so the relay chain can absorb more parachain throughput without parameter changes. Estimated DA throughput (1.2--4.9~MiB/s, from parachain-side PoV sizes) is 1--3\% of the $\sim$167~MiB/s maximum.
+Bulk coretime prices would be expected to rise with demand; at the observed capacity price, cost is not a binding constraint.
+A more precise analysis would need compressed PoV sizes, which only active validators record.\footnote{The \texttt{candidate\_validation\_pov\_size} histogram exported by Polkadot validators.}
 
 \subsection{Implications for Rollup Developers}
 \label{sec:disc-rollups}
 
-Our findings suggest several considerations for rollup developers selecting a DA backend:
-
-\begin{enumerate}
-    \item \textbf{Retention must exceed fraud proof windows}: Optimistic rollups with 7-day challenge periods cannot safely use DA layers with shorter retention (Avail: 85~min, Polkadot: 25~h, NEAR: 2.5~d) without external archival infrastructure. This is a binding constraint that supersedes cost considerations.
-
-    \item \textbf{Spot cost is misleading without annualization}: A rollup evaluating DA cost should compute annualized cost (Section~\ref{sec:meth-metrics}), which accounts for the number of times data must be reposted to maintain continuous availability. Short-retention protocols that appear cheap at spot may be expensive when annualized.
-
-    \item \textbf{Fee market maturity matters}: Our observation of Celestia's December congestion event shows that responsive fee markets produce cost spikes under load. Rollups sensitive to cost predictability should consider protocols with stable or capped pricing.
-
-    \item \textbf{Utilization headroom is currently abundant}: All protocols operate at $<$50\% utilization. In the near term, capacity is not a differentiator---demand can be accommodated by any protocol. As adoption grows and utilization approaches saturation, the empirical dynamics we measure (fee market responsiveness, throughput scaling) will become increasingly important.
-\end{enumerate}
+For optimistic rollups, the retention horizon constrains the choice of DA layer independently of cost.
+An optimistic rollup with a 7-day challenge period cannot rely on Polkadot (25~h) or NEAR ($\sim$1.5~d) without its own archive, and Celestia's 7-day sampling window leaves no margin.
+For the same reason, spot prices understate the cost of sustained availability on short-retention layers; the annualized cost (Section~\ref{sec:meth-metrics}) counts the reposts needed to keep data available.
+In the window, minimum fees and token prices, more than congestion, set what rollups paid: Ethereum's post-Fusaka cost is consistent with the EIP-7918 reserve price, and Celestia's six-day partner load test at $\sim$22\% of capacity did not raise its median fee.
+Only Ethereum used a large share of its capacity, and only before the BPO forks; fee-market behaviour under sustained load remains to be observed.
 
 \subsection{Protocol Design Observations}
 \label{sec:disc-design}
 
-Several cross-cutting observations emerge from comparing six production protocols simultaneously:
+\paragraph{Withholding enforcement}
+Slashing for omission faults requires attributable evidence, which none of the six designs produces; commission faults such as equivocation or invalid execution are attributable.
+Other enforcement models may be needed, for example insurance schemes, reputation systems with gradual stake reduction, or cryptographic mechanisms that make withholding unprofitable without having to attribute it.
 
-\paragraph{The withholding enforcement gap is universal}
-No protocol has solved the fundamental problem of attributing data withholding to specific actors.
-This suggests that slashing for DA omission faults may be a harder problem than slashing for commission faults (equivocation, invalid execution).
-Future protocol designs may need to pursue alternative enforcement models: insurance-based schemes, reputation systems with gradual stake reduction, or cryptographic mechanisms that make withholding economically irrational rather than attributably punishable.
-
-\paragraph{DA is converging toward ephemerality}
-All six protocols treat DA as temporary, with no protocol offering permanent data availability.
-This is a deliberate design choice reflecting the scalability--permanence trade-off: storing all historical data indefinitely does not scale, and DA's primary function is to provide a window for verification and fraud detection, not long-term archival.
-The DA layer is therefore not a substitute for archival storage; rollups and applications must implement separate data permanence strategies (e.g., IPFS, Filecoin, Arweave) for data that must be retrievable beyond the DA retention window.
-
-\paragraph{Encoding redundancy vs.\ commitment sophistication}
-Protocols exhibit an inverse relationship between encoding redundancy and commitment scheme sophistication.
-High-redundancy encodings (Celestia's 4$\times$, Polkadot/NEAR's 3$\times$) use simpler commitment schemes (NMT, Merkle), while low-redundancy encodings (Ethereum/Avail's 2$\times$) use algebraically richer commitments (KZG) that enable encoding correctness verification without fraud proofs.
-Espresso's polynomial VID represents a third point in this design space, using algebraic commitments to provide both encoding verification and bribery resistance with configurable redundancy.
+\paragraph{Retention}
+Four protocols have a default retention horizon, and Avail and Espresso retain data unless operators enable pruning.
+Bounded retention is a deliberate choice that limits node storage growth; a DA layer is meant to provide a window for verification and fraud detection.
+Rollups and applications that need data beyond that window must store it elsewhere, for example on IPFS, Filecoin or Arweave.
 
 \subsection{Limitations and Threats to Validity}
 \label{sec:disc-limitations}
 
 \paragraph{Demand-constrained measurements}
-All observed throughput figures reflect current demand, not protocol capacity.
-Our measurements characterize usage patterns during a specific 90-day window, not protocol performance limits under saturation.
-Conclusions about maximum throughput should rely on protocol parameter analysis, not observed throughput.
+Observed throughput reflects demand during one 92-day window; conclusions about maximum throughput must come from protocol parameters (Section~\ref{sec:meth-normalization}).
 
-\paragraph{Token price volatility}
-USD-denominated costs are sensitive to the token prices observed during our window.
-ETH ranged from approximately \$2,000 to \$4,000, and TIA ranged from approximately \$0.30 to \$0.85.
-Different windows would yield different cost figures.
-We mitigate this by reporting VWAP and percentile distributions alongside snapshot values.
+\paragraph{Token prices}
+USD costs depend on token prices, which moved widely during the window (daily means: ETH \$1,821--\$3,357, TIA \$0.31--\$0.82), so another window would give different figures.
+Reporting VWAP and percentiles reduces this effect but does not remove it.
 
-\paragraph{Polkadot throughput upper bound}
-Our Polkadot throughput measurement uses $\text{included\_candidates} \times \text{max\_pov\_size}$, which is an upper bound since actual PoV sizes are not exposed on-chain.
-Real throughput is lower; parachains typically use 1--3~MiB per PoV, not the full 10~MiB maximum.
+\paragraph{Polkadot PoV estimate}
+PoV sizes are not exposed on the relay chain, so we estimate them from 60 random blocks on each of 17 parachains (47\% of inclusions) as \texttt{System.BlockWeight} proof size plus extrinsic bytes, weighted by each parachain's share of inclusions. This uncompressed proxy overstates the real PoV. Two parachains report a fixed proof size that looks like a weight reservation; with them the mean is $\sim$1.13~MiB per candidate ($\sim$4.9~MiB/s), without them $\sim$0.29~MiB ($\sim$1.2~MiB/s). Tables report the higher figure; both are uncompressed proof weights that include state witnesses, so they are not comparable to rollup payload bytes.
 
 \paragraph{Espresso Mainnet~0}
-Espresso's Mainnet~0 is a permissioned early deployment.
-Its cost, throughput, and security characteristics should not be compared on equal footing with permissionless, economically secured networks.
-We include it for architectural completeness and note its pre-production status throughout.
+Mainnet~0 is a permissioned early deployment, so its cost, throughput and security figures cannot be compared on equal terms with permissionless, economically secured networks.
+We include it for architectural completeness.
 
 \paragraph{Single observation window}
-A 90-day window provides a snapshot, not a longitudinal view.
-Protocol behavior under different market conditions, governance events, or adoption phases may differ.
-Our open-source tooling enables future researchers to extend the measurement window.
+A 92-day window is a snapshot, and behaviour under other market conditions, governance events or adoption levels may differ.
+The released tooling can be used to extend the window.
 
-\paragraph{Cross-protocol normalization}
-Comparing cost across protocols with different pricing models (blob gas, coretime, gas/byte, fixed fee) requires normalization choices that may obscure economic nuances.
-Polkadot's coretime bundles execution and DA, making per-MiB cost an imperfect metric.
-NEAR's gas pricing reflects general smart-contract costs, not DA-specific fees.
-Our retention-adjusted annualized cost metric (Table~\ref{tab:annualized_cost} and Figure~\ref{fig:retention_cost}) partially addresses this, but no single metric fully captures the economic trade-offs.
+\paragraph{Cost measures}
+The six cost figures are of different kinds: Ethereum's is the blob base fee without the carrying transaction's execution gas; Celestia's quantiles use the gas price and exclude fixed PayForBlobs gas; NEAR's is a modelled marginal cost; Avail's is a per-transaction average; Polkadot's is a capacity price that also buys execution; Espresso's is a fixed placeholder. Spot fees also exclude batch overhead and compression, so they are not the effective cost to a rollup. The retention-adjusted cost (Table~\ref{tab:annualized_cost}, Fig.~\ref{fig:landscape}(b)) depends on the retention definition in Section~\ref{sec:meth-metrics}.
+
+\paragraph{Data sources}
+Celestia data comes from the Celenium indexer, Ethereum data from the public BigQuery dataset, and prices from CoinGecko hourly data; we did not cross-check these against independent sources beyond spot checks of protocol parameters at in-window heights.

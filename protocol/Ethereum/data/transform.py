@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2025-2026 Chainscore Labs
 """Ethereum EIP-4844 Blob DA: Local transform pipeline.
 
 Replicates the Dune cost-quantile-bands-viz, utilization-viz, and throughput queries locally.
@@ -34,9 +36,10 @@ DENOM_BPO2 = 11_684_671
 REGIMES = [
     (0,        "pre-Dencun",       0,  0,  DENOM_PRAGUE),
     (19426587, "Dencun",           3,  6,  DENOM_PRAGUE),
-    (22222222, "Pectra",           6,  9,  DENOM_PRAGUE),   # approximate
-    (23975796, "BPO1",            10, 15,  DENOM_BPO1),
-    (24500000, "BPO2",            14, 21,  DENOM_BPO2),     # approximate
+    (22431084, "Pectra",           6,  9,  DENOM_PRAGUE),   # epoch 364032, 2025-05-07 10:05:11 UTC
+    (23935694, "Fusaka",          6,  9,  DENOM_PRAGUE),   # epoch 411392, 2025-12-03 21:49:11 UTC (PeerDAS + EIP-7918)
+    (23975778, "BPO1",            10, 15,  DENOM_BPO1),     # epoch 412672, 2025-12-09 14:21:11 UTC
+    (24179383, "BPO2",            14, 21,  DENOM_BPO2),     # epoch 419072, 2026-01-07 01:01:11 UTC
 ]
 
 DATA_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -156,6 +159,9 @@ def build_period(blocks: pd.DataFrame, prices: pd.DataFrame, period: str):
         fee_gwei = df[f"{pctl}_blob_base_fee_gwei"]
         fee_wei = fee_gwei * 1e9
         df[f"{pctl}_cost_per_mib_day_usd"] = (fee_wei * BYTES_PER_BLOB / 1e18 / MIB_PER_BLOB) / AVAILABILITY_DAYS * eth_usd
+
+    for pctl in ["p10", "p50", "p90", "vwap"]:
+        df[f"{pctl}_cost_per_mib_usd"] = df[f"{pctl}_cost_per_mib_day_usd"] * AVAILABILITY_DAYS
 
     # Daily blob spend
     df[f"{period_label}_blob_spend_usd"] = (

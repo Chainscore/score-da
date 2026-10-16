@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2025-2026 Chainscore Labs
 """Avail DA: Local transform pipeline.
 
 Replicates avail-daily.sql and avail-hourly.sql locally.
@@ -19,7 +21,7 @@ import numpy as np
 import pandas as pd
 
 # ── Parameters ──────────────────────────────────────────────────────────────
-MAX_BLOCK_BYTES = 4_456_448
+MAX_BLOCK_BYTES = 4_194_304  # kate_blockLength max at in-window heights 2,150,518-2,543,638 (256 rows x 512 cols x 32 B)
 TARGET_BLOCK_TIME_S = 20.0
 AVAIL_DECIMALS = 18  # 1 AVAIL = 10^18 plancks
 

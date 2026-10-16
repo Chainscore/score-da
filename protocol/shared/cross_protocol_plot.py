@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2025-2026 Chainscore Labs
 """Cross-protocol comparison charts for the DA research paper.
 
 Loads all 6 daily.csv files and generates combined figures:
@@ -29,7 +31,7 @@ OUT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "out")
 # Each entry: (csv_path, throughput_7d_col, utilization_7d_col, cost_p50_col, daily_mib_col, cumulative_mib_col)
 PROTO_CONFIG = {
     "Polkadot": {
-        "csv": "protocol/polkadot/analysis/daily.csv",
+        "csv": "protocol/Polkadot/analysis/daily.csv",
         "throughput_7d": "actual_mib_per_s_7d",
         "utilization_7d": "utilization_pct_7d",
         "cost_p50": "bulk_p50_cost_per_mib_usd",
@@ -37,7 +39,7 @@ PROTO_CONFIG = {
         "cumulative_mib": "cumulative_daily_data_mib",
     },
     "Ethereum": {
-        "csv": "protocol/ethereum/analysis/daily.csv",
+        "csv": "protocol/Ethereum/analysis/daily.csv",
         "throughput_7d": "actual_mib_per_s_7d",
         "utilization_7d": "utilization_pct_7d",
         "cost_p50": "p50_cost_per_mib_day_usd",
@@ -45,7 +47,7 @@ PROTO_CONFIG = {
         "cumulative_mib": "cumulative_daily_data_mib",
     },
     "Celestia": {
-        "csv": "protocol/celestia/analysis/daily.csv",
+        "csv": "protocol/Celestia/analysis/daily.csv",
         "throughput_7d": "actual_mib_per_s_7d",
         "utilization_7d": "utilization_pct_7d",
         "cost_p50": "cost_per_mib_usd_p50",
@@ -53,7 +55,7 @@ PROTO_CONFIG = {
         "cumulative_mib": "cumulative_daily_blob_mib",
     },
     "Espresso": {
-        "csv": "protocol/espresso/analysis/daily.csv",
+        "csv": "protocol/Espresso/analysis/daily.csv",
         "throughput_7d": "actual_mib_per_s_7d",
         "utilization_7d": "utilization_pct_7d",
         "cost_p50": "cost_per_mib_usd_p50",
@@ -61,7 +63,7 @@ PROTO_CONFIG = {
         "cumulative_mib": "cumulative_daily_mib",
     },
     "NEAR": {
-        "csv": "protocol/near/analysis/daily.csv",
+        "csv": "protocol/Near/analysis/daily.csv",
         "throughput_7d": "actual_mib_per_s_7d",
         "utilization_7d": "utilization_pct_7d",
         "cost_p50": "cost_per_mib_usd_p50",
@@ -69,7 +71,7 @@ PROTO_CONFIG = {
         "cumulative_mib": "cumulative_daily_data_mib",
     },
     "Avail": {
-        "csv": "protocol/avail/analysis/daily.csv",
+        "csv": "protocol/Avail/analysis/daily.csv",
         "throughput_7d": "actual_mib_per_s_7d",
         "utilization_7d": "utilization_pct_7d",
         "cost_p50": "cost_per_mib_usd_p50",
@@ -207,40 +209,10 @@ def chart_encoding_overhead():
 
 
 def chart_retention_adjusted_cost(data):
-    """4b: Retention-adjusted cost comparison bar chart."""
-    protos = ["Avail", "Polkadot", "NEAR", "Espresso", "Ethereum", "Celestia"]
-    # Spot p50 cost ($/MiB) — from summary stats
-    spot_p50 = {
-        "Avail": 0.008,
-        "Polkadot": 5e-6,
-        "NEAR": 0.51,
-        "Espresso": 3e-9,
-        "Ethereum": 4e-4,
-        "Celestia": 0.021,
-    }
-    # Reposts per year (from retention)
-    reposts = {
-        "Avail": 6176,
-        "Polkadot": 350,
-        "NEAR": 146,
-        "Espresso": 52,
-        "Ethereum": 21,
-        "Celestia": 12,
-    }
-
-    spot_vals = [spot_p50[p] for p in protos]
-    annual_vals = [spot_p50[p] * reposts[p] for p in protos]
-
-    return plot_grouped_bar(
-        protos,
-        {"Spot p50 ($/MiB)": spot_vals,
-         "Annualized ($/MiB/yr)": annual_vals},
-        title="Retention-Adjusted DA Cost: Spot vs Annualized",
-        ylabel="$/MiB", log_scale=True,
-        group_colors={"Spot p50 ($/MiB)": "#3366CC",
-                      "Annualized ($/MiB/yr)": "#CC3333"},
-    )
-
+    """4b: Retention-adjusted cost; same data-driven values as cross_protocol_fgcs.py."""
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from cross_protocol_fgcs import chart_retention_adjusted_cost as fgcs_chart
+    return fgcs_chart(data)
 
 def main():
     apply_style()

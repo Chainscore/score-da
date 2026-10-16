@@ -1,3 +1,5 @@
+-- SPDX-License-Identifier: Apache-2.0
+-- Copyright 2025-2026 Chainscore Labs
 -- Avail DA: Hourly Analysis Dashboard
 -- Columns for: throughput, utilization, payload, cost, block time
 -- Rolling averages: 24-hour

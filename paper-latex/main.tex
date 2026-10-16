@@ -1,105 +1,118 @@
-\documentclass[journal]{IEEEtran}
+%% Build: pdflatex main && bibtex main && pdflatex main && pdflatex main
+%% Anonymized review copy: pdflatex -jobname=main_anonymized "\def\buildanonymous{}\input{main}" (then bibtex main_anonymized and two more passes).
+\documentclass[5p,times,twocolumn,final]{elsarticle}
 
 \usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
 \usepackage{graphicx}
 \usepackage{amsmath,amssymb,amsthm}
-\usepackage{hyperref}
-
-\newtheorem{definition}{Definition}
-\usepackage{cite}
-\usepackage{adjustbox}
-\usepackage{array}
-\usepackage{float}
-\usepackage{caption}
-\usepackage{subcaption}
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{tabularx}
+\usepackage{array}
 \usepackage{xcolor}
+\usepackage{caption}
+\usepackage{subcaption}
 \usepackage{url}
+\usepackage[hidelinks]{hyperref}
 
+\newtheorem{definition}{Definition}
 \graphicspath{{./figures/}}
-\captionsetup{
-    font=small,
-    labelfont=bf,
-    width=0.95\linewidth
-}
+\captionsetup{font=small,labelfont=bf}
+\captionsetup[sub]{font=footnotesize}
 
 % Compact list environments
 \newcommand{\squishlist}{\begin{itemize}\setlength{\itemsep}{1pt}\setlength{\parskip}{0pt}\setlength{\parsep}{0pt}}
 \newcommand{\squishend}{\end{itemize}}
+\newif\ifanonymous
+\anonymousfalse
+\ifdefined\buildanonymous\anonymoustrue\fi
+\newcommand{\repolink}{\ifanonymous[repository withheld for anonymized review]\else\url{https://github.com/Chainscore/score-da}, archived at \url{https://doi.org/10.5281/zenodo.23276229}\fi}
 
-\title{Benchmarking Blockchain Data Availability:\\A Comparative Empirical Study of Six Production DA Protocols}
-
-\author{
-    \IEEEauthorblockN{Prasad Kumkar, Pranjal Sarode}
-    \IEEEauthorblockA{\\Chainscore Labs, Pune, IN
-    \\\{prasad, pranjal\}@chainscore.finance}
-}
+\journal{Future Generation Computer Systems}
 
 \begin{document}
 
-\maketitle
+\begin{frontmatter}
+
+\title{Blockchain Data Availability: Benchmarking Throughput, Economics, Utilization, and Security of Six Production Protocols}
+
+\ifanonymous
+\author{Anonymous}
+\else
+\author[cs]{Prasad Kumkar\corref{cor1}}
+\ead{prasad@chainscorelabs.com}
+\author[cs]{Pranjal Sarode}
+\ead{pranjal@chainscorelabs.com}
+\cortext[cor1]{Corresponding author.}
+\affiliation[cs]{organization={Chainscore Labs},
+            city={Pune},
+            state={Maharashtra},
+            country={India}}
+\fi
 
 \begin{abstract}
-Data Availability (DA) is a critical bottleneck in blockchain scalability, this paper presents a comprehensive benchmarking study of six DA protocols (Polkadot ELVES, Ethereum EIP-4844/PeerDAS, Celestia, Espresso Tiramisu, NEAR, and Avail) using 90 days of mainnet data (November 2025--February 2026).
-We introduce a taxonomy that classifies DA architectures along three paradigms: Data Availability Sampling (DAS), Verifiable Information Dispersal (VID), and validator-set recovery.
-Our empirical analysis measures throughput (MiB/s), cost (\$/MiB), utilization, and block dynamics across all six protocols under a unified methodology.
-Key findings include: (i) all protocols operate well below saturation ($<$50\% utilization), making current measurements demand-constrained rather than supply-constrained; (ii) DA costs span seven orders of magnitude across protocols, from nano-dollars (Espresso) to cents per MiB (Celestia); (iii) no protocol implements slashing for pure data withholding, with enforcement remaining indirect across all designs; and (iv) DA is universally treated as temporary, with retention windows ranging from 85~minutes to 18~days.
-We release all collection tooling, datasets, and analysis notebooks under open licenses to enable reproducibility.
+Data availability (DA) bandwidth bounds the throughput of rollups and sharded blockchains.
+This paper presents a benchmarking study of six production DA protocols (Polkadot ELVES, Ethereum EIP-4844/PeerDAS, Celestia, Espresso Tiramisu, NEAR, and Avail) using 92 days of mainnet data (November 2025 to February 2026).
+We introduce a taxonomy that classifies DA architectures into three paradigms: data availability sampling (DAS), verifiable information dispersal (VID), and validator-set recovery.
+Under a unified methodology we measure throughput (MiB/s), cost (\$/MiB), utilization, and block dynamics across all six protocols.
+Key findings are: (i)~window-mean utilization of the protocol maximum ranges from 0.18\% (NEAR) to 35\% (Ethereum); Ethereum ran at $\sim$60\% of its maximum ($\sim$90\% of its fee-market target) until the BPO forks raised capacity, and the other five protocols stayed below 3\%; (ii)~median DA cost spans nearly seven orders of magnitude, from \$3.1$\times$10$^{-9}$/MiB (Espresso, a fixed placeholder fee) to \$0.020/MiB (Celestia), although the six cost measures differ in what they include; (iii)~no protocol slashes for pure data withholding, so enforcement is indirect in every design; and (iv)~no protocol guarantees permanent availability: default retention ranges from $\sim$25~hours (Polkadot) to $\sim$18~days (Ethereum), while Avail and Espresso nodes retain data unless operators enable pruning.
+Ethereum's Fusaka upgrade and two blob-parameter-only forks fall inside the window, allowing before--after comparisons of fee-market behaviour.
+We release all collection tooling, datasets, and analysis code under open licenses.
 \end{abstract}
 
-\begin{IEEEkeywords}
-data availability, blockchain scalability, erasure coding, data availability sampling, benchmarking, rollups
-\end{IEEEkeywords}
+\begin{keyword}
+data availability \sep blockchain scalability \sep erasure coding \sep data availability sampling \sep benchmarking \sep rollups \sep distributed systems \sep measurement
+\end{keyword}
+
+\end{frontmatter}
 
 % ================================================================
 \section{Introduction}
 \label{sec:introduction}
 \input{sections/introduction}
 
-% ================================================================
 \section{Background and Related Work}
 \label{sec:background}
 \input{sections/background}
 
-% ================================================================
 \section{Protocol Architecture Comparison}
 \label{sec:architecture}
 \input{sections/architecture}
 
-% ================================================================
 \section{Methodology}
 \label{sec:methodology}
 \input{sections/methodology}
 
-% ================================================================
 \section{Empirical Results}
 \label{sec:results}
 \input{sections/results}
 
-% ================================================================
 \section{Security and Trust Analysis}
 \label{sec:security}
 \input{sections/security}
 
-% ================================================================
 \section{Discussion}
 \label{sec:discussion}
 \input{sections/discussion}
 
-% ================================================================
 \section{Conclusion}
 \label{sec:conclusion}
 \input{sections/conclusion}
 
 % ================================================================
-\section*{Acknowledgment}
-This work was supported by the Web3 Foundation under the W3F Grants Program.
-The authors thank the Web3 Foundation for their support of open blockchain research.
-All data, code, and analysis artifacts produced in this study are released under open licenses (Apache~2.0 for software, CC~BY~4.0 for data and documentation).
+\section*{Data availability}
+Code and data are available at \repolink.
 
-\bibliographystyle{IEEEtran}
+\ifanonymous\else
+\section*{Acknowledgements}
+This work was supported by the Web3 Foundation through the W3F Grants Program.
+\fi
+
+\section*{Declaration of generative AI and AI-assisted technologies in the manuscript preparation process}
+During the preparation of this work the authors used AI chat tools to assist with researching approaches to data collection. After using these tools, the authors reviewed and edited the content as needed and take full responsibility for the content of the published article.
+
+\bibliographystyle{elsarticle-num}
 \bibliography{references}
 
 \end{document}

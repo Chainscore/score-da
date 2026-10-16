@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2025-2026 Chainscore Labs
 """Shared matplotlib styling and plotting helpers for DA research paper figures.
 
 All protocols import this to get a consistent visual language.
@@ -21,8 +23,8 @@ STYLE = {
     "xtick.labelsize": 8,
     "ytick.labelsize": 8,
     "legend.fontsize": 8,
-    "figure.dpi": 200,
-    "savefig.dpi": 200,
+    "figure.dpi": 300,
+    "savefig.dpi": 300,
     "savefig.bbox": "tight",
     "savefig.pad_inches": 0.15,
     "axes.grid": True,
@@ -49,9 +51,12 @@ C_SPEND = "#CC6633"       # spend line
 C_ERA = "#888888"          # era boundary lines
 
 # Figure sizes (width, height) in inches — for two-column paper layout
-SZ_FULL = (7.0, 2.8)       # full-width main charts
+# FGCS_COMPACT=1 renders panel-sized figures (no in-figure titles) for the
+# Elsevier double-column layout, so fonts stay legible at print size.
+COMPACT = os.environ.get("FGCS_COMPACT") == "1"
+SZ_FULL = (3.5, 2.2) if COMPACT else (7.0, 2.8)   # full-width main charts
 SZ_HALF = (3.4, 2.4)       # half-width secondary charts
-SZ_WIDE = (7.0, 2.0)       # full-width but shorter (cumulative, simple lines)
+SZ_WIDE = (3.5, 2.0) if COMPACT else (7.0, 2.0)   # full-width but shorter
 
 
 def apply_style():
@@ -80,9 +85,13 @@ def fmt_date_axis(ax, df_dates: pd.Series):
 
 
 def save(fig, out_dir: str, name: str):
-    """Save figure as both PNG and SVG."""
+    """Save figure as PNG (300 dpi), SVG and PDF (vector, for journal submission)."""
     os.makedirs(out_dir, exist_ok=True)
-    for ext in ("png", "svg"):
+    if COMPACT:
+        for ax in fig.axes:
+            ax.set_title("")
+        fig.tight_layout()
+    for ext in ("png", "svg", "pdf"):
         path = os.path.join(out_dir, f"{name}.{ext}")
         fig.savefig(path)
     plt.close(fig)
@@ -228,7 +237,7 @@ PROTO_COLORS = {
 }
 PROTO_ORDER = ["Polkadot", "Ethereum", "Celestia", "Espresso", "NEAR", "Avail"]
 
-SZ_CROSS = (7.0, 3.5)   # cross-protocol comparison charts (slightly taller)
+SZ_CROSS = (3.5, 2.6) if COMPACT else (7.0, 3.5)   # cross-protocol comparison charts (slightly taller)
 
 
 def plot_multi_line(series_dict, title, ylabel, log_scale=False,

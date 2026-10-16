@@ -55,3 +55,20 @@ grant.md
 reports/
 deliveries/
 .claude
+# Private submission material and local notes (not for the public repo)
+paper-latex/HANDOFF.md
+paper-latex/arxiv-*.tar.gz
+paper-latex/submission/em/
+paper-latex/submission/upload/
+paper-latex/submission/titlepage/*.pdf
+*.spl
+
+# Generated figure outputs (PNG/SVG are kept; paper PDFs live in paper-latex/figures/)
+protocol/*/analysis/out/*.pdf
+protocol/*/analysis/out_fgcs/
+protocol/shared/out/*.pdf
+protocol/shared/out_fgcs/
+paper-latex/FACTS.md
+paper-latex/REFERENCES_AUDIT.md
+paper-latex/submission/
+paper-latex/main_anonymized.pdf
