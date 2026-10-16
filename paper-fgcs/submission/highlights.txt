@@ -1,7 +1,0 @@
-Highlights
-
-- A 90-day mainnet benchmark of six blockchain data availability protocols
-- Taxonomy of DA designs: sampling, verifiable dispersal and validator recovery
-- Mean DA utilization stays below 40%, so capacity is demand-constrained today
-- Ethereum blob fees left the 1-wei floor at Fusaka (EIP-7918), not at BPO forks
-- No protocol slashes data withholding; retention spans ~25 hours to ~18 days

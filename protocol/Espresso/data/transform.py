@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2025-2026 Chainscore Labs
 """Espresso Tiramisu DA: Local transform pipeline.
 
 Replicates espresso-daily.sql and espresso-hourly.sql locally.

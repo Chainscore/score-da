@@ -1,3 +1,5 @@
+-- SPDX-License-Identifier: Apache-2.0
+-- Copyright 2025-2026 Chainscore Labs
 -- Ethereum Blob Cost - Rolling Quantile Bands Time Series
 -- Fork-aware with correct denominator handling
 

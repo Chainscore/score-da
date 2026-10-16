@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2025-2026 Chainscore Labs
 """Espresso DA — Generate research paper figures from daily.csv."""
 
 import sys, os

@@ -1,3 +1,5 @@
+-- SPDX-License-Identifier: Apache-2.0
+-- Copyright 2025-2026 Chainscore Labs
 -- Espresso Tiramisu DA: Hourly Analysis Dashboard
 -- Single query producing all columns for dashboard charts:
 --   1. Throughput (MiB/s)       → actual_mib_per_s, max_mib_per_s, actual_mib_per_s_24h

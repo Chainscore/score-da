@@ -1,3 +1,5 @@
+-- SPDX-License-Identifier: Apache-2.0
+-- Copyright 2025-2026 Chainscore Labs
 -- Ethereum Blob Cost Analysis - Summary Statistics Only
 -- Includes p50/p90/p95/p99/ES99, VWAP, time-at-floor by era
 -- Fork-aware with correct denominator handling

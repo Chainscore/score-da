@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2025-2026 Chainscore Labs
 set -euo pipefail
 
 PROTOCOL="${1:-}"
@@ -175,6 +177,14 @@ run_all() {
     exit 1
   else
     echo "All protocols completed successfully."
+  fi
+
+  # Cross-protocol outputs need every protocol's daily.csv
+  if [ "$action" = "transform" ]; then
+    (cd /app && python3 protocol/shared/make_tables.py)
+  elif [ "$action" = "plot" ]; then
+    (cd /app && python3 protocol/shared/cross_protocol_plot.py \
+             && FGCS_COMPACT=1 python3 protocol/shared/cross_protocol_fgcs.py)
   fi
 }
 

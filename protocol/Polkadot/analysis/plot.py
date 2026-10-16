@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2025-2026 Chainscore Labs
 """Polkadot DA — Generate research paper figures from daily.csv.
 
 Extra charts: pipeline efficiency, core engagement, coretime cost.
@@ -33,7 +35,7 @@ def main():
     # Throughput — Polkadot max is ~167 MiB/s vs actual ~43 → log not needed
     save(plot_throughput(
         d, df["actual_mib_per_s"], df["max_mib_per_s"], df["actual_mib_per_s_7d"],
-        f"{PROTO} — Throughput Upper Bound (MiB/s)",
+        f"{PROTO} — Estimated Throughput (MiB/s, parachain-side PoV)",
     ), OUT_DIR, "throughput")
 
     save(plot_utilization(
@@ -43,7 +45,7 @@ def main():
 
     save(plot_data_volume(
         d, df["daily_data_mib"], df["daily_data_mib_7d"],
-        f"{PROTO} — Daily Data Volume Upper Bound (MiB)",
+        f"{PROTO} — Estimated Daily Data Volume (MiB)",
     ), OUT_DIR, "data_volume")
 
     # Cost bands from bulk coretime purchases (sparse — only days with purchases)

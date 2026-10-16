@@ -13,8 +13,12 @@ da-rsrch/
 │   ├── Avail/          # Substrate RPC (TypeScript collector)
 │   ├── Near/           # NEAR Lake S3 + RPC (TypeScript collector)
 │   ├── Polkadot/       # Relay chain + Coretime (TypeScript collector)
-│   └── shared/         # Common Python utilities (transform + plot helpers)
-├── paper-latex/        # IEEE paper (LaTeX)
+│   ├── active-tests/   # Submit/retrieve/stress tests run on all five networks (Aug–Dec 2025) + on-chain evidence
+│   └── shared/         # Common utilities: transform/plot helpers, cross-protocol figures, make_tables.py
+├── paper-latex/        # Paper (LaTeX, Elsevier elsarticle) and its generated tables and figures
+├── DEVIATIONS.md       # Changes from the grant application, with reasons
+├── VERIFICATION.md     # Each claim in the paper and its source or reproducing command
+├── CHANGELOG.md        # Corrections to the analysis
 ├── Dockerfile
 ├── docker-compose.yml
 ├── LICENSE             # Apache 2.0 (code)
@@ -22,6 +26,8 @@ da-rsrch/
 ```
 
 See each subdirectory's README for setup and usage.
+
+The final paper is `paper-latex/main.pdf`. Every table in it is generated from `protocol/*/analysis/daily.csv` by `python3 protocol/shared/make_tables.py`, and `VERIFICATION.md` maps each claim to a source or a command. Protocol parameters (capacities, fork boundaries, gas schedules, retention) are the values in force at each recorded block.
 
 ## Dune Dashboards
 
@@ -86,6 +92,8 @@ docker run -v ./protocol:/app/protocol da-research celestia --days 1
 docker run -v ./protocol:/app/protocol da-research celestia transform
 docker run -v ./protocol:/app/protocol da-research celestia plot
 ```
+
+`all transform` also regenerates the paper tables, and `all plot` also builds the cross-protocol figures.
 
 Note: mount `./protocol` to persist outputs and share data between steps.
 

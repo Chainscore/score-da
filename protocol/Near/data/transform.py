@@ -1,8 +1,25 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2025-2026 Chainscore Labs
 """NEAR DA: Local transform pipeline.
 
 Replicates near-daily.sql and near-hourly.sql locally.
 
-Cost model: cost_near = total_gas_used × gas_price / 1e24 (yoctoNEAR → NEAR)
+Cost model (DA): NEAR has no blob type or DA fee market; rollups post data as
+function-call arguments. The DA cost per MiB is the marginal gas of posting 1 MiB as
+the argument of a cross-account blob-store submit() call, from the protocol gas
+schedule (nearcore core/parameters/res/runtime_configs/parameters.yaml):
+  per byte: action_function_call_per_byte send_not_sir (47,683,715)
+            + execution (2,235,934)
+            + env::input() read: write_register + read_register + write_memory
+              (3,801,564 + 98,562 + 2,723,772)
+  fixed:    2 × receipt creation (108,059,500,000) + function-call base send/exec
+            (200 Ggas + 780 Ggas)
+cost_per_mib_near = (FIXED_GAS + PER_BYTE_GAS × 2^20) × gas_price / 1e24.
+These costs are the in-window values: identical in EXPERIMENTAL_protocol_config at
+heights 172,665,547 (2025-11-15, protocol 81) and 185,299,415 (2026-02-13, protocol 82).
+
+The chain-wide average fee per byte (all gas burned / all chunk bytes) is kept as
+chain_avg_fee_per_mib_*: it measures NEAR's general fee intensity, not DA cost.
 Chain params: ~0.6s block time, 9 shards, 36 MiB max per block (9 × 4 MiB).
 """
 
@@ -22,6 +39,9 @@ MAX_BLOCK_MIB = 36        # 9 shards × 4 MiB
 NUM_SHARDS = 9
 TARGET_BLOCK_TIME_S = 0.61
 NEAR_DECIMALS = 24        # 1 NEAR = 10^24 yoctoNEAR
+PER_BYTE_GAS = 47_683_715 + 2_235_934 + 3_801_564 + 98_562 + 2_723_772
+FIXED_GAS = 2 * 108_059_500_000 + 200_000_000_000 + 780_000_000_000
+GAS_PER_MIB = FIXED_GAS + PER_BYTE_GAS * 1048576
 
 DATA_DIR = os.path.dirname(os.path.abspath(__file__))
 BLOCKS_DIR = os.path.join(DATA_DIR, "blocks")
@@ -39,6 +59,8 @@ def build_period(blocks: pd.DataFrame, prices: pd.DataFrame, period: str):
         np.nan,
     )
 
+    blocks["_marginal_cost_per_mib_near"] = GAS_PER_MIB * blocks["gas_price"].astype(float) / 1e24
+
     g = blocks.groupby(pcol)
 
     stats = g.agg(
@@ -49,6 +71,10 @@ def build_period(blocks: pd.DataFrame, prices: pd.DataFrame, period: str):
         total_gas_limit=("total_gas_limit", lambda s: s.astype(float).sum()),
         total_chunks_produced=("chunks_produced", "sum"),
         total_da_cost_near=("_da_cost_near", "sum"),
+        p10_marginal_cost_per_mib_near=("_marginal_cost_per_mib_near", lambda s: s.quantile(0.10)),
+        p50_marginal_cost_per_mib_near=("_marginal_cost_per_mib_near", lambda s: s.quantile(0.50)),
+        p90_marginal_cost_per_mib_near=("_marginal_cost_per_mib_near", lambda s: s.quantile(0.90)),
+        avg_marginal_cost_per_mib_near=("_marginal_cost_per_mib_near", "mean"),
     ).reset_index()
 
     # Block-time percentiles
@@ -94,15 +120,19 @@ def build_period(blocks: pd.DataFrame, prices: pd.DataFrame, period: str):
         df["block_count"].astype(float) * MAX_BLOCK_MIB * MiB,
     ) * 100.0
 
-    # Cost per MiB in NEAR
-    df["avg_cost_per_mib_near"] = np.where(
+    # Chain-wide average fee per MiB (all gas / all chunk bytes): fee intensity, not DA cost
+    df["chain_avg_fee_per_mib_near"] = np.where(
         df["total_encoded_bytes"] > 0,
         df["total_da_cost_near"] / (df["total_encoded_bytes"] / MiB),
         np.nan,
     )
-    df["cost_per_mib_near_p10"] = df["p10_cost_per_byte_near"] * MiB
-    df["cost_per_mib_near_p50"] = df["p50_cost_per_byte_near"] * MiB
-    df["cost_per_mib_near_p90"] = df["p90_cost_per_byte_near"] * MiB
+    df["chain_avg_fee_per_mib_near_p50"] = df["p50_cost_per_byte_near"] * MiB
+
+    # DA cost per MiB in NEAR: marginal cost of posting 1 MiB of function-call input
+    df["avg_cost_per_mib_near"] = df["avg_marginal_cost_per_mib_near"]
+    df["cost_per_mib_near_p10"] = df["p10_marginal_cost_per_mib_near"]
+    df["cost_per_mib_near_p50"] = df["p50_marginal_cost_per_mib_near"]
+    df["cost_per_mib_near_p90"] = df["p90_marginal_cost_per_mib_near"]
 
     # ── Prices ───────────────────────────────────────────────────────────────
     if period == "day":
@@ -117,7 +147,11 @@ def build_period(blocks: pd.DataFrame, prices: pd.DataFrame, period: str):
     df["cost_per_mib_usd_p10"] = df["cost_per_mib_near_p10"] * usd
     df["cost_per_mib_usd_p50"] = df["cost_per_mib_near_p50"] * usd
     df["cost_per_mib_usd_p90"] = df["cost_per_mib_near_p90"] * usd
-    df[f"{period_label}_da_spend_usd"] = df["total_da_cost_near"] * usd
+    df["chain_avg_fee_per_mib_usd"] = df["chain_avg_fee_per_mib_near"] * usd
+    df["chain_avg_fee_per_mib_usd_p50"] = df["chain_avg_fee_per_mib_near_p50"] * usd
+    df[f"{period_label}_chain_fees_usd"] = df["total_da_cost_near"] * usd
+    # Implied DA spend: chunk volume priced at the marginal DA cost
+    df[f"{period_label}_da_spend_usd"] = df[f"{period_label}_data_mib"] * df["cost_per_mib_usd"]
 
     # ── Rolling & Cumulative ─────────────────────────────────────────────────
     mib_col = f"{period_label}_data_mib"

@@ -1,3 +1,5 @@
+-- SPDX-License-Identifier: Apache-2.0
+-- Copyright 2025-2026 Chainscore Labs
 -- Ethereum Blob Cost Analysis with Fork-Aware Blob Base Fee Calculation
 -- Correctly handles Prague, BPO1, and BPO2 denominator changes
 

@@ -1,4 +1,6 @@
 #!/usr/bin/env npx tsx
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025-2026 Chainscore Labs
 /**
  * Ethereum DA (EIP-4844 Blobs) — block & price collector
  *

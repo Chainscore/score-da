@@ -1,0 +1,10 @@
+{
+  "timestamp": "2025-11-21T13:16:30.584Z",
+  "rpc": "https://rpc.testnet.fastnear.com",
+  "senders": 4,
+  "launched": 478204,
+  "accepted": 0,
+  "failed": 478204,
+  "window_ms": 17486,
+  "avg_ms": 6.87772373296752
+}

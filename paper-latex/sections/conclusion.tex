@@ -2,49 +2,28 @@
 % SECTION VIII: CONCLUSION
 % ================================================================
 
-This paper presented the first comprehensive empirical benchmarking study of six production blockchain DA protocols (Polkadot ELVES, Ethereum EIP-4844/PeerDAS, Celestia, Espresso Tiramisu, NEAR, and Avail) using 90~days of mainnet data collected under a unified methodology.
+We measured six production DA protocols (Polkadot ELVES, Ethereum EIP-4844/PeerDAS, Celestia, Espresso Tiramisu, NEAR and Avail) with one methodology, using 92~days of mainnet data covering about 18.8~million blocks.
 
 \subsection{Summary of Findings}
 
-Our analysis yields four principal findings.
+Window-mean utilization ranged from 0.18\% (NEAR) to 35\% (Ethereum). Ethereum ran at $\sim$60\% of its maximum until the BPO forks raised capacity; the other five protocols stayed below 3\%.
+Throughput comparisons across these networks therefore measure adoption rather than capacity.
 
-\emph{First}, all six protocols operate well below their theoretical capacity ceilings ($<$50\% utilization), indicating that the current DA landscape is demand-constrained.
-Observed throughput measures ecosystem adoption, not protocol engineering limits.
-This observation is important for interpreting any cross-protocol throughput comparison: until protocols approach saturation, throughput comparisons reflect market dynamics rather than technical capability.
+Median DA cost spans nearly seven orders of magnitude, from $\sim$\$3$\times$10$^{-9}$/MiB (Espresso, whose 1~wei/byte fee is a Mainnet~0 placeholder) to \$0.020/MiB (Celestia); the six measures differ in which fee components they include.
+On Ethereum, the blob fee left the 1-wei floor at Fusaka, coinciding with the EIP-7918 reserve price and before the BPO forks added capacity.
+Annualization reorders the ranking: NEAR's spot cost (\$0.010/MiB) is close to Avail's and Ethereum's, but its annualized cost (\$2.4/MiB/yr) is the highest because of its $\sim$1.5-day retention.
 
-\emph{Second}, DA costs span seven orders of magnitude across protocols, from $\sim$\$3$\times$10$^{-9}$/MiB (Espresso, whose 1~wei/byte fee is a Mainnet~0 placeholder) to $\sim$\$0.80/MiB (Celestia peak during a demand spike).
-Annualized cost normalization, which accounts for protocol-specific retention windows, reveals that protocols appearing cheap at spot pricing (due to short retention) may be expensive when continuous availability is required.
-The absence of a single ``cheapest'' protocol after annualization underscores the importance of multi-dimensional evaluation.
+No protocol slashes for pure data withholding.
+Polkadot gates candidate inclusion on availability bitfields, Celestia uses bad-encoding fraud proofs, Ethereum uses peer scoring, Espresso relies on committee reputation, NEAR relies on its chunk-inclusion rule, and Avail slashes only for equivocation.
+Attributing withholding, an omission fault, to a specific actor is still unsolved.
 
-\emph{Third}, no protocol implements slashing for pure data withholding.
-Enforcement is uniformly indirect: Polkadot gates finality on availability bitfields, Celestia employs bad encoding fraud proofs, Ethereum uses peer scoring, Espresso relies on committee reputation, NEAR has an unused challenge mechanism, and Avail slashes only for equivocation.
-This universal gap reflects the fundamental difficulty of attributing data withholding (an omission fault) to specific actors.
-
-\emph{Fourth}, DA is universally temporary, with retention windows ranging from $\sim$85~minutes (Avail) to $\sim$30~days (Celestia).
-This ephemerality is a deliberate design choice, but it creates binding constraints for downstream consumers, particularly optimistic rollups whose fraud proof windows may exceed their DA layer's retention period.
-
-\subsection{Architectural Taxonomy}
-
-We classified DA architectures along three paradigms (DAS, VID, and validator-set recovery) and along orthogonal dimensions of encoding scheme and commitment type.
-This taxonomy reveals that the choice of verification paradigm has deeper implications than encoding or commitment choices: it determines light client capabilities, trust assumptions, and enforcement mechanisms.
-DAS protocols (Celestia, Avail, Ethereum) enable trust-minimized verification but require active network participation.
-Validator-recovery protocols (Polkadot, NEAR) provide deterministic guarantees but offer no independent light client verification.
-VID (Espresso) provides algebraic bribery resistance at the cost of committee trust.
-
-\subsection{Contributions and Reproducibility}
-
-Beyond the empirical findings, this work contributes:
-(i)~open-source data collection tooling for all six protocols,
-(ii)~raw datasets comprising over 14~million blocks,
-(iii)~analysis notebooks that reproduce all figures and tables, and
-(iv)~interactive dashboards for real-time data exploration.
-All artifacts are released under Apache~2.0 (code) and CC~BY~4.0 (data) licenses to enable reproducibility and longitudinal extension by the research community.
+No protocol guarantees permanent availability.
+Default retention ranges from 25~hours (Polkadot) to $\sim$18~days (Ethereum); Avail and Espresso retain data unless operators enable pruning; and among the four with a default horizon, only Ethereum's exceeds a 7-day optimistic-rollup challenge period with margin.
 
 \subsection{Future Work}
 
-Several directions emerge from this study.
-\emph{Longitudinal extension}: as adoption grows and protocols approach saturation, repeating this analysis will reveal supply-constrained dynamics not observable in the current demand-constrained regime.
-\emph{Stress testing}: synthetic load testing under controlled conditions would complement our observational methodology with causal measurements of protocol limits.
-\emph{Withholding enforcement}: the universal absence of withholding-specific slashing identifies an open problem; formal analysis of incentive-compatible enforcement mechanisms for omission faults remains an important research direction.
-\emph{Cross-layer analysis}: measuring end-to-end rollup performance (confirmation time, cost, finality) as a function of DA backend choice would directly inform the rollup developer decision framework.
-\emph{PeerDAS deployment}: Ethereum's PeerDAS is in progressive deployment; measuring its impact on DA pricing and validator behavior as it reaches full activation is a natural extension of this work.
+\emph{Longitudinal extension}: repeating these measurements as utilization rises would show supply-constrained behaviour that the current data cannot.
+\emph{Stress testing}: controlled synthetic load would measure protocol limits directly, which observational data cannot do.
+\emph{Withholding enforcement}: incentive-compatible enforcement for omission faults needs formal analysis.
+\emph{Cross-layer analysis}: measuring end-to-end rollup performance (confirmation time, cost, finality) for each DA backend would show how the choice affects rollups.
+\emph{PeerDAS at scale}: PeerDAS activated during our window; its effect on node bandwidth and on further BPO increases remains to be measured.
